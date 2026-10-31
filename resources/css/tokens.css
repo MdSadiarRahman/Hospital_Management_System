@@ -1,0 +1,161 @@
+/**
+ * Meghna Clinic and Nursing Home - Hospital Management System
+ * Global Design Tokens
+ * 
+ * Aesthetic Core:
+ * - Minimalism & Material Design Principles
+ * - Modern SaaS Dashboard & Bento Grid
+ * - Corporate Healthcare & Enterprise Data-Driven UI
+ * - Accessibility-First (WCAG AA Compliant) & Mobile-First
+ */
+
+:root {
+    /* -------------------------------------------------------------------------
+       1. BRAND COLOR PALETTE
+       ------------------------------------------------------------------------- */
+    /* Primary Navy (Dominant, authoritative, clinical stability) */
+    --hms-primary: #123B5D;
+    --hms-primary-hover: #0D2A43;
+    --hms-primary-active: #091F31;
+    --hms-primary-light: #E8F0F7;
+    --hms-primary-subtle: #F0F5FA;
+    --hms-primary-rgb: 18, 59, 93;
+
+    /* Medical Teal (Secondary brand, healthcare precision, actions) */
+    --hms-teal: #087F8C;
+    --hms-teal-hover: #066772;
+    --hms-teal-active: #044E57;
+    --hms-teal-light: #E6F7F9;
+    --hms-teal-subtle: #F2FBFC;
+    --hms-teal-rgb: 8, 127, 140;
+
+    /* Base Surfaces & Backgrounds */
+    --hms-bg-body: #F4F7FA;
+    --hms-bg-surface: #FFFFFF;
+    --hms-bg-muted: #F8FAFC;
+    --hms-bg-subtle: #EEF2F6;
+
+    /* Text & Neutral Contrast */
+    --hms-text-main: #263445;
+    --hms-text-secondary: #475569;
+    --hms-text-muted: #64748B;
+    --hms-text-light: #94A3B8;
+    --hms-text-inverse: #FFFFFF;
+
+    /* Borders & Dividers */
+    --hms-border-color: #E2E8F0;
+    --hms-border-subtle: #F1F5F9;
+    --hms-border-focus: #087F8C;
+
+    /* -------------------------------------------------------------------------
+       2. CLINICAL STATUS & SEVERITY TOKENS (High Accessibility Contrast)
+       ------------------------------------------------------------------------- */
+    /* Normal / Paid / Cleared / Available / Active */
+    --hms-success: #10B981;
+    --hms-success-hover: #059669;
+    --hms-success-bg: #ECFDF5;
+    --hms-success-border: #A7F3D0;
+    --hms-success-text: #065F46;
+
+    /* Priority / Pending / Partial Payment / In Review */
+    --hms-warning: #D97706;
+    --hms-warning-hover: #B45309;
+    --hms-warning-bg: #FFFBEB;
+    --hms-warning-border: #FDE68A;
+    --hms-warning-text: #78350F;
+
+    /* Critical / Emergency / Due / Overdue / Allergy Warning */
+    --hms-danger: #EF4444;
+    --hms-danger-hover: #DC2626;
+    --hms-danger-bg: #FEF2F2;
+    --hms-danger-border: #FECACA;
+    --hms-danger-text: #991B1B;
+
+    /* Routine / Information / Consultation */
+    --hms-info: #2563EB;
+    --hms-info-hover: #1D4ED8;
+    --hms-info-bg: #EFF6FF;
+    --hms-info-border: #BFDBFE;
+    --hms-info-text: #1E40AF;
+
+    /* Neutral Status / Draft / Archived */
+    --hms-neutral: #64748B;
+    --hms-neutral-bg: #F1F5F9;
+    --hms-neutral-border: #CBD5E1;
+    --hms-neutral-text: #334155;
+
+    /* -------------------------------------------------------------------------
+       3. TYPOGRAPHY SYSTEM
+       ------------------------------------------------------------------------- */
+    --hms-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --hms-font-bn: 'Hind Siliguri', 'Inter', sans-serif;
+    --hms-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* Font Sizes */
+    --hms-text-xs: 0.75rem;    /* 12px */
+    --hms-text-sm: 0.875rem;   /* 14px */
+    --hms-text-base: 1rem;     /* 16px */
+    --hms-text-lg: 1.125rem;   /* 18px */
+    --hms-text-xl: 1.25rem;    /* 20px */
+    --hms-text-2xl: 1.5rem;    /* 24px */
+    --hms-text-3xl: 1.875rem;  /* 30px */
+
+    /* Font Weights */
+    --hms-font-regular: 400;
+    --hms-font-medium: 500;
+    --hms-font-semibold: 600;
+    --hms-font-bold: 700;
+
+    /* -------------------------------------------------------------------------
+       4. SPACING TOKENS (4px Baseline Grid)
+       ------------------------------------------------------------------------- */
+    --hms-space-1: 0.25rem;    /* 4px */
+    --hms-space-2: 0.5rem;     /* 8px */
+    --hms-space-3: 0.75rem;    /* 12px */
+    --hms-space-4: 1rem;       /* 16px */
+    --hms-space-5: 1.25rem;    /* 20px */
+    --hms-space-6: 1.5rem;     /* 24px */
+    --hms-space-8: 2rem;       /* 32px */
+    --hms-space-10: 2.5rem;    /* 40px */
+    --hms-space-12: 3rem;      /* 48px */
+
+    /* -------------------------------------------------------------------------
+       5. BORDER RADIUS TOKENS
+       ------------------------------------------------------------------------- */
+    --hms-radius-xs: 4px;
+    --hms-radius-sm: 6px;
+    --hms-radius-md: 10px;
+    --hms-radius-lg: 14px;
+    --hms-radius-xl: 20px;
+    --hms-radius-pill: 9999px;
+
+    /* -------------------------------------------------------------------------
+       6. ELEVATION & SHADOW TOKENS (Crisp SaaS Shadows - No Extreme Blur)
+       ------------------------------------------------------------------------- */
+    --hms-shadow-none: none;
+    --hms-shadow-xs: 0 1px 2px 0 rgba(18, 59, 93, 0.04);
+    --hms-shadow-sm: 0 1px 3px 0 rgba(18, 59, 93, 0.07), 0 1px 2px -1px rgba(18, 59, 93, 0.04);
+    --hms-shadow-md: 0 4px 6px -1px rgba(18, 59, 93, 0.07), 0 2px 4px -2px rgba(18, 59, 93, 0.04);
+    --hms-shadow-lg: 0 10px 15px -3px rgba(18, 59, 93, 0.08), 0 4px 6px -4px rgba(18, 59, 93, 0.03);
+    
+    /* Accessible Focus Rings */
+    --hms-shadow-focus: 0 0 0 3px rgba(8, 127, 140, 0.25);
+    --hms-shadow-focus-danger: 0 0 0 3px rgba(239, 68, 68, 0.25);
+
+    /* -------------------------------------------------------------------------
+       7. INTERACTION & TRANSITION TOKENS
+       ------------------------------------------------------------------------- */
+    --hms-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    --hms-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* -------------------------------------------------------------------------
+       8. Z-INDEX SYSTEM
+       ------------------------------------------------------------------------- */
+    --hms-z-dropdown: 1000;
+    --hms-z-sticky: 1020;
+    --hms-z-fixed: 1030;
+    --hms-z-modal-backdrop: 1040;
+    --hms-z-modal: 1050;
+    --hms-z-popover: 1060;
+    --hms-z-tooltip: 1070;
+}

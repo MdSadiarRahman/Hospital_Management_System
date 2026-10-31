@@ -1,0 +1,1256 @@
+/**
+ * Meghna Clinic and Nursing Home - Hospital Management System
+ * Core UI Component System (Bootstrap 5 Enhancements & Custom SaaS Components)
+ */
+
+/* =============================================================================
+   1. BUTTONS (Accessible touch targets, crisp feedback, high contrast)
+   ============================================================================= */
+.btn-hms-primary {
+    background-color: var(--hms-primary);
+    border-color: var(--hms-primary);
+    color: var(--hms-text-inverse);
+    font-weight: var(--hms-font-medium);
+    padding: 0.5rem 1.15rem;
+    font-size: var(--hms-text-sm);
+    border-radius: var(--hms-radius-sm);
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background-color var(--hms-transition-fast), border-color var(--hms-transition-fast), box-shadow var(--hms-transition-fast);
+}
+
+.btn-hms-primary:hover,
+.btn-hms-primary:focus {
+    background-color: var(--hms-primary-hover);
+    border-color: var(--hms-primary-hover);
+    color: var(--hms-text-inverse);
+    box-shadow: var(--hms-shadow-sm);
+}
+
+.btn-hms-primary:active {
+    background-color: var(--hms-primary-active);
+    border-color: var(--hms-primary-active);
+}
+
+.btn-hms-primary:focus-visible {
+    outline: none;
+    box-shadow: var(--hms-shadow-focus);
+}
+
+/* Medical Teal Button (Secondary Brand / Primary Actions) */
+.btn-hms-teal {
+    background-color: var(--hms-teal);
+    border-color: var(--hms-teal);
+    color: var(--hms-text-inverse);
+    font-weight: var(--hms-font-medium);
+    padding: 0.5rem 1.15rem;
+    font-size: var(--hms-text-sm);
+    border-radius: var(--hms-radius-sm);
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background-color var(--hms-transition-fast), border-color var(--hms-transition-fast), box-shadow var(--hms-transition-fast);
+}
+
+.btn-hms-teal:hover,
+.btn-hms-teal:focus {
+    background-color: var(--hms-teal-hover);
+    border-color: var(--hms-teal-hover);
+    color: var(--hms-text-inverse);
+    box-shadow: var(--hms-shadow-sm);
+}
+
+.btn-hms-teal:active {
+    background-color: var(--hms-teal-active);
+    border-color: var(--hms-teal-active);
+}
+
+.btn-hms-teal:focus-visible {
+    outline: none;
+    box-shadow: var(--hms-shadow-focus);
+}
+
+/* Outlined Variants */
+.btn-hms-outline-primary {
+    background-color: transparent;
+    border: 1px solid var(--hms-primary);
+    color: var(--hms-primary);
+    font-weight: var(--hms-font-medium);
+    padding: 0.5rem 1.15rem;
+    font-size: var(--hms-text-sm);
+    border-radius: var(--hms-radius-sm);
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all var(--hms-transition-fast);
+}
+
+.btn-hms-outline-primary:hover {
+    background-color: var(--hms-primary-light);
+    color: var(--hms-primary-hover);
+    border-color: var(--hms-primary);
+}
+
+.btn-hms-outline-teal {
+    background-color: transparent;
+    border: 1px solid var(--hms-teal);
+    color: var(--hms-teal);
+    font-weight: var(--hms-font-medium);
+    padding: 0.5rem 1.15rem;
+    font-size: var(--hms-text-sm);
+    border-radius: var(--hms-radius-sm);
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all var(--hms-transition-fast);
+}
+
+.btn-hms-outline-teal:hover {
+    background-color: var(--hms-teal-light);
+    color: var(--hms-teal-hover);
+    border-color: var(--hms-teal);
+}
+
+/* Subtle Ghost Button */
+.btn-hms-ghost {
+    background-color: transparent;
+    border: 1px solid transparent;
+    color: var(--hms-text-secondary);
+    font-weight: var(--hms-font-medium);
+    padding: 0.5rem 0.85rem;
+    font-size: var(--hms-text-sm);
+    border-radius: var(--hms-radius-sm);
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all var(--hms-transition-fast);
+}
+
+.btn-hms-ghost:hover {
+    background-color: var(--hms-border-subtle);
+    color: var(--hms-primary);
+}
+
+/* Small Buttons */
+.btn-hms-sm {
+    min-height: 32px;
+    padding: 0.25rem 0.75rem;
+    font-size: var(--hms-text-xs);
+    border-radius: var(--hms-radius-xs);
+}
+
+/* =============================================================================
+   2. CARDS & BENTO GRID ARCHITECTURE
+   ============================================================================= */
+.hms-card {
+    background-color: var(--hms-bg-surface);
+    border: 1px solid var(--hms-border-color);
+    border-radius: var(--hms-radius-md);
+    box-shadow: var(--hms-shadow-xs);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-clip: border-box;
+    transition: box-shadow var(--hms-transition-fast), border-color var(--hms-transition-fast);
+}
+
+.hms-card:hover {
+    box-shadow: var(--hms-shadow-sm);
+}
+
+.hms-card-header {
+    padding: var(--hms-space-4) var(--hms-space-5);
+    background-color: transparent;
+    border-bottom: 1px solid var(--hms-border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--hms-space-3);
+}
+
+.hms-card-title {
+    font-size: var(--hms-text-base);
+    font-weight: var(--hms-font-semibold);
+    color: var(--hms-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.hms-card-subtitle {
+    font-size: var(--hms-text-xs);
+    color: var(--hms-text-muted);
+    margin: 0.15rem 0 0 0;
+}
+
+.hms-card-body {
+    padding: var(--hms-space-5);
+    flex: 1 1 auto;
+}
+
+.hms-card-footer {
+    padding: var(--hms-space-3) var(--hms-space-5);
+    background-color: var(--hms-bg-muted);
+    border-top: 1px solid var(--hms-border-subtle);
+    border-bottom-left-radius: calc(var(--hms-radius-md) - 1px);
+    border-bottom-right-radius: calc(var(--hms-radius-md) - 1px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Bento Grid System */
+.bento-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Bento Column Spans */
+.bento-col-12 { grid-column: span 12; }
+.bento-col-8  { grid-column: span 8; }
+.bento-col-7  { grid-column: span 7; }
+.bento-col-6  { grid-column: span 6; }
+.bento-col-5  { grid-column: span 5; }
+.bento-col-4  { grid-column: span 4; }
+.bento-col-3  { grid-column: span 3; }
+
+@media (max-width: 991.98px) {
+    .bento-col-8,
+    .bento-col-7,
+    .bento-col-6,
+    .bento-col-5,
+    .bento-col-4,
+    .bento-col-3 {
+        grid-column: span 12;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .bento-col-3 {
+        grid-column: span 6;
+    }
+    .bento-col-4 {
+        grid-column: span 6;
+    }
+}
+
+/* KPI Metric Bento Card */
+.kpi-card {
+    background-color: var(--hms-bg-surface);
+    border: 1px solid var(--hms-border-color);
+    border-radius: var(--hms-radius-md);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
+    box-shadow: var(--hms-shadow-xs);
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: var(--hms-primary);
+}
+
+.kpi-card.teal::before   { background-color: var(--hms-teal); }
+.kpi-card.success::before{ background-color: var(--hms-success); }
+.kpi-card.warning::before{ background-color: var(--hms-warning); }
+.kpi-card.danger::before { background-color: var(--hms-danger); }
+
+.kpi-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.kpi-label {
+    font-size: var(--hms-text-xs);
+    font-weight: var(--hms-font-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--hms-text-muted);
+}
+
+.kpi-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--hms-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    background-color: var(--hms-primary-light);
+    color: var(--hms-primary);
+}
+
+.kpi-icon-box.teal   { background-color: var(--hms-teal-light); color: var(--hms-teal); }
+.kpi-icon-box.success{ background-color: var(--hms-success-bg); color: var(--hms-success); }
+.kpi-icon-box.warning{ background-color: var(--hms-warning-bg); color: var(--hms-warning); }
+.kpi-icon-box.danger { background-color: var(--hms-danger-bg); color: var(--hms-danger); }
+
+.kpi-value {
+    font-size: 1.625rem; /* 26px */
+    font-weight: var(--hms-font-bold);
+    color: var(--hms-text-main);
+    line-height: 1.1;
+    margin: 0.25rem 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.kpi-meta {
+    font-size: var(--hms-text-xs);
+    color: var(--hms-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* =============================================================================
+   3. FORMS & INPUT CONTROLS
+   ============================================================================= */
+.hms-form-label {
+    font-size: 0.8125rem; /* 13px */
+    font-weight: var(--hms-font-semibold);
+    color: var(--hms-text-secondary);
+    margin-bottom: 0.35rem;
+    display: block;
+}
+
+.hms-form-label.required::after {
+    content: " *";
+    color: var(--hms-danger);
+    font-weight: bold;
+}
+
+.hms-form-control,
+.hms-form-select {
+    width: 100%;
+    height: 42px;
+    padding: 0.5rem 0.85rem;
+    font-size: var(--hms-text-sm);
+    font-family: inherit;
+    color: var(--hms-text-main);
+    background-color: var(--hms-bg-surface);
+    border: 1px solid var(--hms-border-color);
+    border-radius: var(--hms-radius-sm);
+    transition: border-color var(--hms-transition-fast), box-shadow var(--hms-transition-fast);
+}
+
+textarea.hms-form-control {
+    height: auto;
+    min-height: 80px;
+}
+
+.hms-form-control:focus,
+.hms-form-select:focus {
+    border-color: var(--hms-teal);
+    outline: 0;
+    box-shadow: var(--hms-shadow-focus);
+}
+
+.hms-form-control.is-invalid,
+.hms-form-select.is-invalid {
+    border-color: var(--hms-danger);
+}
+
+.hms-form-control.is-invalid:focus,
+.hms-form-select.is-invalid:focus {
+    box-shadow: var(--hms-shadow-focus-danger);
+}
+
+.hms-form-hint {
+    font-size: var(--hms-text-xs);
+    color: var(--hms-text-muted);
+    margin-top: 0.25rem;
+}
+
+.hms-form-error {
+    font-size: var(--hms-text-xs);
+    color: var(--hms-danger);
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Input group */
+.hms-input-group {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+.hms-input-addon {
+    display: flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    font-size: var(--hms-text-sm);
+    font-weight: 500;
+    color: var(--hms-text-muted);
+    background-color: var(--hms-bg-muted);
+    border: 1px solid var(--hms-border-color);
+    border-radius: var(--hms-radius-sm) 0 0 var(--hms-radius-sm);
+    border-right: none;
+}
+
+.hms-input-group .hms-form-control {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* =============================================================================
+   4. DATA TABLES (Clinical & Financial Readability)
+   ============================================================================= */
+.hms-table-responsive {
+    background-color: var(--hms-bg-surface);
+    border: 1px solid var(--hms-border-color);
+    border-radius: var(--hms-radius-md);
+    overflow: hidden;
+    box-shadow: var(--hms-shadow-xs);
+    margin-bottom: 1.5rem;
+}
+
+.hms-table {
+    width: 100%;
+    margin-bottom: 0;
+    color: var(--hms-text-main);
+    vertical-align: middle;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.hms-table thead th {
+    background-color: var(--hms-bg-muted);
+    color: var(--hms-text-secondary);
+    font-size: 0.75rem; /* 12px */
+    font-weight: var(--hms-font-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--hms-border-color);
+    white-space: nowrap;
+}
+
+.hms-table tbody td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--hms-border-subtle);
+    font-size: var(--hms-text-sm);
+    color: var(--hms-text-main);
+    background-color: var(--hms-bg-surface);
+}
+
+.hms-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.hms-table tbody tr:hover td {
+    background-color: var(--hms-bg-subtle);
+}
+
+/* =============================================================================
+   5. BADGES & CLINICAL STATUS PILLS
+   ============================================================================= */
+.hms-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.75rem; /* 12px */
+    font-weight: var(--hms-font-semibold);
+    border-radius: var(--hms-radius-pill);
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.hms-badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Status variants */
+.hms-badge-success {
+    background-color: var(--hms-success-bg);
+    color: var(--hms-success-text);
+    border: 1px solid var(--hms-success-border);
+}
+.hms-badge-success .hms-badge-dot { background-color: var(--hms-success); }
+
+.hms-badge-warning {
+    background-color: var(--hms-warning-bg);
+    color: var(--hms-warning-text);
+    border: 1px solid var(--hms-warning-border);
+}
+.hms-badge-warning .hms-badge-dot { background-color: var(--hms-warning); }
+
+.hms-badge-danger {
+    background-color: var(--hms-danger-bg);
+    color: var(--hms-danger-text);
+    border: 1px solid var(--hms-danger-border);
+}
+.hms-badge-danger .hms-badge-dot { background-color: var(--hms-danger); }
+
+.hms-badge-info {
+    background-color: var(--hms-info-bg);
+    color: var(--hms-info-text);
+    border: 1px solid var(--hms-info-border);
+}
+.hms-badge-info .hms-badge-dot { background-color: var(--hms-info); }
+
+.hms-badge-teal {
+    background-color: var(--hms-teal-light);
+    color: var(--hms-teal-hover);
+    border: 1px solid rgba(8, 127, 140, 0.25);
+}
+.hms-badge-teal .hms-badge-dot { background-color: var(--hms-teal); }
+
+.hms-badge-navy {
+    background-color: var(--hms-primary-light);
+    color: var(--hms-primary);
+    border: 1px solid rgba(18, 59, 93, 0.2);
+}
+.hms-badge-navy .hms-badge-dot { background-color: var(--hms-primary); }
+
+.hms-badge-neutral {
+    background-color: var(--hms-neutral-bg);
+    color: var(--hms-neutral-text);
+    border: 1px solid var(--hms-neutral-border);
+}
+.hms-badge-neutral .hms-badge-dot { background-color: var(--hms-neutral); }
+
+/* =============================================================================
+   6. ALERTS & CALLOUTS
+   ============================================================================= */
+.hms-alert {
+    padding: 0.85rem 1.15rem;
+    border-radius: var(--hms-radius-sm);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: var(--hms-text-sm);
+    margin-bottom: 1rem;
+    border-left: 4px solid transparent;
+}
+
+.hms-alert-icon {
+    font-size: 1.15rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+}
+
+.hms-alert-success {
+    background-color: var(--hms-success-bg);
+    color: var(--hms-success-text);
+    border-color: var(--hms-success);
+}
+.hms-alert-success .hms-alert-icon { color: var(--hms-success); }
+
+.hms-alert-warning {
+    background-color: var(--hms-warning-bg);
+    color: var(--hms-warning-text);
+    border-color: var(--hms-warning);
+}
+.hms-alert-warning .hms-alert-icon { color: var(--hms-warning); }
+
+.hms-alert-danger {
+    background-color: var(--hms-danger-bg);
+    color: var(--hms-danger-text);
+    border-color: var(--hms-danger);
+}
+.hms-alert-danger .hms-alert-icon { color: var(--hms-danger); }
+
+.hms-alert-info {
+    background-color: var(--hms-info-bg);
+    color: var(--hms-info-text);
+    border-color: var(--hms-info);
+}
+.hms-alert-info .hms-alert-icon { color: var(--hms-info); }
+
+/* =============================================================================
+   7. MODALS & DIALOGS
+   ============================================================================= */
+.modal-content.hms-modal {
+    border: 1px solid var(--hms-border-color);
+    border-radius: var(--hms-radius-lg);
+    box-shadow: var(--hms-shadow-lg);
+    background-color: var(--hms-bg-surface);
+}
+
+.modal-header.hms-modal-header {
+    border-bottom: 1px solid var(--hms-border-subtle);
+    padding: 1rem 1.5rem;
+}
+
+.modal-title.hms-modal-title {
+    font-size: 1.125rem;
+    font-weight: var(--hms-font-semibold);
+    color: var(--hms-primary);
+}
+
+.modal-body.hms-modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer.hms-modal-footer {
+    border-top: 1px solid var(--hms-border-subtle);
+    padding: 0.85rem 1.5rem;
+    background-color: var(--hms-bg-muted);
+    border-bottom-left-radius: calc(var(--hms-radius-lg) - 1px);
+    border-bottom-right-radius: calc(var(--hms-radius-lg) - 1px);
+}
+
+/* =============================================================================
+   8. NAVIGATION (TOPBAR & SIDEBAR)
+   ============================================================================= */
+.hms-topbar {
+    background-color: var(--hms-bg-surface);
+    border-bottom: 1px solid var(--hms-border-color);
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: var(--hms-z-sticky);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+}
+
+.hms-sidebar {
+    width: 260px;
+    background-color: var(--hms-primary);
+    color: var(--hms-text-inverse);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: all var(--hms-transition-base);
+}
+
+.hms-sidebar-brand {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hms-sidebar-nav {
+    list-style: none;
+    padding: 1rem 0.75rem;
+    margin: 0;
+    flex: 1;
+}
+
+.hms-nav-item {
+    margin-bottom: 0.25rem;
+}
+
+.hms-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    border-radius: var(--hms-radius-sm);
+    font-size: var(--hms-text-sm);
+    font-weight: var(--hms-font-medium);
+    transition: all var(--hms-transition-fast);
+}
+
+.hms-nav-link:hover {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.hms-nav-link.active {
+    color: #FFFFFF;
+    background-color: var(--hms-teal);
+    font-weight: var(--hms-font-semibold);
+}
+
+.hms-nav-section-title {
+    font-size: 0.6875rem; /* 11px */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.45);
+    padding: 0.75rem 0.85rem 0.35rem;
+}
+
+/* Layout Wrappers */
+.hms-layout-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--hms-bg-body);
+}
+
+.hms-main-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 100vh;
+}
+
+.hms-content-area {
+    flex: 1;
+    padding: 1.5rem;
+}
+
+@media (max-width: 767.98px) {
+    .hms-content-area {
+        padding: 1rem;
+    }
+}
+
+/* User & Notification Topbar Elements */
+.hms-user-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--hms-radius-pill);
+    background-color: var(--hms-bg-muted);
+    border: 1px solid var(--hms-border-color);
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--hms-text-main);
+    transition: background-color var(--hms-transition-fast);
+}
+
+.hms-user-badge:hover {
+    background-color: var(--hms-border-subtle);
+    color: var(--hms-primary);
+}
+
+.hms-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--hms-primary);
+    color: #FFFFFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.hms-avatar.doctor   { background-color: var(--hms-teal); }
+.hms-avatar.nurse    { background-color: #059669; }
+.hms-avatar.billing  { background-color: #D97706; }
+.hms-avatar.lab      { background-color: #2563EB; }
+.hms-avatar.patient  { background-color: #7C3AED; }
+
+.hms-notification-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--hms-radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--hms-text-secondary);
+    background: transparent;
+    border: 1px solid transparent;
+    font-size: 1.15rem;
+    transition: all var(--hms-transition-fast);
+}
+
+.hms-notification-btn:hover {
+    background-color: var(--hms-bg-muted);
+    color: var(--hms-primary);
+}
+
+.hms-notification-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--hms-danger);
+    border: 2px solid #FFFFFF;
+}
+
+.notification-dropdown {
+    width: 320px;
+    max-width: 90vw;
+    padding: 0;
+    border-radius: var(--hms-radius-md);
+    box-shadow: var(--hms-shadow-lg);
+    border: 1px solid var(--hms-border-color);
+}
+
+.notification-header {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--hms-border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--hms-bg-muted);
+}
+
+.notification-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--hms-border-subtle);
+    display: flex;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--hms-text-main);
+    transition: background-color var(--hms-transition-fast);
+}
+
+.notification-item:hover {
+    background-color: var(--hms-bg-subtle);
+}
+
+.notification-item.unread {
+    background-color: var(--hms-primary-light);
+}
+
+/* Portal Footer */
+.hms-portal-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--hms-border-color);
+    background-color: var(--hms-bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--hms-text-muted);
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Public Website Specific Styling */
+.public-topbar {
+    background-color: var(--hms-primary);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.8rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.public-navbar {
+    background-color: #FFFFFF;
+    box-shadow: var(--hms-shadow-xs);
+    border-bottom: 1px solid var(--hms-border-color);
+    padding: 0.85rem 0;
+    position: sticky;
+    top: 0;
+    z-index: var(--hms-z-sticky);
+}
+
+.public-nav-link {
+    font-weight: 500;
+    color: var(--hms-text-main);
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--hms-radius-sm);
+    text-decoration: none;
+    font-size: 0.925rem;
+    transition: color var(--hms-transition-fast);
+}
+
+.public-nav-link:hover,
+.public-nav-link.active {
+    color: var(--hms-teal);
+}
+
+.public-footer {
+    background-color: var(--hms-primary);
+    color: rgba(255, 255, 255, 0.85);
+    padding: 3.5rem 0 1.5rem;
+}
+
+.public-footer a {
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    transition: color var(--hms-transition-fast);
+}
+
+.public-footer a:hover {
+    color: #FFFFFF;
+}
+
+.public-footer-divider {
+    border-color: rgba(255, 255, 255, 0.1);
+    margin: 2rem 0 1.5rem;
+}
+
+/* =============================================================================
+   9. ICON BUTTONS
+   ============================================================================= */
+.btn-hms-icon {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--hms-radius-sm);
+    color: var(--hms-text-secondary);
+    background-color: transparent;
+    border: 1px solid transparent;
+    transition: all var(--hms-transition-fast);
+}
+
+.btn-hms-icon:hover {
+    background-color: var(--hms-bg-subtle);
+    color: var(--hms-primary);
+    border-color: var(--hms-border-color);
+}
+
+.btn-hms-icon:focus-visible {
+    outline: none;
+    box-shadow: var(--hms-shadow-focus);
+}
+
+.btn-hms-icon.primary {
+    background-color: var(--hms-primary-light);
+    color: var(--hms-primary);
+    border-color: rgba(18, 59, 93, 0.15);
+}
+.btn-hms-icon.primary:hover {
+    background-color: var(--hms-primary);
+    color: #FFFFFF;
+}
+
+.btn-hms-icon.teal {
+    background-color: var(--hms-teal-light);
+    color: var(--hms-teal);
+    border-color: rgba(8, 127, 140, 0.2);
+}
+.btn-hms-icon.teal:hover {
+    background-color: var(--hms-teal);
+    color: #FFFFFF;
+}
+
+.btn-hms-icon.danger {
+    background-color: var(--hms-danger-bg);
+    color: var(--hms-danger);
+    border-color: var(--hms-danger-border);
+}
+.btn-hms-icon.danger:hover {
+    background-color: var(--hms-danger);
+    color: #FFFFFF;
+}
+
+/* =============================================================================
+   10. SEARCH FIELD
+   ============================================================================= */
+.hms-search-container {
+    position: relative;
+    width: 100%;
+}
+
+.hms-search-icon {
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--hms-text-muted);
+    pointer-events: none;
+    font-size: 0.95rem;
+}
+
+.hms-search-input {
+    width: 100%;
+    height: 40px;
+    padding-left: 2.35rem;
+    padding-right: 2rem;
+    font-size: var(--hms-text-sm);
+    border: 1px solid var(--hms-border-color);
+    border-radius: var(--hms-radius-sm);
+    background-color: var(--hms-bg-surface);
+    color: var(--hms-text-main);
+    transition: all var(--hms-transition-fast);
+}
+
+.hms-search-input:focus {
+    outline: none;
+    border-color: var(--hms-teal);
+    box-shadow: var(--hms-shadow-focus);
+}
+
+.hms-search-clear {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--hms-text-muted);
+    padding: 0.25rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.hms-search-clear:hover {
+    color: var(--hms-text-main);
+}
+
+/* =============================================================================
+   11. FILTER PANEL
+   ============================================================================= */
+.hms-filter-panel {
+    background-color: var(--hms-bg-surface);
+    border: 1px solid var(--hms-border-color);
+    border-radius: var(--hms-radius-md);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    box-shadow: var(--hms-shadow-xs);
+}
+
+.hms-filter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.hms-filter-title {
+    font-size: var(--hms-text-xs);
+    font-weight: var(--hms-font-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--hms-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* =============================================================================
+   12. PAGINATION
+   ============================================================================= */
+.hms-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    font-size: var(--hms-text-sm);
+}
+
+.hms-pagination .pagination {
+    margin-bottom: 0;
+    gap: 0.25rem;
+}
+
+.hms-pagination .page-item .page-link {
+    border: 1px solid var(--hms-border-color);
+    color: var(--hms-text-main);
+    border-radius: var(--hms-radius-xs);
+    padding: 0.35rem 0.75rem;
+    font-size: var(--hms-text-sm);
+    min-width: 34px;
+    text-align: center;
+    transition: all var(--hms-transition-fast);
+}
+
+.hms-pagination .page-item .page-link:hover {
+    background-color: var(--hms-bg-subtle);
+    color: var(--hms-teal);
+    border-color: var(--hms-teal);
+}
+
+.hms-pagination .page-item.active .page-link {
+    background-color: var(--hms-primary);
+    border-color: var(--hms-primary);
+    color: #FFFFFF;
+    font-weight: var(--hms-font-semibold);
+}
+
+.hms-pagination .page-item.disabled .page-link {
+    background-color: var(--hms-bg-muted);
+    color: var(--hms-text-muted);
+    border-color: var(--hms-border-subtle);
+}
+
+/* =============================================================================
+   13. BREADCRUMBS
+   ============================================================================= */
+.hms-breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 0;
+    margin-bottom: 0.5rem;
+    list-style: none;
+    font-size: var(--hms-text-xs);
+}
+
+.hms-breadcrumb-item {
+    display: flex;
+    align-items: center;
+    color: var(--hms-text-muted);
+}
+
+.hms-breadcrumb-item a {
+    color: var(--hms-text-muted);
+    text-decoration: none;
+    transition: color var(--hms-transition-fast);
+}
+
+.hms-breadcrumb-item a:hover {
+    color: var(--hms-teal);
+}
+
+.hms-breadcrumb-item.active {
+    color: var(--hms-text-main);
+    font-weight: var(--hms-font-semibold);
+}
+
+.hms-breadcrumb-item + .hms-breadcrumb-item::before {
+    content: "/";
+    padding: 0 0.5rem;
+    color: var(--hms-text-light);
+}
+
+/* =============================================================================
+   14. PAGE HEADER
+   ============================================================================= */
+.hms-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.hms-page-title-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.hms-page-title {
+    font-size: 1.35rem; /* 22px */
+    font-weight: var(--hms-font-bold);
+    color: var(--hms-primary);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.hms-page-subtitle {
+    font-size: var(--hms-text-xs);
+    color: var(--hms-text-muted);
+    margin: 0.2rem 0 0 0;
+}
+
+/* =============================================================================
+   15. EMPTY STATE
+   ============================================================================= */
+.hms-empty-state {
+    padding: 3rem 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--hms-bg-surface);
+}
+
+.hms-empty-icon-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--hms-radius-xl);
+    background-color: var(--hms-bg-muted);
+    border: 1px dashed var(--hms-border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    color: var(--hms-text-muted);
+    margin-bottom: 1rem;
+}
+
+.hms-empty-title {
+    font-size: var(--hms-text-base);
+    font-weight: var(--hms-font-semibold);
+    color: var(--hms-text-main);
+    margin-bottom: 0.35rem;
+}
+
+.hms-empty-description {
+    font-size: var(--hms-text-sm);
+    color: var(--hms-text-muted);
+    max-width: 400px;
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+}
+
+/* =============================================================================
+   16. LOADING STATE & SKELETON LOADERS
+   ============================================================================= */
+.hms-skeleton {
+    background-color: #E2E8F0;
+    border-radius: var(--hms-radius-xs);
+    position: relative;
+    overflow: hidden;
+    animation: hms-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes hms-pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+.hms-skeleton-text {
+    height: 14px;
+    margin-bottom: 0.5rem;
+}
+
+.hms-skeleton-title {
+    height: 20px;
+    width: 60%;
+    margin-bottom: 0.75rem;
+}
+
+.hms-skeleton-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.hms-spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--hms-primary-light);
+    border-top-color: var(--hms-teal);
+    border-radius: 50%;
+    animation: hms-spin 0.8s linear infinite;
+    display: inline-block;
+}
+
+@keyframes hms-spin {
+    to { transform: rotate(360deg); }
+}

@@ -1,7 +1,256 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\PatientAuthController;
+use App\Http\Controllers\Patient\PatientDashboardController;
+use App\Http\Controllers\Patient\PatientProfileController;
+use App\Http\Controllers\PublicController;
+use App\Http\Controllers\Staff\DepartmentController;
+use App\Http\Controllers\Staff\PatientLinkingController;
+use App\Http\Controllers\Staff\StaffController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
+/*
+|--------------------------------------------------------------------------
+| Public Web Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/', [PublicController::class, 'index'])->name('home');
+Route::get('/about', [PublicController::class, 'about'])->name('about');
+Route::get('/departments', [PublicController::class, 'departments'])->name('departments');
+Route::get('/departments/{id}', [PublicController::class, 'departmentDetail'])->name('departments.show');
+Route::get('/doctors', [PublicController::class, 'doctors'])->name('doctors');
+Route::get('/doctors/{id}', [PublicController::class, 'doctorProfile'])->name('doctors.show');
+Route::get('/services', [PublicController::class, 'services'])->name('services');
+Route::get('/contact', [PublicController::class, 'contact'])->name('contact');
+Route::get('/privacy-policy', [PublicController::class, 'privacy'])->name('privacy');
+
+Route::get('/components', function () {
+    return view('components-demo');
+})->name('components.demo');
+
+Route::get('/design-system', function () {
+    return view('design-system.index');
+})->name('design-system');
+
+
+/*
+|--------------------------------------------------------------------------
+| Staff Portal Authentication Routes
+|--------------------------------------------------------------------------
+*/
+// Canonical login route alias required by Laravel auth
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+
+Route::prefix('portal')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('portal.login');
+    Route::post('/login', [AuthController::class, 'login'])->name('portal.login.submit');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('portal.logout');
+});
+
+// Universal logout
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+
+/*
+|--------------------------------------------------------------------------
+| Patient Self-Care Portal Authentication Routes
+|--------------------------------------------------------------------------
+*/
+Route::prefix('patient')->name('patient.')->group(function () {
+    Route::get('/login', [PatientAuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [PatientAuthController::class, 'login'])->name('login.submit');
+    Route::get('/register', [PatientAuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [PatientAuthController::class, 'register'])->name('register.submit');
+    Route::post('/logout', [PatientAuthController::class, 'logout'])->name('logout');
+    
+    // Notice for self-registered patients pending physical identity verification
+    Route::get('/unlinked-notice', [PatientAuthController::class, 'unlinkedNotice'])
+        ->middleware(['auth', 'patient'])
+        ->name('unlinked');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Password Reset Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+
+
+/*
+|--------------------------------------------------------------------------
+| Protected Staff Portal Routes (auth + staff + role middleware)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(function () {
+    // Role-aware dashboard dispatcher
+    Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
+
+    // Administrator Control Center
+    Route::get('/admin', function () {
+        return view('previews.admin');
+    })->middleware('role:super_admin,administrator')->name('admin');
+
+    // Doctor Clinical Workstation
+    Route::get('/doctor', function () {
+        return view('previews.doctor');
+    })->middleware('role:doctor')->name('doctor');
+
+    // Nurse Ward Station
+    Route::get('/nurse', function () {
+        return view('previews.nurse');
+    })->middleware('role:nurse')->name('nurse');
+
+    // Reception & Patient Intake Desk
+    Route::get('/reception', function () {
+        return view('previews.reception');
+    })->middleware('role:receptionist')->name('reception');
+
+    // Billing & Cashier Desk
+    Route::get('/billing', function () {
+        return view('previews.billing');
+    })->middleware('role:billing_staff')->name('billing');
+
+    // Diagnostic Laboratory Workstation
+    Route::get('/lab', function () {
+        return view('previews.lab');
+    })->middleware('role:lab_staff')->name('lab');
+
+    // OT & Inpatient Ward Station
+    Route::get('/ot-ward', function () {
+        return view('previews.nurse');
+    })->middleware('role:ot_ward_staff,nurse')->name('ot-ward');
+
+    // Staff Patient Account Verification & Record Linking
+    Route::get('/patient-linking', [PatientLinkingController::class, 'index'])
+        ->middleware('permission:patients.link_account')
+        ->name('patient-linking.index');
+    Route::post('/patient-linking', [PatientLinkingController::class, 'link'])
+        ->middleware('permission:patients.link_account')
+        ->name('patient-linking.store');
+    Route::post('/patient-linking/{id}/unlink', [PatientLinkingController::class, 'unlink'])
+        ->middleware('permission:patients.link_account')
+        ->name('patient-linking.unlink');
+
+    // Department & Ward Management (Super Admin & Administrator)
+    Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');
+    Route::get('/departments/create', [DepartmentController::class, 'create'])->name('departments.create');
+    Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
+    Route::get('/departments/{department}', [DepartmentController::class, 'show'])->name('departments.show');
+    Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])->name('departments.edit');
+    Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
+    Route::post('/departments/{department}/toggle-status', [DepartmentController::class, 'toggleStatus'])->name('departments.toggle-status');
+    Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
+
+    // Department Staff Assignment & Transfer
+    Route::post('/departments/{department}/staff', [DepartmentController::class, 'assignStaff'])->name('departments.staff.assign');
+    Route::delete('/departments/{department}/staff/{staffProfile}', [DepartmentController::class, 'removeStaff'])->name('departments.staff.remove');
+
+    // Department Bed Configuration & Tariffs
+    Route::post('/departments/{department}/beds', [DepartmentController::class, 'storeBed'])->name('departments.beds.store');
+    Route::put('/departments/{department}/beds/{bed}', [DepartmentController::class, 'updateBed'])->name('departments.beds.update');
+    Route::delete('/departments/{department}/beds/{bed}', [DepartmentController::class, 'deleteBed'])->name('departments.beds.destroy');
+
+    // Staff Management, Allocation, & 8-Hour Shift Scheduling
+    Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+    Route::get('/staff/shifts', [StaffController::class, 'shifts'])->name('staff.shifts');
+    Route::post('/staff/shifts', [StaffController::class, 'scheduleShift'])->name('staff.schedule-shift');
+    Route::delete('/staff/shifts/{shiftSchedule}', [StaffController::class, 'deleteShift'])->name('staff.delete-shift');
+    Route::get('/staff/create', [StaffController::class, 'create'])->name('staff.create');
+    Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+    Route::get('/staff/{staffProfile}', [StaffController::class, 'show'])->name('staff.show');
+    Route::get('/staff/{staffProfile}/edit', [StaffController::class, 'edit'])->name('staff.edit');
+    Route::put('/staff/{staffProfile}', [StaffController::class, 'update'])->name('staff.update');
+    Route::post('/staff/{staffProfile}/toggle-status', [StaffController::class, 'toggleStatus'])->name('staff.toggle-status');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Protected Patient Portal Routes (auth + patient middleware)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('patient')->middleware(['auth', 'patient'])->name('patient.')->group(function () {
+    // Patient Self-Care Dashboard (accessible to both linked and unlinked patients)
+    Route::get('/dashboard', [PatientDashboardController::class, 'index'])->name('dashboard');
+
+    // Patient Profile & Settings (accessible to both linked and unlinked patients)
+    Route::get('/profile', [PatientProfileController::class, 'show'])->name('profile');
+    Route::put('/profile', [PatientProfileController::class, 'update'])->name('profile.update');
+    Route::post('/emergency-contacts', [PatientProfileController::class, 'storeEmergencyContact'])->name('emergency-contacts.store');
+    Route::delete('/emergency-contacts/{id}', [PatientProfileController::class, 'destroyEmergencyContact'])->name('emergency-contacts.destroy');
+    Route::put('/password', [PatientProfileController::class, 'updatePassword'])->name('password.update');
+
+    // Notifications
+    Route::post('/notifications/{id}/read', [PatientDashboardController::class, 'markNotificationAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [PatientDashboardController::class, 'markAllNotificationsAsRead'])->name('notifications.read-all');
+
+    // Sensitive Clinical Records: strictly protected by EnsurePatientLinked middleware
+    Route::middleware('patient.linked')->group(function () {
+        Route::get('/prescriptions', function () {
+            return redirect()->route('patient.dashboard', '#prescriptions-section');
+        })->name('prescriptions');
+        Route::get('/prescriptions/{id}', [PatientDashboardController::class, 'showPrescription'])->name('prescriptions.show');
+
+        Route::get('/lab-reports', function () {
+            return redirect()->route('patient.dashboard', '#reports-section');
+        })->name('lab-reports');
+        Route::get('/lab-reports/{id}/download', [PatientDashboardController::class, 'downloadLabReport'])->name('lab-reports.download');
+
+        Route::get('/inpatient-stays', function () {
+            return redirect()->route('patient.dashboard', '#admission-section');
+        })->name('inpatient-stays');
+
+        Route::get('/bills', function () {
+            return redirect()->route('patient.dashboard', '#billing-section');
+        })->name('bills');
+    });
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| Application Layout Previews
+|--------------------------------------------------------------------------
+*/
+Route::prefix('previews')->name('previews.')->group(function () {
+    Route::get('/', function () {
+        return view('previews.index');
+    })->name('index');
+
+    Route::get('/public', [PublicController::class, 'index'])->name('public');
+
+    Route::get('/admin', function () {
+        return view('previews.admin');
+    })->name('admin');
+
+    Route::get('/doctor', function () {
+        return view('previews.doctor');
+    })->name('doctor');
+
+    Route::get('/nurse', function () {
+        return view('previews.nurse');
+    })->name('nurse');
+
+    Route::get('/reception', function () {
+        return view('previews.reception');
+    })->name('reception');
+
+    Route::get('/billing', function () {
+        return view('previews.billing');
+    })->name('billing');
+
+    Route::get('/lab', function () {
+        return view('previews.lab');
+    })->name('lab');
+
+    Route::get('/patient', function () {
+        return view('previews.patient');
+    })->name('patient');
 });

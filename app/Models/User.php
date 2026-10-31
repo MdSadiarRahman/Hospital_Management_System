@@ -2,47 +2,134 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
+        'user_type',
+        'is_active',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'role_user');
+    }
+
+    public function staffProfile(): HasOne
+    {
+        return $this->hasOne(StaffProfile::class);
+    }
+
+    public function patient(): HasOne
+    {
+        return $this->hasOne(Patient::class);
+    }
+
+    public function hasRole(string|array $role): bool
+    {
+        if (is_array($role)) {
+            return $this->roles->pluck('name')->intersect($role)->isNotEmpty();
+        }
+
+        return $this->roles->contains('name', $role);
+    }
+
+    public function hasPermission(string|array $permission): bool
+    {
+        if ($this->hasRole('super_admin')) {
+            return true;
+        }
+
+        if (is_array($permission)) {
+            return $this->roles()
+                ->whereHas('permissions', fn ($query) => $query->whereIn('name', $permission))
+                ->exists();
+        }
+
+        return $this->roles()
+            ->whereHas('permissions', fn ($query) => $query->where('name', $permission))
+            ->exists();
+    }
+
+    public function isAdministrative(): bool
+    {
+        return $this->hasRole(['super_admin', 'administrator']);
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->user_type === 'staff';
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->hasRole('super_admin');
+    }
+
+    public function assignRole(Role|string $role): self
+    {
+        $roleModel = is_string($role) ? Role::where('name', $role)->firstOrFail() : $role;
+        $this->roles()->syncWithoutDetaching([$roleModel->id]);
+        $this->load('roles');
+
+        return $this;
+    }
+
+    public function removeRole(Role|string $role): self
+    {
+        $roleModel = is_string($role) ? Role::where('name', $role)->first() : $role;
+        if ($roleModel) {
+            $this->roles()->detach($roleModel->id);
+            $this->load('roles');
+        }
+
+        return $this;
+    }
+
+    public function syncRoles(array $roles): self
+    {
+        $roleIds = Role::whereIn('name', $roles)
+            ->orWhereIn('id', array_filter($roles, 'is_numeric'))
+            ->pluck('id');
+
+        $this->roles()->sync($roleIds);
+        $this->load('roles');
+
+        return $this;
+    }
+
+    public function scopeStaff($query)
+    {
+        return $query->where('user_type', 'staff');
+    }
+
+    public function scopePatient($query)
+    {
+        return $query->where('user_type', 'patient');
     }
 }

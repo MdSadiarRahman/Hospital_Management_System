@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +22,35 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Explicit Policy Registrations
+        Gate::policy(\App\Models\Department::class, \App\Policies\DepartmentPolicy::class);
+        Gate::policy(\App\Models\StaffProfile::class, \App\Policies\StaffPolicy::class);
+
+        // Super Admin universal bypass and granular permission resolution
+        Gate::before(function (User $user, string $ability) {
+            if ($user->hasRole('super_admin')) {
+                return true;
+            }
+
+            if ($user->hasPermission($ability)) {
+                return true;
+            }
+
+            return null;
+        });
+
+        // Blade Directive: @role('doctor') or @role(['doctor', 'nurse'])
+        Blade::if('role', function (string|array $roles) {
+            return auth()->check() && auth()->user()->hasRole($roles);
+        });
+
+        Blade::if('hasrole', function (string|array $roles) {
+            return auth()->check() && auth()->user()->hasRole($roles);
+        });
+
+        // Blade Directive: @permission('patients.create') or @permission(['patients.view', 'patients.print'])
+        Blade::if('permission', function (string|array $permissions) {
+            return auth()->check() && auth()->user()->hasPermission($permissions);
+        });
     }
 }

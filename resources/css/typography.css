@@ -1,0 +1,127 @@
+/**
+ * Meghna Clinic and Nursing Home - Hospital Management System
+ * Typography Architecture (English Inter + Bangla Hind Siliguri)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+    font-family: var(--hms-font-sans);
+    font-size: var(--hms-text-sm);
+    line-height: 1.5;
+    color: var(--hms-text-main);
+    background-color: var(--hms-bg-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings Hierarchy */
+h1, .h1 {
+    font-family: var(--hms-font-sans);
+    font-size: 1.5rem; /* 24px */
+    font-weight: var(--hms-font-bold);
+    line-height: 1.25;
+    color: var(--hms-primary);
+    letter-spacing: -0.015em;
+    margin-bottom: var(--hms-space-3);
+}
+
+h2, .h2 {
+    font-family: var(--hms-font-sans);
+    font-size: 1.25rem; /* 20px */
+    font-weight: var(--hms-font-semibold);
+    line-height: 1.3;
+    color: var(--hms-primary);
+    letter-spacing: -0.01em;
+    margin-bottom: var(--hms-space-2);
+}
+
+h3, .h3 {
+    font-family: var(--hms-font-sans);
+    font-size: 1.0625rem; /* 17px */
+    font-weight: var(--hms-font-semibold);
+    line-height: 1.35;
+    color: var(--hms-text-main);
+    margin-bottom: var(--hms-space-2);
+}
+
+h4, .h4 {
+    font-family: var(--hms-font-sans);
+    font-size: 0.9375rem; /* 15px */
+    font-weight: var(--hms-font-medium);
+    line-height: 1.4;
+    color: var(--hms-text-secondary);
+    margin-bottom: var(--hms-space-1);
+}
+
+h5, .h5, h6, .h6 {
+    font-family: var(--hms-font-sans);
+    font-size: 0.875rem; /* 14px */
+    font-weight: var(--hms-font-medium);
+    line-height: 1.4;
+    color: var(--hms-text-secondary);
+    margin-bottom: var(--hms-space-1);
+}
+
+/* Bangla Typography Override */
+.font-bn, [lang="bn"], .bangla-text {
+    font-family: var(--hms-font-bn) !important;
+    line-height: 1.6;
+}
+
+/* Tabular Numerics for Healthcare Data & Financials */
+.tabular-nums,
+.hms-table td.numeric,
+.patient-code,
+.invoice-number,
+.badge-currency,
+.vital-metric {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    letter-spacing: 0.01em;
+}
+
+/* Mono Code Badges */
+.code-badge {
+    font-family: var(--hms-font-mono);
+    font-size: 0.8125rem;
+    font-weight: var(--hms-font-semibold);
+    padding: 0.15rem 0.4rem;
+    background-color: var(--hms-primary-light);
+    color: var(--hms-primary);
+    border-radius: var(--hms-radius-xs);
+    border: 1px solid rgba(18, 59, 93, 0.15);
+}
+
+/* Text Utilities */
+.text-navy {
+    color: var(--hms-primary) !important;
+}
+
+.text-teal {
+    color: var(--hms-teal) !important;
+}
+
+.text-main {
+    color: var(--hms-text-main) !important;
+}
+
+.text-muted-hms {
+    color: var(--hms-text-muted) !important;
+}
+
+.text-secondary-hms {
+    color: var(--hms-text-secondary) !important;
+}
+
+.fw-medium {
+    font-weight: var(--hms-font-medium) !important;
+}
+
+.fw-semibold {
+    font-weight: var(--hms-font-semibold) !important;
+}
+
+.fw-bold {
+    font-weight: var(--hms-font-bold) !important;
+}

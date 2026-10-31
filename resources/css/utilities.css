@@ -1,0 +1,59 @@
+/**
+ * Meghna Clinic and Nursing Home - Hospital Management System
+ * Accessibility & Healthcare UI Utilities
+ */
+
+/* Screen Reader Only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Touch Target Minimum (44px x 44px on mobile) */
+.touch-target {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Accessible Focus Visible */
+*:focus-visible {
+    outline: 2px solid var(--hms-teal);
+    outline-offset: 2px;
+}
+
+/* Clinical Divider */
+.hms-divider {
+    height: 1px;
+    background-color: var(--hms-border-color);
+    margin: 1.25rem 0;
+    border: none;
+}
+
+/* Clean Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--hms-bg-body);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--hms-border-color);
+    border-radius: var(--hms-radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--hms-text-muted);
+}

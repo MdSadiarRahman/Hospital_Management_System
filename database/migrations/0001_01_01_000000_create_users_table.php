@@ -15,8 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('phone', 20)->nullable()->index();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('user_type', ['staff', 'patient'])->default('staff')->index();
+            $table->boolean('is_active')->default(true)->index();
             $table->rememberToken();
             $table->timestamps();
         });
