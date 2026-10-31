@@ -33,8 +33,13 @@ class PatientPortalFoundationTest extends TestCase
      */
     public function test_patient_registration_with_duplicate_prevention(): void
     {
-        $uniquePhone = '017119988' . rand(10, 99);
-        $uniqueEmail = 'patient_test_' . time() . '@example.com';
+        do {
+            $uniquePhone = '017' . rand(10000000, 99999999);
+        } while (User::where('phone', $uniquePhone)->exists());
+
+        do {
+            $uniqueEmail = 'patient_test_' . uniqid() . '_' . rand(1000, 9999) . '@example.com';
+        } while (User::where('email', $uniqueEmail)->exists());
 
         // 1. Successful registration
         $response = $this->post('/patient/register', [

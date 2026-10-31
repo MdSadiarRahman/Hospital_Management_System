@@ -8,7 +8,9 @@ use App\Http\Controllers\Patient\PatientProfileController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\Staff\DepartmentController;
 use App\Http\Controllers\Staff\PatientLinkingController;
+use App\Http\Controllers\Staff\PatientMasterController;
 use App\Http\Controllers\Staff\StaffController;
+use App\Http\Controllers\Staff\VisitController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -137,6 +139,27 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::post('/patient-linking/{id}/unlink', [PatientLinkingController::class, 'unlink'])
         ->middleware('permission:patients.link_account')
         ->name('patient-linking.unlink');
+
+    // Patient Registration & Master Registry (Receptionist & Administrators)
+    Route::get('/patients', [PatientMasterController::class, 'index'])->name('patients.index');
+    Route::get('/patients/create', [PatientMasterController::class, 'create'])->name('patients.create');
+    Route::post('/patients/check-duplicates', [PatientMasterController::class, 'checkDuplicates'])->name('patients.check-duplicates');
+    Route::post('/patients', [PatientMasterController::class, 'store'])->name('patients.store');
+    Route::get('/patients/{patient}', [PatientMasterController::class, 'show'])->name('patients.show');
+    Route::get('/patients/{patient}/medical-record', [PatientMasterController::class, 'medicalRecord'])->name('patients.medical-record');
+    Route::get('/patients/{patient}/edit', [PatientMasterController::class, 'edit'])->name('patients.edit');
+    Route::put('/patients/{patient}', [PatientMasterController::class, 'update'])->name('patients.update');
+    Route::get('/patients/{patient}/print-card', [PatientMasterController::class, 'printCard'])->name('patients.print-card');
+
+    // Patient Visit Management & Emergency Triage Intake
+    Route::get('/visits', [VisitController::class, 'index'])->name('visits.index');
+    Route::get('/visits/create', [VisitController::class, 'create'])->name('visits.create');
+    Route::post('/visits', [VisitController::class, 'store'])->name('visits.store');
+    Route::get('/visits/{visit}', [VisitController::class, 'show'])->name('visits.show');
+    Route::get('/visits/{visit}/edit', [VisitController::class, 'edit'])->name('visits.edit');
+    Route::put('/visits/{visit}', [VisitController::class, 'update'])->name('visits.update');
+    Route::delete('/visits/{visit}', [VisitController::class, 'destroy'])->name('visits.destroy');
+    Route::get('/visits/{visit}/print-token', [VisitController::class, 'printToken'])->name('visits.print-token');
 
     // Department & Ward Management (Super Admin & Administrator)
     Route::get('/departments', [DepartmentController::class, 'index'])->name('departments.index');

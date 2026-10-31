@@ -84,6 +84,8 @@
     $navMenus = match($role) {
         'admin' => [
             ['title' => 'Overview', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/admin')],
+            ['title' => 'Patient Registry', 'icon' => 'person-vcard', 'slug' => 'patients', 'url' => route('portal.patients.index')],
+            ['title' => 'Patient Visits', 'icon' => 'ticket-perforated', 'slug' => 'visits', 'url' => route('portal.visits.index')],
             ['title' => 'Staff Management', 'icon' => 'people', 'slug' => 'staff', 'url' => route('portal.staff.index')],
             ['title' => 'Departments & Wards', 'icon' => 'diagram-3', 'slug' => 'departments', 'url' => route('portal.departments.index')],
             ['title' => '10 Beds & Tariffs', 'icon' => 'door-open', 'slug' => 'beds', 'url' => '#'],
@@ -93,6 +95,7 @@
         ],
         'doctor' => [
             ['title' => 'Clinical Dashboard', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/doctor')],
+            ['title' => 'Patient Registry', 'icon' => 'person-vcard', 'slug' => 'patients', 'url' => route('portal.patients.index')],
             ['title' => 'OPD Patient Queue', 'icon' => 'person-lines-fill', 'slug' => 'queue', 'url' => '#'],
             ['title' => 'Inpatient Rounds (10 Beds)', 'icon' => 'hospital', 'slug' => 'inpatients', 'url' => '#'],
             ['title' => 'Prescriptions & MAR', 'icon' => 'file-earmark-medical', 'slug' => 'prescriptions', 'url' => '#'],
@@ -102,6 +105,7 @@
         ],
         'nurse' => [
             ['title' => 'Nursing Station', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/nurse')],
+            ['title' => 'Patient Registry', 'icon' => 'person-vcard', 'slug' => 'patients', 'url' => route('portal.patients.index')],
             ['title' => '10-Bed Live Station', 'icon' => 'door-open', 'slug' => 'beds', 'url' => '#'],
             ['title' => 'Record Vital Signs', 'icon' => 'heart-pulse', 'slug' => 'vitals', 'url' => '#'],
             ['title' => 'Medication Administration', 'icon' => 'capsule', 'slug' => 'mar', 'url' => '#'],
@@ -110,9 +114,9 @@
         ],
         'reception' => [
             ['title' => 'Reception Desk', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/reception')],
-            ['title' => 'Patient Registration', 'icon' => 'person-plus', 'slug' => 'register', 'url' => '#'],
+            ['title' => 'Patient Registration', 'icon' => 'person-plus', 'slug' => 'patients', 'url' => route('portal.patients.index')],
             ['title' => 'Doctor Appointments', 'icon' => 'calendar2-check', 'slug' => 'appointments', 'url' => '#'],
-            ['title' => 'Visit & Triage Intake', 'icon' => 'ticket-perforated', 'slug' => 'visits', 'url' => '#'],
+            ['title' => 'Visit & Triage Intake', 'icon' => 'ticket-perforated', 'slug' => 'visits', 'url' => route('portal.visits.index')],
             ['title' => 'Inpatient Admission', 'icon' => 'box-arrow-in-right', 'slug' => 'admissions', 'url' => '#'],
             ['title' => 'Verify & Link Accounts', 'icon' => 'person-check', 'slug' => 'linking', 'url' => route('portal.patient-linking.index')],
         ],

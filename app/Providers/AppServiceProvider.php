@@ -25,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
         // Explicit Policy Registrations
         Gate::policy(\App\Models\Department::class, \App\Policies\DepartmentPolicy::class);
         Gate::policy(\App\Models\StaffProfile::class, \App\Policies\StaffPolicy::class);
+        Gate::policy(\App\Models\Patient::class, \App\Policies\PatientPolicy::class);
+        Gate::policy(\App\Models\Visit::class, \App\Policies\VisitPolicy::class);
 
         // Super Admin universal bypass and granular permission resolution
         Gate::before(function (User $user, string $ability) {
