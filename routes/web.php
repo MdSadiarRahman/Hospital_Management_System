@@ -3,10 +3,14 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\PatientAuthController;
+use App\Http\Controllers\Patient\PatientAppointmentController;
 use App\Http\Controllers\Patient\PatientDashboardController;
 use App\Http\Controllers\Patient\PatientProfileController;
+use App\Http\Controllers\PublicAppointmentController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\Staff\AppointmentController;
 use App\Http\Controllers\Staff\DepartmentController;
+use App\Http\Controllers\Staff\DoctorScheduleController;
 use App\Http\Controllers\Staff\PatientLinkingController;
 use App\Http\Controllers\Staff\PatientMasterController;
 use App\Http\Controllers\Staff\StaffController;
@@ -27,6 +31,11 @@ Route::get('/doctors/{id}', [PublicController::class, 'doctorProfile'])->name('d
 Route::get('/services', [PublicController::class, 'services'])->name('services');
 Route::get('/contact', [PublicController::class, 'contact'])->name('contact');
 Route::get('/privacy-policy', [PublicController::class, 'privacy'])->name('privacy');
+
+// Public Doctor Appointment Booking & Availability APIs
+Route::post('/appointments', [PublicAppointmentController::class, 'store'])->name('appointments.store');
+Route::get('/api/appointments/slots', [PublicAppointmentController::class, 'getAvailableSlots'])->name('api.appointments.slots');
+Route::get('/api/appointments/doctors', [PublicAppointmentController::class, 'getDoctorsByDepartment'])->name('api.appointments.doctors');
 
 Route::get('/components', function () {
     return view('components-demo');
@@ -151,6 +160,23 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::put('/patients/{patient}', [PatientMasterController::class, 'update'])->name('patients.update');
     Route::get('/patients/{patient}/print-card', [PatientMasterController::class, 'printCard'])->name('patients.print-card');
 
+    // Doctor Consultation Schedules (Receptionist, Doctors, & Administrators)
+    Route::get('/doctor-schedules', [DoctorScheduleController::class, 'index'])->name('doctor-schedules.index');
+    Route::post('/doctor-schedules', [DoctorScheduleController::class, 'store'])->name('doctor-schedules.store');
+    Route::put('/doctor-schedules/{doctorSchedule}', [DoctorScheduleController::class, 'update'])->name('doctor-schedules.update');
+    Route::delete('/doctor-schedules/{doctorSchedule}', [DoctorScheduleController::class, 'destroy'])->name('doctor-schedules.destroy');
+
+    // Appointment Management (Receptionist, Doctors, & Staff)
+    Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+    Route::get('/appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
+    Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+    Route::get('/appointments/{appointment}', [AppointmentController::class, 'show'])->name('appointments.show');
+    Route::post('/appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
+    Route::post('/appointments/{appointment}/reschedule', [AppointmentController::class, 'reschedule'])->name('appointments.reschedule');
+    Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
+    Route::post('/appointments/{appointment}/status', [AppointmentController::class, 'markStatus'])->name('appointments.status');
+    Route::get('/appointments/{appointment}/print-slip', [AppointmentController::class, 'printSlip'])->name('appointments.print-slip');
+
     // Patient Visit Management & Emergency Triage Intake
     Route::get('/visits', [VisitController::class, 'index'])->name('visits.index');
     Route::get('/visits/create', [VisitController::class, 'create'])->name('visits.create');
@@ -209,6 +235,14 @@ Route::prefix('patient')->middleware(['auth', 'patient'])->name('patient.')->gro
     Route::post('/emergency-contacts', [PatientProfileController::class, 'storeEmergencyContact'])->name('emergency-contacts.store');
     Route::delete('/emergency-contacts/{id}', [PatientProfileController::class, 'destroyEmergencyContact'])->name('emergency-contacts.destroy');
     Route::put('/password', [PatientProfileController::class, 'updatePassword'])->name('password.update');
+
+    // Patient Appointments (accessible to all registered patients)
+    Route::get('/appointments', [PatientAppointmentController::class, 'index'])->name('appointments.index');
+    Route::get('/appointments/create', [PatientAppointmentController::class, 'create'])->name('appointments.create');
+    Route::post('/appointments', [PatientAppointmentController::class, 'store'])->name('appointments.store');
+    Route::post('/appointments/{appointment}/reschedule', [PatientAppointmentController::class, 'reschedule'])->name('appointments.reschedule');
+    Route::post('/appointments/{appointment}/cancel', [PatientAppointmentController::class, 'cancel'])->name('appointments.cancel');
+    Route::get('/appointments/{appointment}/print-slip', [PatientAppointmentController::class, 'printSlip'])->name('appointments.print-slip');
 
     // Notifications
     Route::post('/notifications/{id}/read', [PatientDashboardController::class, 'markNotificationAsRead'])->name('notifications.read');

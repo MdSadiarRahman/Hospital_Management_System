@@ -59,13 +59,18 @@
                         </div>
                     @endif
 
+                    <div class="alert alert-info py-2 px-3 mb-3 d-flex align-items-center gap-2" style="font-size: 0.825rem;">
+                        <i class="bi bi-lightning-charge-fill text-primary"></i>
+                        <div><strong>Default Login Active:</strong> Just click <strong>Sign In</strong> to enter automatically!</div>
+                    </div>
+
                     <form method="POST" action="{{ route('portal.login.submit') }}" class="d-flex flex-column gap-3">
                         @csrf
 
                         <!-- Email Address -->
                         <div>
                             <label for="email" class="form-label text-navy fw-semibold" style="font-size: 0.85rem;">
-                                Staff Email Address <span class="text-danger">*</span>
+                                Staff Email Address
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted-hms"><i class="bi bi-envelope"></i></span>
@@ -74,9 +79,8 @@
                                     name="email" 
                                     id="email" 
                                     class="form-control @error('email') is-invalid @enderror" 
-                                    value="{{ old('email') }}" 
-                                    placeholder="doctor@meghnaclinic.com" 
-                                    required 
+                                    value="{{ old('email', 'admin@meghnaclinic.com') }}" 
+                                    placeholder="admin@meghnaclinic.com" 
                                     autofocus
                                 >
                             </div>
@@ -89,7 +93,7 @@
                         <div>
                             <div class="d-flex justify-content-between align-items-center mb-1">
                                 <label for="password" class="form-label text-navy fw-semibold mb-0" style="font-size: 0.85rem;">
-                                    Password <span class="text-danger">*</span>
+                                    Password
                                 </label>
                                 <a href="{{ route('password.request') }}" class="text-teal text-decoration-none" style="font-size: 0.775rem;">
                                     Forgot password?
@@ -102,8 +106,8 @@
                                     name="password" 
                                     id="password" 
                                     class="form-control @error('password') is-invalid @enderror" 
-                                    placeholder="••••••••••••" 
-                                    required
+                                    value="Meghna@2026!"
+                                    placeholder="••••••••••••"
                                 >
                             </div>
                             @error('password')
@@ -113,7 +117,7 @@
 
                         <!-- Remember Me -->
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remember" id="remember" value="1">
+                            <input class="form-check-input" type="checkbox" name="remember" id="remember" value="1" checked>
                             <label class="form-check-label text-muted-hms" for="remember" style="font-size: 0.825rem;">
                                 Keep me signed in on this workstation
                             </label>

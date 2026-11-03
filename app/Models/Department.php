@@ -59,6 +59,11 @@ class Department extends Model
         return $this->hasMany(Appointment::class);
     }
 
+    public function doctorSchedules(): HasMany
+    {
+        return $this->hasMany(DoctorSchedule::class);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);

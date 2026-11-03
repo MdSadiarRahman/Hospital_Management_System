@@ -148,39 +148,186 @@
 
                     <!-- Appointment Booking Card -->
                     <div class="card border shadow-sm p-4 rounded-3 bg-white mb-4">
-                        <h3 class="h5 fw-bold text-navy mb-2">
-                            <i class="bi bi-calendar-plus text-teal me-2"></i> Request Consultation Token
-                        </h3>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h3 class="h5 fw-bold text-navy mb-0">
+                                <i class="bi bi-calendar-plus text-teal me-2"></i> Request Consultation Token
+                            </h3>
+                            <span class="badge bg-teal-subtle text-teal">OPD Token</span>
+                        </div>
                         <p class="text-muted-hms mb-4" style="font-size: 0.875rem;">
                             Fill in patient details below to book an appointment with <strong>{{ $doctor->name }}</strong>. Tokens are confirmed by our reception desk upon arrival.
                         </p>
 
-                        <form action="{{ route('home') }}#appointment" method="GET">
+                        <!-- Success Alert with Serial -->
+                        @if(session('appointment_success'))
+                            <div class="alert alert-success border-0 shadow-sm rounded-3 p-3 text-center mb-4">
+                                <i class="bi bi-check-circle-fill text-success fs-2 d-block mb-1"></i>
+                                <h5 class="fw-bold text-navy mb-1">Appointment Request Submitted!</h5>
+                                <p class="text-muted small mb-2">{{ session('status') }}</p>
+                                <div class="bg-white p-2 rounded-2 border d-inline-block text-start small mb-2">
+                                    <div><strong>Consulting Doctor:</strong> Dr. {{ session('appointment_doctor') }}</div>
+                                    <div><strong>Date & Time:</strong> {{ session('appointment_date') }}</div>
+                                    @if(session('appointment_serial'))
+                                    <div><strong>Daily Serial:</strong> <span class="badge bg-navy text-white">#{{ session('appointment_serial') }}</span></div>
+                                    @endif
+                                </div>
+                                <div class="small text-muted">
+                                    Reference ID: <strong>MCNH-APT-{{ str_pad(session('appointment_id'), 5, '0', STR_PAD_LEFT) }}</strong>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($errors->any())
+                            <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-4 p-3">
+                                <strong class="small d-block mb-1"><i class="bi bi-exclamation-circle me-1"></i> Please check errors:</strong>
+                                <ul class="small mb-0 ps-3">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <form action="{{ route('appointments.store') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="doctor_id" id="doc_profile_doctor_id" value="{{ $doctor->id }}">
+                            <input type="hidden" name="department_id" value="{{ $doctor->staffProfile?->department_id ?? 1 }}">
+
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label text-navy fw-semibold" style="font-size: 0.85rem;">Patient Full Name</label>
-                                    <input type="text" name="patient_name" class="form-control" placeholder="e.g. Mohammad Rahim" required>
+                                    <label class="form-label text-navy fw-semibold" style="font-size: 0.85rem;">Patient Full Name <span class="text-danger">*</span></label>
+                                    <input type="text" name="guest_name" class="form-control" placeholder="e.g. Mohammad Rahim" value="{{ old('guest_name') }}" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label text-navy fw-semibold" style="font-size: 0.85rem;">Contact Phone Number</label>
-                                    <input type="tel" name="phone" class="form-control" placeholder="017XXXXXXXX" required>
+                                    <label class="form-label text-navy fw-semibold" style="font-size: 0.85rem;">Contact Phone Number <span class="text-danger">*</span></label>
+                                    <input type="tel" name="guest_phone" class="form-control" placeholder="017XXXXXXXX" value="{{ old('guest_phone') }}" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label text-navy fw-semibold" style="font-size: 0.85rem;">Consulting Doctor</label>
-                                    <input type="text" class="form-control" value="{{ $doctor->name }}" readonly>
+                                    <label class="form-label text-navy fw-semibold" style="font-size: 0.85rem;">Email Address (Optional)</label>
+                                    <input type="email" name="guest_email" class="form-control" placeholder="name@example.com" value="{{ old('guest_email') }}">
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label text-navy fw-semibold" style="font-size: 0.85rem;">Preferred Date</label>
-                                    <input type="date" name="appointment_date" class="form-control" min="{{ date('Y-m-d') }}">
+                                    <label class="form-label text-navy fw-semibold" style="font-size: 0.85rem;">Preferred Date <span class="text-danger">*</span></label>
+                                    <input type="date" id="doc_profile_apt_date" name="appointment_date" class="form-control" min="{{ date('Y-m-d') }}" value="{{ old('appointment_date', date('Y-m-d')) }}" required onchange="onDocProfileDateChange()">
                                 </div>
-                                <div class="col-12 mt-4">
-                                    <button type="submit" class="btn btn-hms-teal w-100">
-                                        <i class="bi bi-check2-circle"></i> Submit Appointment Request
+
+                                <!-- Time Slot Chips Selection -->
+                                <div class="col-12">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <label class="form-label fw-semibold text-navy mb-0" style="font-size: 0.85rem;">
+                                            Available Consultation Slot <span class="text-danger">*</span>
+                                        </label>
+                                        <span id="doc_profile_slot_spinner" class="spinner-border spinner-border-sm text-teal d-none"></span>
+                                    </div>
+
+                                    <input type="hidden" name="appointment_time" id="doc_profile_apt_time" value="{{ old('appointment_time') }}" required>
+
+                                    <div id="doc_profile_slots_box" class="border rounded-2 p-3 bg-light">
+                                        <p class="text-muted small text-center mb-0" id="doc_profile_slots_empty">
+                                            <i class="bi bi-clock me-1"></i> Checking consultation slots for selected date...
+                                        </p>
+                                        <div id="doc_profile_slots_grid" class="d-flex flex-wrap gap-2 d-none">
+                                            <!-- Injected Slots -->
+                                        </div>
+                                    </div>
+                                    <div id="doc_profile_slots_note" class="form-text small"></div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label text-navy fw-semibold" style="font-size: 0.85rem;">Brief Medical Concern (Optional)</label>
+                                    <textarea name="reason" class="form-control" rows="2" placeholder="Symptoms or note for the doctor...">{{ old('reason') }}</textarea>
+                                </div>
+
+                                <div class="col-12 mt-3">
+                                    <button type="submit" class="btn btn-hms-teal w-100 shadow-sm">
+                                        <i class="bi bi-calendar2-check"></i> Submit Appointment Request
                                     </button>
                                 </div>
                             </div>
                         </form>
                     </div>
+
+                    <script>
+                    function onDocProfileDateChange() {
+                        const docId = document.getElementById('doc_profile_doctor_id').value;
+                        const date = document.getElementById('doc_profile_apt_date').value;
+                        const grid = document.getElementById('doc_profile_slots_grid');
+                        const emptyMsg = document.getElementById('doc_profile_slots_empty');
+                        const note = document.getElementById('doc_profile_slots_note');
+                        const spinner = document.getElementById('doc_profile_slot_spinner');
+                        const timeInput = document.getElementById('doc_profile_apt_time');
+
+                        if (!docId || !date) return;
+
+                        spinner.classList.remove('d-none');
+                        grid.innerHTML = '';
+                        grid.classList.add('d-none');
+                        emptyMsg.classList.remove('d-none');
+                        emptyMsg.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Loading slots...';
+                        note.textContent = '';
+                        timeInput.value = '';
+
+                        fetch(`{{ route('api.appointments.slots') }}?doctor_id=${docId}&date=${date}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                spinner.classList.add('d-none');
+                                if (!data.scheduled) {
+                                    emptyMsg.innerHTML = `<i class="bi bi-info-circle text-warning me-1"></i> ${data.message}`;
+                                    note.textContent = 'Please choose another day from the doctor\'s weekly consultation schedule.';
+                                    note.className = 'form-text small text-danger';
+                                    return;
+                                }
+
+                                if (!data.slots || data.slots.length === 0) {
+                                    emptyMsg.innerHTML = '<i class="bi bi-x-circle text-danger me-1"></i> No consultation slots configured for this date.';
+                                    return;
+                                }
+
+                                emptyMsg.classList.add('d-none');
+                                grid.classList.remove('d-none');
+
+                                let selectableCount = 0;
+                                data.slots.forEach(slot => {
+                                    const btn = document.createElement('button');
+                                    btn.type = 'button';
+                                    btn.className = `btn btn-sm ${slot.available ? 'btn-outline-primary' : 'btn-light text-muted border'}`;
+                                    btn.textContent = slot.formatted;
+                                    btn.disabled = !slot.available;
+                                    if (!slot.available) {
+                                        btn.title = 'Slot Already Booked / Past';
+                                    } else {
+                                        selectableCount++;
+                                        btn.onclick = function() {
+                                            grid.querySelectorAll('button').forEach(b => {
+                                                if (!b.disabled) b.className = 'btn btn-sm btn-outline-primary';
+                                            });
+                                            btn.className = 'btn btn-sm btn-hms-teal text-white fw-bold shadow-sm';
+                                            timeInput.value = slot.time;
+                                            note.textContent = `Selected consultation slot: ${slot.formatted}`;
+                                            note.className = 'form-text small text-success fw-semibold';
+                                        };
+                                    }
+                                    grid.appendChild(btn);
+                                });
+
+                                if (selectableCount === 0) {
+                                    note.textContent = 'All consultation slots are fully booked or past for this date.';
+                                    note.className = 'form-text small text-danger';
+                                } else {
+                                    note.textContent = `${selectableCount} available consultation slot(s). Click a time slot to select.`;
+                                    note.className = 'form-text small text-muted';
+                                }
+                            })
+                            .catch(err => {
+                                spinner.classList.add('d-none');
+                                emptyMsg.innerHTML = '<i class="bi bi-exclamation-triangle text-danger me-1"></i> Failed to load available slots. Please try again.';
+                            });
+                    }
+
+                    document.addEventListener('DOMContentLoaded', function() {
+                        onDocProfileDateChange();
+                    });
+                    </script>
 
                     <!-- Other Doctors On Duty -->
                     @if($otherDoctors->isNotEmpty())

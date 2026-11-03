@@ -42,15 +42,22 @@ class PatientDashboardController extends Controller
         $totalDue = 0.00;
         $currentAdmission = null;
 
+        // 1. Upcoming Appointments (available to linked and unlinked self-registered patients)
+        $apptQuery = Appointment::with(['doctor.staffProfile.department', 'department'])
+            ->where('appointment_date', '>=', now()->startOfDay())
+            ->whereNotIn('status', ['cancelled']);
+
+        if ($patient) {
+            $apptQuery->where('patient_id', $patient->id);
+        } else {
+            $apptQuery->where(function ($q) use ($user) {
+                $q->where('guest_email', $user->email)
+                  ->orWhere('guest_phone', $user->phone);
+            });
+        }
+        $upcomingAppointments = $apptQuery->orderBy('appointment_date', 'asc')->take(5)->get();
+
         if ($isLinked) {
-            // 1. Upcoming Appointments
-            $upcomingAppointments = Appointment::where('patient_id', $patient->id)
-                ->with(['doctor.staffProfile.department', 'department'])
-                ->where('appointment_date', '>=', now()->startOfDay())
-                ->whereNotIn('status', ['cancelled'])
-                ->orderBy('appointment_date', 'asc')
-                ->take(5)
-                ->get();
 
             // 2. Recent Visits (Outpatient / Emergency)
             $recentVisits = Visit::where('patient_id', $patient->id)

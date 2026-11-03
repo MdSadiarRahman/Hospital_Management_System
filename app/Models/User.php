@@ -132,4 +132,14 @@ class User extends Authenticatable
     {
         return $query->where('user_type', 'patient');
     }
+
+    public function doctorSchedules(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(DoctorSchedule::class, 'doctor_id');
+    }
+
+    public function doctorAppointments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Appointment::class, 'doctor_id');
+    }
 }

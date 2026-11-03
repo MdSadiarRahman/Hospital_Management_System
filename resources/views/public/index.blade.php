@@ -732,51 +732,125 @@
                             </span>
                             <h2 class="h2 fw-bold text-navy">Book a Doctor Appointment</h2>
                             <p class="text-muted-hms mb-0" style="font-size: 0.95rem;">
-                                Submit your appointment request. Our reception desk will call you to confirm your serial token and consultation time.
+                                Select your doctor, preferred date, and consultation time slot. Our reception desk will confirm your serial number.
                             </p>
                         </div>
 
+                        <!-- Success Alert with Serial -->
+                        @if(session('appointment_success'))
+                            <div class="alert alert-success border-0 shadow-sm rounded-3 p-4 text-center mb-4">
+                                <i class="bi bi-check-circle-fill text-success fs-1 d-block mb-2"></i>
+                                <h4 class="fw-bold text-navy mb-1">Appointment Request Submitted!</h4>
+                                <p class="text-muted small mb-3">{{ session('status') }}</p>
+                                <div class="bg-white p-3 rounded-2 border d-inline-block text-start small mb-3">
+                                    <div><strong>Consulting Doctor:</strong> Dr. {{ session('appointment_doctor') }}</div>
+                                    <div><strong>Date & Time:</strong> {{ session('appointment_date') }}</div>
+                                    @if(session('appointment_serial'))
+                                    <div><strong>Daily Serial:</strong> <span class="badge bg-navy text-white">#{{ session('appointment_serial') }}</span></div>
+                                    @endif
+                                </div>
+                                <div class="small text-muted">
+                                    Reference ID: <strong>MCNH-APT-{{ str_pad(session('appointment_id'), 5, '0', STR_PAD_LEFT) }}</strong>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if ($errors->any())
+                            <div class="alert alert-danger border-0 shadow-sm rounded-3 mb-4">
+                                <strong class="small d-block mb-1"><i class="bi bi-exclamation-circle me-1"></i> Please check the form errors:</strong>
+                                <ul class="small mb-0 ps-3">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         <!-- Public Appointment Form -->
-                        <form action="{{ route('patient.register') }}" method="GET">
+                        <form action="{{ route('appointments.store') }}" method="POST">
+                            @csrf
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-navy" for="apt_patient_name" style="font-size: 0.875rem;">
                                         Patient Full Name <span class="text-danger">*</span>
                                     </label>
-                                    <input type="text" id="apt_patient_name" name="name" class="form-control" placeholder="e.g. Most. Rokeya Akhter" required>
+                                    <input type="text" id="apt_patient_name" name="guest_name" class="form-control" placeholder="e.g. Most. Rokeya Akhter" value="{{ old('guest_name') }}" required>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-navy" for="apt_phone" style="font-size: 0.875rem;">
                                         Mobile Phone Number <span class="text-danger">*</span>
                                     </label>
-                                    <input type="tel" id="apt_phone" name="phone" class="form-control" placeholder="e.g. 017XXXXXXXX" required>
+                                    <input type="tel" id="apt_phone" name="guest_phone" class="form-control" placeholder="e.g. 017XXXXXXXX" value="{{ old('guest_phone') }}" required>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold text-navy" for="apt_department" style="font-size: 0.875rem;">
                                         Clinical Department <span class="text-danger">*</span>
                                     </label>
-                                    <select id="apt_department" name="department" class="form-select" required>
+                                    <select id="apt_department" name="department_id" class="form-select" required onchange="onPublicDeptChange()">
                                         <option value="" selected disabled>Select Department</option>
                                         @foreach($departments as $dept)
-                                            <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                                            <option value="{{ $dept->id }}" {{ old('department_id') == $dept->id ? 'selected' : '' }}>{{ $dept->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
 
                                 <div class="col-md-6">
-                                    <label class="form-label fw-semibold text-navy" for="apt_date" style="font-size: 0.875rem;">
+                                    <label class="form-label fw-semibold text-navy" for="pub_apt_doctor" style="font-size: 0.875rem;">
+                                        Consulting Doctor <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="pub_apt_doctor" name="doctor_id" class="form-select" required onchange="onPublicDocOrDateChange()">
+                                        <option value="" selected disabled>Select Doctor</option>
+                                        @foreach($doctors as $doc)
+                                            <option value="{{ $doc->id }}" {{ old('doctor_id') == $doc->id ? 'selected' : '' }}>
+                                                {{ $doc->name }} ({{ $doc->staffProfile?->department?->name ?? 'OPD' }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-navy" for="pub_apt_date" style="font-size: 0.875rem;">
                                         Preferred Date <span class="text-danger">*</span>
                                     </label>
-                                    <input type="date" id="apt_date" name="preferred_date" class="form-control" min="{{ date('Y-m-d') }}" value="{{ date('Y-m-d') }}" required>
+                                    <input type="date" id="pub_apt_date" name="appointment_date" class="form-control" min="{{ date('Y-m-d') }}" value="{{ old('appointment_date', date('Y-m-d')) }}" required onchange="onPublicDocOrDateChange()">
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold text-navy" for="pub_apt_email" style="font-size: 0.875rem;">
+                                        Email Address (Optional)
+                                    </label>
+                                    <input type="email" id="pub_apt_email" name="guest_email" class="form-control" placeholder="name@example.com" value="{{ old('guest_email') }}">
+                                </div>
+
+                                <!-- Time Slot Chips Selection -->
+                                <div class="col-12">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <label class="form-label fw-semibold text-navy mb-0" style="font-size: 0.875rem;">
+                                            Available Consultation Slot <span class="text-danger">*</span>
+                                        </label>
+                                        <span id="pub_slot_spinner" class="spinner-border spinner-border-sm text-teal d-none"></span>
+                                    </div>
+
+                                    <input type="hidden" name="appointment_time" id="pub_apt_time" value="{{ old('appointment_time') }}" required>
+
+                                    <div id="pub_slots_box" class="border rounded-2 p-3 bg-light">
+                                        <p class="text-muted small text-center mb-0" id="pub_slots_empty">
+                                            <i class="bi bi-clock me-1"></i> Select department, doctor, and date to view available consultation slots.
+                                        </p>
+                                        <div id="pub_slots_grid" class="d-flex flex-wrap gap-2 d-none">
+                                            <!-- Injected Slots -->
+                                        </div>
+                                    </div>
+                                    <div id="pub_slots_note" class="form-text small"></div>
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label fw-semibold text-navy" for="apt_concern" style="font-size: 0.875rem;">
+                                    <label class="form-label fw-semibold text-navy" for="pub_apt_concern" style="font-size: 0.875rem;">
                                         Brief Medical Concern (Optional)
                                     </label>
-                                    <textarea id="apt_concern" name="concern" class="form-control" rows="2" placeholder="Describe symptoms or reasons for visit..."></textarea>
+                                    <textarea id="pub_apt_concern" name="reason" class="form-control" rows="2" placeholder="Describe symptoms or reasons for consultation...">{{ old('reason') }}</textarea>
                                 </div>
 
                                 <div class="col-12 text-center pt-2">
@@ -797,6 +871,105 @@
                             </a>
                         </div>
                     </div>
+
+<script>
+function onPublicDeptChange() {
+    const deptElem = document.getElementById('apt_department') || document.getElementById('pub_apt_dept');
+    const deptId = deptElem ? deptElem.value : '';
+    const docSelect = document.getElementById('pub_apt_doctor');
+    if (!deptId) return;
+
+    fetch(`{{ route('api.appointments.doctors') }}?department_id=${deptId}`)
+        .then(res => res.json())
+        .then(data => {
+            docSelect.innerHTML = '<option value="" selected disabled>Select Doctor</option>';
+            data.doctors.forEach(doc => {
+                const opt = document.createElement('option');
+                opt.value = doc.id;
+                opt.textContent = `${doc.name} (${doc.designation})`;
+                docSelect.appendChild(opt);
+            });
+            onPublicDocOrDateChange();
+        });
+}
+
+function onPublicDocOrDateChange() {
+    const docId = document.getElementById('pub_apt_doctor').value;
+    const date = document.getElementById('pub_apt_date').value;
+    const grid = document.getElementById('pub_slots_grid');
+    const emptyMsg = document.getElementById('pub_slots_empty');
+    const note = document.getElementById('pub_slots_note');
+    const spinner = document.getElementById('pub_slot_spinner');
+    const timeHidden = document.getElementById('pub_apt_time');
+
+    if (!docId || !date) return;
+
+    spinner.classList.remove('d-none');
+    emptyMsg.textContent = 'Checking doctor consultation slots...';
+    emptyMsg.classList.remove('d-none');
+    grid.classList.add('d-none');
+
+    fetch(`{{ route('api.appointments.slots') }}?doctor_id=${docId}&date=${date}`)
+        .then(res => res.json())
+        .then(data => {
+            spinner.classList.add('d-none');
+
+            if (!data.is_scheduled || !data.slots || data.slots.length === 0) {
+                emptyMsg.innerHTML = `<span class="text-danger"><i class="bi bi-x-circle me-1"></i> ${data.message || 'No slots available on this date.'}</span>`;
+                emptyMsg.classList.remove('d-none');
+                grid.classList.add('d-none');
+                note.textContent = '';
+                return;
+            }
+
+            emptyMsg.classList.add('d-none');
+            grid.classList.remove('d-none');
+            grid.innerHTML = '';
+
+            let available = 0;
+            data.slots.forEach(slot => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-sm py-1.5 px-2.5 rounded-2 text-center ';
+
+                if (slot.is_available) {
+                    available++;
+                    btn.className += (timeHidden.value === slot.start) ? 'btn-hms-teal shadow-sm' : 'btn-outline-secondary';
+                    btn.innerHTML = `<span class="fw-semibold" style="font-size: 0.82rem;">${slot.formatted}</span>`;
+                    btn.onclick = function() {
+                        timeHidden.value = slot.start;
+                        document.querySelectorAll('#pub_slots_grid button').forEach(b => {
+                            if (b.classList.contains('btn-hms-teal')) {
+                                b.classList.remove('btn-hms-teal', 'shadow-sm');
+                                b.classList.add('btn-outline-secondary');
+                            }
+                        });
+                        btn.classList.remove('btn-outline-secondary');
+                        btn.classList.add('btn-hms-teal', 'shadow-sm');
+                    };
+                } else {
+                    btn.className += 'btn-light text-muted border opacity-50';
+                    btn.disabled = true;
+                    btn.innerHTML = `<span class="text-decoration-line-through small">${slot.formatted}</span>`;
+                }
+
+                grid.appendChild(btn);
+            });
+
+            note.textContent = `${available} slots available for ${data.day_of_week}.`;
+        })
+        .catch(() => {
+            spinner.classList.add('d-none');
+            emptyMsg.innerHTML = '<span class="text-danger">Error loading slots.</span>';
+        });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('pub_apt_doctor').value && document.getElementById('pub_apt_date').value) {
+        onPublicDocOrDateChange();
+    }
+});
+</script>
                 </div>
             </div>
         </div>

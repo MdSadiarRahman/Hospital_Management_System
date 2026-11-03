@@ -85,6 +85,8 @@
         'admin' => [
             ['title' => 'Overview', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/admin')],
             ['title' => 'Patient Registry', 'icon' => 'person-vcard', 'slug' => 'patients', 'url' => route('portal.patients.index')],
+            ['title' => 'Doctor Appointments', 'icon' => 'calendar2-check', 'slug' => 'appointments', 'url' => route('portal.appointments.index')],
+            ['title' => 'Doctor Schedules', 'icon' => 'calendar-week', 'slug' => 'doctor-schedules', 'url' => route('portal.doctor-schedules.index')],
             ['title' => 'Patient Visits', 'icon' => 'ticket-perforated', 'slug' => 'visits', 'url' => route('portal.visits.index')],
             ['title' => 'Staff Management', 'icon' => 'people', 'slug' => 'staff', 'url' => route('portal.staff.index')],
             ['title' => 'Departments & Wards', 'icon' => 'diagram-3', 'slug' => 'departments', 'url' => route('portal.departments.index')],
@@ -96,6 +98,8 @@
         'doctor' => [
             ['title' => 'Clinical Dashboard', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/doctor')],
             ['title' => 'Patient Registry', 'icon' => 'person-vcard', 'slug' => 'patients', 'url' => route('portal.patients.index')],
+            ['title' => 'Doctor Appointments', 'icon' => 'calendar2-check', 'slug' => 'appointments', 'url' => route('portal.appointments.index')],
+            ['title' => 'My Consultation Hours', 'icon' => 'calendar-week', 'slug' => 'doctor-schedules', 'url' => route('portal.doctor-schedules.index')],
             ['title' => 'OPD Patient Queue', 'icon' => 'person-lines-fill', 'slug' => 'queue', 'url' => '#'],
             ['title' => 'Inpatient Rounds (10 Beds)', 'icon' => 'hospital', 'slug' => 'inpatients', 'url' => '#'],
             ['title' => 'Prescriptions & MAR', 'icon' => 'file-earmark-medical', 'slug' => 'prescriptions', 'url' => '#'],
@@ -115,7 +119,8 @@
         'reception' => [
             ['title' => 'Reception Desk', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/reception')],
             ['title' => 'Patient Registration', 'icon' => 'person-plus', 'slug' => 'patients', 'url' => route('portal.patients.index')],
-            ['title' => 'Doctor Appointments', 'icon' => 'calendar2-check', 'slug' => 'appointments', 'url' => '#'],
+            ['title' => 'Doctor Appointments', 'icon' => 'calendar2-check', 'slug' => 'appointments', 'url' => route('portal.appointments.index')],
+            ['title' => 'Doctor Schedules', 'icon' => 'calendar-week', 'slug' => 'doctor-schedules', 'url' => route('portal.doctor-schedules.index')],
             ['title' => 'Visit & Triage Intake', 'icon' => 'ticket-perforated', 'slug' => 'visits', 'url' => route('portal.visits.index')],
             ['title' => 'Inpatient Admission', 'icon' => 'box-arrow-in-right', 'slug' => 'admissions', 'url' => '#'],
             ['title' => 'Verify & Link Accounts', 'icon' => 'person-check', 'slug' => 'linking', 'url' => route('portal.patient-linking.index')],
@@ -138,7 +143,7 @@
         ],
         'patient' => [
             ['title' => 'Health Overview', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('patient.dashboard')],
-            ['title' => 'My Doctor Appointments', 'icon' => 'calendar-date', 'slug' => 'appointments', 'url' => route('patient.dashboard') . '#appointments-section'],
+            ['title' => 'My Doctor Appointments', 'icon' => 'calendar-date', 'slug' => 'appointments', 'url' => route('patient.appointments.index')],
             ['title' => 'Prescriptions & Advice', 'icon' => 'file-earmark-medical', 'slug' => 'prescriptions', 'url' => route('patient.dashboard') . '#prescriptions-section'],
             ['title' => 'Diagnostic Test Reports', 'icon' => 'file-earmark-pdf', 'slug' => 'reports', 'url' => route('patient.dashboard') . '#reports-section'],
             ['title' => 'Inpatient Bed Stays', 'icon' => 'hospital', 'slug' => 'admissions', 'url' => route('patient.dashboard') . '#admission-section'],

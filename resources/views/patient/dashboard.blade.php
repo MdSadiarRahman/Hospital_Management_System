@@ -151,9 +151,14 @@
             <div class="col-lg-8" id="appointments-section">
                 <x-card title="My Upcoming Doctor Appointments">
                     <x-slot:actions>
-                        <a href="tel:+8801711000000" class="btn btn-outline-teal btn-sm">
-                            <i class="bi bi-calendar2-plus me-1"></i> Book via Reception
-                        </a>
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="{{ route('patient.appointments.index') }}" class="btn btn-outline-secondary btn-sm">
+                                <i class="bi bi-list-check me-1"></i> All Appointments
+                            </a>
+                            <a href="{{ route('patient.appointments.create') }}" class="btn btn-hms-teal btn-sm">
+                                <i class="bi bi-calendar2-plus me-1"></i> Book Consultation
+                            </a>
+                        </div>
                     </x-slot:actions>
 
                     @if($upcomingAppointments->isNotEmpty())
@@ -161,11 +166,11 @@
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="table-light">
                                     <tr style="font-size: 0.8rem;" class="text-uppercase text-muted-hms">
-                                        <th>Date & Time</th>
+                                        <th>Date & Slot</th>
                                         <th>Doctor & Department</th>
                                         <th>Serial #</th>
-                                        <th>Type</th>
                                         <th>Status</th>
+                                        <th class="text-end">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -175,30 +180,43 @@
                                                 <div class="fw-semibold text-navy">
                                                     {{ $appt->appointment_date->format('d M Y') }}
                                                 </div>
-                                                <small class="text-muted">{{ $appt->appointment_date->format('h:i A') }}</small>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-clock me-1"></i>
+                                                    {{ $appt->appointment_time ? date('h:i A', strtotime($appt->appointment_time)) : $appt->appointment_date->format('h:i A') }}
+                                                </small>
                                             </td>
                                             <td>
                                                 <div class="fw-semibold text-navy">{{ $appt->doctor?->name ?? 'Attending Doctor' }}</div>
                                                 <small class="text-muted">{{ $appt->department?->name ?? 'General OPD' }}</small>
                                             </td>
                                             <td>
-                                                <span class="badge bg-navy text-white px-2 py-1">
-                                                    Serial #{{ str_pad($appt->serial_number ?? 1, 2, '0', STR_PAD_LEFT) }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span class="badge bg-light text-dark border">
-                                                    {{ ucfirst(str_replace('_', ' ', $appt->type)) }}
-                                                </span>
+                                                @if($appt->serial_number)
+                                                    <span class="badge bg-navy text-white px-2 py-1">
+                                                        Serial #{{ str_pad($appt->serial_number, 2, '0', STR_PAD_LEFT) }}
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-light text-muted border">Unassigned</span>
+                                                @endif
                                             </td>
                                             <td>
                                                 @if($appt->status === 'confirmed')
                                                     <x-badge status="success">Confirmed</x-badge>
                                                 @elseif($appt->status === 'pending')
-                                                    <x-badge status="warning">Pending</x-badge>
+                                                    <x-badge status="warning">Pending Approval</x-badge>
+                                                @elseif($appt->status === 'rescheduled')
+                                                    <x-badge status="info">Rescheduled</x-badge>
+                                                @elseif($appt->status === 'completed')
+                                                    <x-badge status="primary">Completed</x-badge>
+                                                @elseif($appt->status === 'no_show')
+                                                    <x-badge status="danger">No Show</x-badge>
                                                 @else
                                                     <x-badge status="secondary">{{ ucfirst($appt->status) }}</x-badge>
                                                 @endif
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="{{ route('patient.appointments.index') }}" class="btn btn-sm btn-outline-teal">
+                                                    Manage
+                                                </a>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -209,10 +227,10 @@
                         <x-empty-state 
                             icon="calendar2-check" 
                             title="No Scheduled Appointments" 
-                            description="You do not have any upcoming doctor appointments scheduled. To book a consultation with our specialist doctors, contact reception at Shohid Minar Mor or call +880 1711-000000."
-                            actionText="Call Front Desk Reception"
-                            actionUrl="tel:+8801711000000"
-                            actionIcon="telephone-fill"
+                            description="You do not have any upcoming doctor appointments scheduled. Choose your doctor and preferred consultation time slot online."
+                            actionText="Book Doctor Consultation"
+                            actionUrl="{{ route('patient.appointments.create') }}"
+                            actionIcon="calendar2-plus"
                         />
                     @endif
                 </x-card>
