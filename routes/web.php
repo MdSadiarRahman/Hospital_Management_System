@@ -8,7 +8,9 @@ use App\Http\Controllers\Patient\PatientDashboardController;
 use App\Http\Controllers\Patient\PatientProfileController;
 use App\Http\Controllers\PublicAppointmentController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\Staff\AdmissionController;
 use App\Http\Controllers\Staff\AppointmentController;
+use App\Http\Controllers\Staff\BedController;
 use App\Http\Controllers\Staff\DepartmentController;
 use App\Http\Controllers\Staff\DoctorScheduleController;
 use App\Http\Controllers\Staff\PatientLinkingController;
@@ -205,6 +207,26 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::post('/departments/{department}/beds', [DepartmentController::class, 'storeBed'])->name('departments.beds.store');
     Route::put('/departments/{department}/beds/{bed}', [DepartmentController::class, 'updateBed'])->name('departments.beds.update');
     Route::delete('/departments/{department}/beds/{bed}', [DepartmentController::class, 'deleteBed'])->name('departments.beds.destroy');
+
+    // Inpatient Bed Management & Ward Operations
+    Route::get('/beds', [BedController::class, 'index'])->name('beds.index');
+    Route::get('/beds/create', [BedController::class, 'create'])->name('beds.create');
+    Route::post('/beds', [BedController::class, 'store'])->name('beds.store');
+    Route::get('/beds/{bed}', [BedController::class, 'show'])->name('beds.show');
+    Route::get('/beds/{bed}/edit', [BedController::class, 'edit'])->name('beds.edit');
+    Route::put('/beds/{bed}', [BedController::class, 'update'])->name('beds.update');
+    Route::post('/beds/{bed}/status', [BedController::class, 'updateStatus'])->name('beds.update-status');
+    Route::delete('/beds/{bed}', [BedController::class, 'destroy'])->name('beds.destroy');
+
+    // Inpatient Admissions & Bed Allocation
+    Route::get('/admissions', [AdmissionController::class, 'index'])->name('admissions.index');
+    Route::get('/admissions/create', [AdmissionController::class, 'create'])->name('admissions.create');
+    Route::post('/admissions', [AdmissionController::class, 'store'])->name('admissions.store');
+    Route::get('/admissions/{admission}', [AdmissionController::class, 'show'])->name('admissions.show');
+    Route::post('/admissions/{admission}/transfer-bed', [AdmissionController::class, 'transferBed'])->name('admissions.transfer-bed');
+    Route::post('/admissions/{admission}/cancel', [AdmissionController::class, 'cancel'])->name('admissions.cancel');
+    Route::get('/api/admissions/available-beds', [AdmissionController::class, 'getAvailableBedsApi'])->name('api.admissions.available-beds');
+    Route::get('/api/admissions/patient/{patient}/visits', [AdmissionController::class, 'getPatientVisitsApi'])->name('api.admissions.patient-visits');
 
     // Staff Management, Allocation, & 8-Hour Shift Scheduling
     Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');

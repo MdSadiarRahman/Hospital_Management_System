@@ -59,6 +59,11 @@ class User extends Authenticatable
         return $this->roles->contains('name', $role);
     }
 
+    public function hasAnyRole(string|array $roles): bool
+    {
+        return $this->hasRole(is_array($roles) ? $roles : func_get_args());
+    }
+
     public function hasPermission(string|array $permission): bool
     {
         if ($this->hasRole('super_admin')) {

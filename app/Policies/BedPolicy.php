@@ -58,8 +58,16 @@ class BedPolicy
     /**
      * Determine whether the user can update bed status (e.g., mark as cleaning/available).
      */
+    public function updateStatus(User $user, Bed $bed): bool
+    {
+        return $user->hasPermission('beds.status_update') || $user->hasPermission('beds.update');
+    }
+
+    /**
+     * Alias for updateStatus.
+     */
     public function statusUpdate(User $user, Bed $bed): bool
     {
-        return $user->hasPermission('beds.status_update');
+        return $this->updateStatus($user, $bed);
     }
 }
