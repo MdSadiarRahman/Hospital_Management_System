@@ -12,6 +12,7 @@ use App\Http\Controllers\Staff\AdmissionController;
 use App\Http\Controllers\Staff\AppointmentController;
 use App\Http\Controllers\Staff\BedController;
 use App\Http\Controllers\Staff\DepartmentController;
+use App\Http\Controllers\Staff\DoctorDashboardController;
 use App\Http\Controllers\Staff\DoctorScheduleController;
 use App\Http\Controllers\Staff\PatientLinkingController;
 use App\Http\Controllers\Staff\PatientMasterController;
@@ -110,10 +111,19 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
         return view('previews.admin');
     })->middleware('role:super_admin,administrator')->name('admin');
 
-    // Doctor Clinical Workstation
-    Route::get('/doctor', function () {
-        return view('previews.doctor');
-    })->middleware('role:doctor')->name('doctor');
+    // Doctor Clinical Workstation Dashboard & Patient Management
+    Route::get('/doctor', [DoctorDashboardController::class, 'index'])
+        ->middleware('role:doctor,administrator,super_admin')
+        ->name('doctor');
+    Route::get('/doctor/patient/{patient}/history', [DoctorDashboardController::class, 'patientHistory'])
+        ->middleware('role:doctor,administrator,super_admin,nurse')
+        ->name('doctor.patient-history');
+    Route::post('/doctor/lab-reports/{labReport}/review', [DoctorDashboardController::class, 'reviewLabReport'])
+        ->middleware('role:doctor,administrator,super_admin')
+        ->name('doctor.review-lab-report');
+    Route::get('/doctor/search-patients', [DoctorDashboardController::class, 'searchPatients'])
+        ->middleware('role:doctor,administrator,super_admin,nurse')
+        ->name('doctor.search-patients');
 
     // Nurse Ward Station
     Route::get('/nurse', function () {
