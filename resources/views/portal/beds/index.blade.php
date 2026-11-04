@@ -20,6 +20,11 @@
             </div>
 
             <div class="d-flex flex-wrap align-items-center gap-2">
+                <a href="{{ route('portal.beds.occupancy') }}" class="btn btn-navy d-inline-flex align-items-center gap-2 shadow-xs">
+                    <i class="bi bi-grid-3x3-gap-fill text-teal"></i>
+                    <span>Live Occupancy Dashboard</span>
+                </a>
+
                 @can('create', App\Models\Bed::class)
                     <button type="button" class="btn btn-teal d-inline-flex align-items-center gap-2 shadow-xs" data-bs-toggle="modal" data-bs-target="#createBedModal">
                         <i class="bi bi-plus-circle"></i>
@@ -54,6 +59,32 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
+
+        <!-- Navigation Tabs: Live Occupancy vs Directory vs Transfers -->
+        <div class="card border-0 shadow-xs mb-4">
+            <div class="card-body p-2">
+                <ul class="nav nav-pills nav-fill gap-2" style="font-size: 0.88rem;">
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold d-flex align-items-center justify-content-center gap-2 text-navy" href="{{ route('portal.beds.occupancy') }}">
+                            <i class="bi bi-grid-3x3-gap-fill"></i>
+                            <span>Visual Occupancy Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active fw-semibold d-flex align-items-center justify-content-center gap-2 bg-navy text-white" href="{{ route('portal.beds.index') }}">
+                            <i class="bi bi-table text-teal"></i>
+                            <span>Beds Inventory & Tariffs</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold d-flex align-items-center justify-content-center gap-2 text-navy" href="{{ route('portal.beds.transfers') }}">
+                            <i class="bi bi-arrow-left-right"></i>
+                            <span>Transfer & Movement Audit</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
         <!-- Bento KPI Grid: 10 Beds Live Status -->
         <div class="row g-3 mb-4">

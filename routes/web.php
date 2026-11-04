@@ -210,12 +210,17 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
 
     // Inpatient Bed Management & Ward Operations
     Route::get('/beds', [BedController::class, 'index'])->name('beds.index');
+    Route::get('/beds/occupancy', [BedController::class, 'occupancy'])->name('beds.occupancy');
+    Route::get('/beds/transfers', [BedController::class, 'transferHistory'])->name('beds.transfers');
     Route::get('/beds/create', [BedController::class, 'create'])->name('beds.create');
     Route::post('/beds', [BedController::class, 'store'])->name('beds.store');
     Route::get('/beds/{bed}', [BedController::class, 'show'])->name('beds.show');
     Route::get('/beds/{bed}/edit', [BedController::class, 'edit'])->name('beds.edit');
     Route::put('/beds/{bed}', [BedController::class, 'update'])->name('beds.update');
     Route::post('/beds/{bed}/status', [BedController::class, 'updateStatus'])->name('beds.update-status');
+    Route::post('/beds/{bed}/transfer', [BedController::class, 'transferOccupant'])->name('beds.transfer-occupant');
+    Route::post('/beds/{bed}/complete-cleaning', [BedController::class, 'completeCleaning'])->name('beds.complete-cleaning');
+    Route::post('/beds/{bed}/complete-maintenance', [BedController::class, 'completeMaintenance'])->name('beds.complete-maintenance');
     Route::delete('/beds/{bed}', [BedController::class, 'destroy'])->name('beds.destroy');
 
     // Inpatient Admissions & Bed Allocation

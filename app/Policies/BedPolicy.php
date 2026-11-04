@@ -52,7 +52,15 @@ class BedPolicy
      */
     public function assign(User $user, Bed $bed): bool
     {
-        return $user->hasPermission('beds.assign');
+        return $user->hasPermission('beds.assign') || $user->hasRole(['super_admin', 'administrator', 'doctor', 'nurse', 'receptionist']);
+    }
+
+    /**
+     * Determine whether the user can transfer patient from this bed.
+     */
+    public function transfer(User $user, Bed $bed): bool
+    {
+        return $this->assign($user, $bed);
     }
 
     /**
@@ -61,6 +69,22 @@ class BedPolicy
     public function updateStatus(User $user, Bed $bed): bool
     {
         return $user->hasPermission('beds.status_update') || $user->hasPermission('beds.update');
+    }
+
+    /**
+     * Determine whether the user can certify cleaning completion.
+     */
+    public function completeCleaning(User $user, Bed $bed): bool
+    {
+        return $this->updateStatus($user, $bed);
+    }
+
+    /**
+     * Determine whether the user can complete maintenance.
+     */
+    public function completeMaintenance(User $user, Bed $bed): bool
+    {
+        return $this->updateStatus($user, $bed);
     }
 
     /**
