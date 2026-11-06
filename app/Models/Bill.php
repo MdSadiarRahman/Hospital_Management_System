@@ -74,6 +74,11 @@ class Bill extends Model
         return $this->hasMany(Payment::class);
     }
 
+    public function refunds(): HasMany
+    {
+        return $this->hasMany(Refund::class);
+    }
+
     public function createdBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -100,19 +105,49 @@ class Bill extends Model
      */
     public function recalculateTotals(): void
     {
-        $subtotal = 0.00;
-        foreach ($this->items as $item) {
-            $subtotal = bcadd((string) $subtotal, (string) $item->total_price, 2);
+        $subtotal = '0.00';
+        if ($this->relationLoaded('items')) {
+            foreach ($this->items as $item) {
+                $subtotal = bcadd($subtotal, (string) $item->total_price, 2);
+            }
+        } else {
+            $subtotal = (string) ($this->subtotal_amount ?? '0.00');
         }
 
-        $discount = (string) ($this->discount_amount ?? 0.00);
-        // Ensure discount cannot exceed subtotal
-        if (bccomp($discount, (string) $subtotal, 2) > 0) {
-            $discount = (string) $subtotal;
+        $discount = (string) ($this->discount_amount ?? '0.00');
+        if (bccomp($discount, $subtotal, 2) > 0) {
+            $discount = $subtotal;
         }
 
-        $total = bcsub((string) $subtotal, $discount, 2);
-        $paid = (string) ($this->paid_amount ?? 0.00);
+        $total = bcsub($subtotal, $discount, 2);
+
+        // Calculate paid amount from payments & refunds if relations are loaded
+        if ($this->relationLoaded('payments')) {
+            $paymentsSum = '0.00';
+            foreach ($this->payments as $payment) {
+                if ($payment->status !== 'refunded') {
+                    $paymentsSum = bcadd($paymentsSum, (string) $payment->amount, 2);
+                }
+            }
+
+            $refundsSum = '0.00';
+            if ($this->relationLoaded('refunds')) {
+                foreach ($this->refunds as $refund) {
+                    $refundsSum = bcadd($refundsSum, (string) $refund->amount, 2);
+                }
+            } else {
+                foreach ($this->payments as $payment) {
+                    $refundsSum = bcadd($refundsSum, (string) ($payment->refunded_amount ?? '0.00'), 2);
+                }
+            }
+
+            $paid = bcsub($paymentsSum, $refundsSum, 2);
+            if (bccomp($paid, '0.00', 2) < 0) {
+                $paid = '0.00';
+            }
+        } else {
+            $paid = (string) ($this->paid_amount ?? '0.00');
+        }
 
         if (bccomp($paid, $total, 2) >= 0) {
             $due = '0.00';
@@ -128,6 +163,7 @@ class Bill extends Model
         $this->subtotal_amount = $subtotal;
         $this->discount_amount = $discount;
         $this->total_amount = $total;
+        $this->paid_amount = $paid;
         $this->due_amount = $due;
         $this->status = $status;
     }

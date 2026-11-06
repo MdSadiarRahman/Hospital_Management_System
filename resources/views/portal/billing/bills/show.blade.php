@@ -57,8 +57,13 @@
                     <i class="bi bi-arrow-left me-1"></i> Back to Ledger
                 </a>
                 <a href="{{ route('portal.billing.print', $bill) }}" target="_blank" class="btn btn-outline-primary">
-                    <i class="bi bi-printer me-1"></i> Print Invoice / Receipt
+                    <i class="bi bi-printer me-1"></i> Print Invoice
                 </a>
+                @if($bill->due_amount > 0)
+                    <button type="button" class="btn btn-success text-white" data-bs-toggle="modal" data-bs-target="#collectPaymentModal">
+                        <i class="bi bi-cash-coin me-1"></i> Collect Payment
+                    </button>
+                @endif
                 @if($bill->status !== 'paid')
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addItemModal">
                         <i class="bi bi-plus-circle me-1"></i> Add Line Item
@@ -208,6 +213,107 @@
                     </div>
                 </div>
 
+                {{-- Payment Receipts & Collections Card --}}
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-header bg-white border-0 pt-4 px-4 pb-2 d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold text-navy mb-0">
+                                <i class="bi bi-cash-stack text-success me-1"></i> Payment Receipts & Collections
+                            </h5>
+                            <span class="small text-muted">Immutable transaction history for all payments and refunds on this bill.</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-light text-dark border">{{ $bill->payments->count() }} payments recorded</span>
+                            @if($bill->due_amount > 0)
+                                <button type="button" class="btn btn-sm btn-success text-white" data-bs-toggle="modal" data-bs-target="#collectPaymentModal">
+                                    <i class="bi bi-plus-circle me-1"></i> Collect Payment
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="card-body p-4 pt-2">
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead class="table-light text-muted small text-uppercase">
+                                    <tr>
+                                        <th class="ps-3">Receipt No</th>
+                                        <th>Date & Time</th>
+                                        <th>Method</th>
+                                        <th>Trx Reference</th>
+                                        <th>Cashier</th>
+                                        <th class="text-end">Amount (BDT)</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-end pe-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($bill->payments as $payment)
+                                        <tr>
+                                            <td class="ps-3">
+                                                <a href="{{ route('portal.payments.show', $payment) }}" class="fw-bold font-monospace text-navy text-decoration-none">
+                                                    {{ $payment->receipt_number }}
+                                                </a>
+                                            </td>
+                                            <td class="small text-muted">
+                                                {{ $payment->payment_date ? $payment->payment_date->format('d M Y, h:i A') : $payment->created_at->format('d M Y') }}
+                                            </td>
+                                            <td>
+                                                @php
+                                                    $mBadge = match($payment->payment_method) {
+                                                        'cash' => 'success',
+                                                        'card' => 'primary',
+                                                        'mobile_banking' => 'warning',
+                                                        default => 'secondary'
+                                                    };
+                                                @endphp
+                                                <span class="badge bg-{{ $mBadge }} bg-opacity-10 text-{{ $mBadge }} border border-{{ $mBadge }}">
+                                                    {{ ucfirst(str_replace('_', ' ', $payment->payment_method)) }}
+                                                </span>
+                                            </td>
+                                            <td class="small font-monospace text-muted">
+                                                {{ $payment->transaction_ref ?? '—' }}
+                                            </td>
+                                            <td class="small text-dark">{{ $payment->receivedBy->name ?? 'Cashier' }}</td>
+                                            <td class="text-end font-monospace fw-bold text-success">
+                                                ৳ {{ number_format($payment->amount, 2) }}
+                                                @if($payment->refunded_amount > 0)
+                                                    <div class="text-danger small font-monospace">Refunded: -৳ {{ number_format($payment->refunded_amount, 2) }}</div>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                @if($payment->status === 'success')
+                                                    <span class="badge bg-success bg-opacity-10 text-success border border-success small">Successful</span>
+                                                @elseif($payment->status === 'partially_refunded')
+                                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning small">Partial Refund</span>
+                                                @else
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger small">Refunded</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <div class="d-inline-flex gap-1">
+                                                    <a href="{{ route('portal.payments.receipt', $payment) }}" target="_blank" class="btn btn-sm btn-outline-secondary" title="Print Money Receipt">
+                                                        <i class="bi bi-printer"></i>
+                                                    </a>
+                                                    <a href="{{ route('portal.payments.show', $payment) }}" class="btn btn-sm btn-outline-primary" title="View Transaction">
+                                                        <i class="bi bi-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="8" class="text-center py-4 text-muted">
+                                                <i class="bi bi-cash-coin display-6 d-block mb-1 text-secondary opacity-50"></i>
+                                                No payments have been recorded for this bill yet.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- Financial Audit Trail Card --}}
                 <div class="card border-0 shadow-sm rounded-3">
                     <div class="card-header bg-white border-0 pt-4 px-4 pb-2">
@@ -327,8 +433,13 @@
 
                         {{-- Action Buttons --}}
                         <div class="d-grid gap-2">
-                            <a href="{{ route('portal.billing.print', $bill) }}" target="_blank" class="btn btn-primary py-2 fw-semibold">
-                                <i class="bi bi-printer me-1"></i> Print Official Invoice Receipt
+                            @if($bill->due_amount > 0)
+                                <button type="button" class="btn btn-success text-white py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#collectPaymentModal">
+                                    <i class="bi bi-cash-coin me-1"></i> Collect Payment
+                                </button>
+                            @endif
+                            <a href="{{ route('portal.billing.print', $bill) }}" target="_blank" class="btn btn-outline-primary py-2 fw-semibold">
+                                <i class="bi bi-printer me-1"></i> Print Official Invoice
                             </a>
                         </div>
                     </div>
@@ -463,6 +574,74 @@
                 }
             });
         </script>
+    @endif
+    {{-- Collect Payment Modal --}}
+    @if($bill->due_amount > 0)
+        <div class="modal fade" id="collectPaymentModal" tabindex="-1" aria-labelledby="collectPaymentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="{{ route('portal.billing.payments.store', $bill) }}" method="POST">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title fw-bold" id="collectPaymentModalLabel">
+                                <i class="bi bi-cash-coin text-success me-1"></i> Collect Bill Payment
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="p-3 bg-light rounded-3 mb-3 d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="text-muted small d-block">Outstanding Due Balance:</span>
+                                    <h4 class="fw-bold text-danger mb-0 font-monospace">৳ {{ number_format($bill->due_amount, 2) }}</h4>
+                                </div>
+                                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning">
+                                    Invoice #{{ $bill->invoice_number }}
+                                </span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">Payment Collection Amount (BDT) <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text">৳</span>
+                                    <input type="number" step="0.01" min="0.01" max="{{ $bill->due_amount }}" name="amount" class="form-control font-monospace fs-5 fw-bold" value="{{ $bill->due_amount }}" required>
+                                </div>
+                                <div class="form-text small">Enter full due or partial installment amount. Overpayment is prevented.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">Payment Method <span class="text-danger">*</span></label>
+                                <select name="payment_method" class="form-select" required>
+                                    <option value="cash" selected>Cash (নগদ)</option>
+                                    <option value="mobile_banking">Mobile Banking (bKash / Nagad / Rocket)</option>
+                                    <option value="card">Debit / Credit Card (POS)</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">Transaction Reference / TrxID / Card Slip</label>
+                                <input type="text" name="transaction_ref" class="form-control font-monospace" placeholder="e.g. 9K28ALM90P or POS approval code">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">Payment Date & Time</label>
+                                <input type="datetime-local" name="payment_date" class="form-control" value="{{ now()->format('Y-m-d\TH:i') }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold small">Cashier Notes</label>
+                                <textarea name="notes" class="form-control" rows="2" placeholder="Payer name, attendant relation, or transaction notes..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success text-white">
+                                <i class="bi bi-check-circle me-1"></i> Confirm & Issue Money Receipt
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     @endif
 </x-layouts.portal>
 

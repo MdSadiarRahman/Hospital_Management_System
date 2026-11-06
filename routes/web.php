@@ -21,6 +21,7 @@ use App\Http\Controllers\Staff\LabReportController;
 use App\Http\Controllers\Staff\LabTestCatalogController;
 use App\Http\Controllers\Staff\NurseDashboardController;
 use App\Http\Controllers\Staff\OperationController;
+use App\Http\Controllers\Staff\PaymentController;
 use App\Http\Controllers\Staff\ReferralController;
 use App\Http\Controllers\Staff\ServiceCatalogController;
 use App\Http\Controllers\Staff\PatientLinkingController;
@@ -214,6 +215,17 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
         Route::delete('/billing/{bill}/items/{item}', [BillingController::class, 'removeItem'])->name('billing.items.remove');
         Route::post('/billing/{bill}/discount', [BillingController::class, 'applyDiscount'])->name('billing.discount.apply');
         Route::get('/billing/{bill}/print', [BillingController::class, 'printInvoice'])->name('billing.print');
+
+        // Payments, Money Receipts & Refunds
+        Route::post('/billing/{bill}/payments', [PaymentController::class, 'store'])->name('billing.payments.store');
+        Route::get('/payments', [PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments/{payment}', [PaymentController::class, 'show'])->name('payments.show');
+        Route::post('/payments/{payment}/refund', [PaymentController::class, 'refund'])->name('payments.refund');
+        Route::get('/payments/{payment}/receipt', [PaymentController::class, 'printReceipt'])->name('payments.receipt');
+
+        // Refund Vouchers
+        Route::get('/refunds', [PaymentController::class, 'refundsIndex'])->name('refunds.index');
+        Route::get('/refunds/{refund}/voucher', [PaymentController::class, 'printRefundVoucher'])->name('refunds.voucher');
 
         // Service Catalog & Pricing Master
         Route::get('/service-catalog', [ServiceCatalogController::class, 'index'])->name('services.index');

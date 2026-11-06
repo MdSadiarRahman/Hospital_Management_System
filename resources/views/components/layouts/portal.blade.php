@@ -124,9 +124,10 @@
         'billing' => [
             ['title' => 'Cashier Desk', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.billing.index')],
             ['title' => 'Create Invoices', 'icon' => 'receipt', 'slug' => 'invoices', 'url' => route('portal.billing.create')],
+            ['title' => 'Payments & Receipts', 'icon' => 'cash-coin', 'slug' => 'payments', 'url' => route('portal.payments.index')],
+            ['title' => 'Refund Vouchers', 'icon' => 'arrow-counterclockwise', 'slug' => 'refunds', 'url' => route('portal.refunds.index')],
             ['title' => 'Service Catalog', 'icon' => 'tags', 'slug' => 'services', 'url' => route('portal.services.index')],
-            ['title' => 'Unpaid Invoices', 'icon' => 'cash-coin', 'slug' => 'payments', 'url' => route('portal.billing.index') . '?status=unpaid'],
-            ['title' => 'Partial Dues', 'icon' => 'exclamation-circle', 'slug' => 'dues', 'url' => route('portal.billing.index') . '?status=partial'],
+            ['title' => 'Unpaid Invoices', 'icon' => 'exclamation-circle', 'slug' => 'dues', 'url' => route('portal.billing.index') . '?status=unpaid'],
             ['title' => 'Paid Invoices', 'icon' => 'check2-all', 'slug' => 'paid', 'url' => route('portal.billing.index') . '?status=paid'],
         ],
         'lab' => [
