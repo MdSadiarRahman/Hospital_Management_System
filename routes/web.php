@@ -154,6 +154,18 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::get('/nurse', [NurseDashboardController::class, 'index'])
         ->middleware('role:nurse,administrator,super_admin')
         ->name('nurse');
+    Route::get('/nursing-observations', [NurseDashboardController::class, 'observationsIndex'])
+        ->middleware('role:nurse,doctor,administrator,super_admin')
+        ->name('nurse.observations');
+    Route::get('/nurse/admissions/{admission}/trends', [NurseDashboardController::class, 'vitalsTrends'])
+        ->middleware('role:nurse,doctor,administrator,super_admin')
+        ->name('nurse.admissions.trends');
+    Route::get('/nurse/admissions/{admission}/flowsheet', [NurseDashboardController::class, 'printFlowsheet'])
+        ->middleware('role:nurse,doctor,administrator,super_admin')
+        ->name('nurse.admissions.flowsheet');
+    Route::post('/nursing-observations/{note}/review', [NurseDashboardController::class, 'reviewObservation'])
+        ->middleware('role:doctor,administrator,super_admin')
+        ->name('nurse.observations.review');
     Route::post('/nurse/admissions/{admission}/vitals', [NurseDashboardController::class, 'storeVitals'])
         ->middleware('role:nurse,administrator,super_admin,doctor')
         ->name('nurse.vitals.store');

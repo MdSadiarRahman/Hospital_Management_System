@@ -211,19 +211,42 @@ class NurseDashboardService
         return DB::transaction(function () use ($admission, $data, $nurse) {
             $shift = !empty($data['shift']) ? $data['shift'] : $this->getCurrentShiftType();
             $recordedAt = !empty($data['recorded_at']) ? Carbon::parse($data['recorded_at']) : now();
+            $tempUnit = !empty($data['temperature_unit']) ? $data['temperature_unit'] : '°F';
+            $weightUnit = !empty($data['weight_unit']) ? $data['weight_unit'] : 'kg';
 
-            $note = NursingNote::create([
+            $note = new NursingNote([
                 'admission_id' => $admission->id,
                 'nurse_id' => $nurse->id,
                 'shift' => $shift,
                 'temperature' => isset($data['temperature']) && $data['temperature'] !== '' ? (float) $data['temperature'] : null,
+                'temperature_unit' => $tempUnit,
                 'blood_pressure' => !empty($data['blood_pressure']) ? trim($data['blood_pressure']) : null,
+                'blood_pressure_unit' => 'mmHg',
                 'pulse_rate' => isset($data['pulse_rate']) && $data['pulse_rate'] !== '' ? (int) $data['pulse_rate'] : null,
+                'pulse_rate_unit' => 'bpm',
                 'respiratory_rate' => isset($data['respiratory_rate']) && $data['respiratory_rate'] !== '' ? (int) $data['respiratory_rate'] : null,
+                'respiratory_rate_unit' => 'breaths/min',
                 'spo2' => isset($data['spo2']) && $data['spo2'] !== '' ? (float) $data['spo2'] : null,
+                'spo2_unit' => '%',
+                'weight' => isset($data['weight']) && $data['weight'] !== '' ? (float) $data['weight'] : null,
+                'weight_unit' => $weightUnit,
                 'observations' => trim($data['observations']),
                 'recorded_at' => $recordedAt,
             ]);
+
+            // Flag unusual values for authorized clinical review without automated medical diagnosis
+            $clinicalFlags = $note->evaluateClinicalFlags();
+            if (!empty($clinicalFlags)) {
+                $note->is_flagged_abnormal = true;
+                $note->clinical_flags = $clinicalFlags;
+                $note->clinical_review_status = 'flagged_for_review';
+            } else {
+                $note->is_flagged_abnormal = false;
+                $note->clinical_flags = null;
+                $note->clinical_review_status = 'normal';
+            }
+
+            $note->save();
 
             // Audit Trail
             AuditLog::create([
@@ -242,6 +265,9 @@ class NurseDashboardService
                     'pulse_rate' => $note->pulse_rate,
                     'respiratory_rate' => $note->respiratory_rate,
                     'spo2' => $note->spo2,
+                    'weight' => $note->weight,
+                    'is_flagged_abnormal' => $note->is_flagged_abnormal,
+                    'clinical_flags' => $note->clinical_flags,
                     'recorded_at' => $note->recorded_at->toDateTimeString(),
                 ],
                 'ip_address' => request()->ip() ?? '127.0.0.1',
@@ -251,6 +277,136 @@ class NurseDashboardService
 
             return $note;
         });
+    }
+
+    /**
+     * Authorized clinical physician / supervisor reviews a flagged nursing observation.
+     */
+    public function reviewObservation(NursingNote $note, User $reviewer, ?string $reviewNotes = null): NursingNote
+    {
+        return DB::transaction(function () use ($note, $reviewer, $reviewNotes) {
+            $lockedNote = NursingNote::where('id', $note->id)->lockForUpdate()->firstOrFail();
+
+            $lockedNote->update([
+                'clinical_review_status' => 'reviewed',
+                'reviewed_by' => $reviewer->id,
+                'reviewed_at' => now(),
+                'review_notes' => $reviewNotes ? trim($reviewNotes) : null,
+            ]);
+
+            AuditLog::create([
+                'user_id' => $reviewer->id,
+                'event' => 'nursing_observation.reviewed',
+                'auditable_type' => NursingNote::class,
+                'auditable_id' => $lockedNote->id,
+                'old_values' => ['clinical_review_status' => 'flagged_for_review'],
+                'new_values' => [
+                    'clinical_review_status' => 'reviewed',
+                    'reviewed_by' => $reviewer->id,
+                    'reviewed_at' => now()->toDateTimeString(),
+                    'review_notes' => $reviewNotes,
+                ],
+                'ip_address' => request()->ip() ?? '127.0.0.1',
+                'user_agent' => request()->userAgent() ?? 'System',
+                'created_at' => now(),
+            ]);
+
+            return $lockedNote;
+        });
+    }
+
+    /**
+     * Retrieve patient vital trends and historical analytics for an admission.
+     */
+    public function getPatientVitalTrends(Admission $admission): array
+    {
+        $admission->loadMissing([
+            'patient',
+            'department',
+            'attendingDoctor.staffProfile',
+            'currentBedAssignment.bed',
+        ]);
+
+        $notes = NursingNote::where('admission_id', $admission->id)
+            ->with(['nurse.staffProfile', 'reviewedBy.staffProfile'])
+            ->orderBy('recorded_at', 'asc')
+            ->get();
+
+        // Statistical trends computation
+        $temps = $notes->pluck('temperature')->filter()->values();
+        $pulses = $notes->pluck('pulse_rate')->filter()->values();
+        $spo2s = $notes->pluck('spo2')->filter()->values();
+        $resps = $notes->pluck('respiratory_rate')->filter()->values();
+        $weights = $notes->pluck('weight')->filter()->values();
+
+        // Systolic and Diastolic series
+        $systolics = collect();
+        $diastolics = collect();
+        foreach ($notes as $n) {
+            if ($n->blood_pressure && str_contains($n->blood_pressure, '/')) {
+                $bpParts = explode('/', $n->blood_pressure);
+                $systolics->push((int) trim($bpParts[0]));
+                $diastolics->push((int) trim($bpParts[1]));
+            }
+        }
+
+        $latest = $notes->last();
+
+        $stats = [
+            'total_observations' => $notes->count(),
+            'flagged_observations' => $notes->where('is_flagged_abnormal', true)->count(),
+            'latest' => $latest,
+            'temperature' => [
+                'current' => $latest?->temperature,
+                'min' => $temps->min(),
+                'max' => $temps->max(),
+                'avg' => $temps->isNotEmpty() ? round($temps->avg(), 1) : null,
+                'unit' => $latest?->temperature_unit ?? '°F',
+            ],
+            'pulse' => [
+                'current' => $latest?->pulse_rate,
+                'min' => $pulses->min(),
+                'max' => $pulses->max(),
+                'avg' => $pulses->isNotEmpty() ? (int) round($pulses->avg()) : null,
+                'unit' => 'bpm',
+            ],
+            'spo2' => [
+                'current' => $latest?->spo2,
+                'min' => $spo2s->min(),
+                'max' => $spo2s->max(),
+                'avg' => $spo2s->isNotEmpty() ? round($spo2s->avg(), 1) : null,
+                'unit' => '%',
+            ],
+            'respiratory' => [
+                'current' => $latest?->respiratory_rate,
+                'min' => $resps->min(),
+                'max' => $resps->max(),
+                'avg' => $resps->isNotEmpty() ? (int) round($resps->avg()) : null,
+                'unit' => 'breaths/min',
+            ],
+            'blood_pressure' => [
+                'current' => $latest?->blood_pressure,
+                'sys_max' => $systolics->max(),
+                'sys_min' => $systolics->min(),
+                'dia_max' => $diastolics->max(),
+                'dia_min' => $diastolics->min(),
+                'unit' => 'mmHg',
+            ],
+            'weight' => [
+                'current' => $latest?->weight,
+                'min' => $weights->min(),
+                'max' => $weights->max(),
+                'unit' => 'kg',
+            ],
+        ];
+
+        return [
+            'admission' => $admission,
+            'patient' => $admission->patient,
+            'notes' => $notes->sortByDesc('recorded_at'),
+            'timelineNotes' => $notes, // chronological for charts
+            'stats' => $stats,
+        ];
     }
 
     /**

@@ -180,5 +180,128 @@ class NurseDashboardController extends Controller
             ]),
         ]);
     }
+
+    /**
+     * Display Master Inpatient Nursing Observations Ledger.
+     */
+    public function observationsIndex(Request $request): View
+    {
+        $user = $request->user();
+        if (!$user->hasPermission('nursing.view') && !$user->hasRole(['nurse', 'doctor', 'super_admin', 'administrator'])) {
+            abort(403, 'Unauthorized access to clinical nursing observations.');
+        }
+
+        $filters = $request->only(['admission_id', 'shift', 'status', 'nurse_id', 'date_from', 'date_to']);
+
+        $query = \App\Models\NursingNote::with([
+            'admission.patient',
+            'admission.currentBedAssignment.bed',
+            'admission.department',
+            'nurse.staffProfile',
+            'reviewedBy.staffProfile',
+        ])
+        ->filter($filters)
+        ->recent();
+
+        $observations = $query->paginate(20)->withQueryString();
+
+        $activeAdmissions = Admission::where('status', 'admitted')->with('patient', 'currentBedAssignment.bed')->get();
+        $nurses = \App\Models\User::whereHas('roles', fn($q) => $q->where('name', 'nurse'))->get();
+
+        return view('portal.nurse.observations_index', [
+            'observations' => $observations,
+            'activeAdmissions' => $activeAdmissions,
+            'nurses' => $nurses,
+            'filters' => $filters,
+            'totalObservations' => \App\Models\NursingNote::count(),
+            'flaggedCount' => \App\Models\NursingNote::where('is_flagged_abnormal', true)->count(),
+            'pendingReviewCount' => \App\Models\NursingNote::where('clinical_review_status', 'flagged_for_review')->count(),
+        ]);
+    }
+
+    /**
+     * Patient Vital Trends Analytics & Historical Trajectory View.
+     */
+    public function vitalsTrends(Request $request, Admission $admission): View|JsonResponse
+    {
+        $user = $request->user();
+        if (!$user->hasPermission('nursing.view') && !$user->hasRole(['nurse', 'doctor', 'super_admin', 'administrator'])) {
+            abort(403, 'Unauthorized access to patient vital trends.');
+        }
+
+        $trendData = $this->nurseService->getPatientVitalTrends($admission);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'admission_number' => $admission->admission_number,
+                'patient_name' => $admission->patient?->name,
+                'stats' => $trendData['stats'],
+                'timeline' => $trendData['timelineNotes']->map(fn($n) => [
+                    'recorded_at' => $n->recorded_at->toIso8601String(),
+                    'temperature' => $n->temperature,
+                    'blood_pressure' => $n->blood_pressure,
+                    'pulse_rate' => $n->pulse_rate,
+                    'spo2' => $n->spo2,
+                    'respiratory_rate' => $n->respiratory_rate,
+                    'weight' => $n->weight,
+                    'is_flagged_abnormal' => $n->is_flagged_abnormal,
+                    'clinical_flags' => $n->clinical_flags,
+                ]),
+            ]);
+        }
+
+        return view('portal.nurse.vitals_trends', $trendData);
+    }
+
+    /**
+     * Authorized clinical physician / supervisor reviews a flagged observation.
+     */
+    public function reviewObservation(Request $request, \App\Models\NursingNote $note): RedirectResponse|JsonResponse
+    {
+        $user = $request->user();
+        if (!$user->hasRole(['doctor', 'super_admin', 'administrator']) && !$user->hasPermission('consultations.approve')) {
+            abort(403, 'Unauthorized. Only attending physicians or clinical administrators may verify flagged observations.');
+        }
+
+        $validated = $request->validate([
+            'review_notes' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $reviewedNote = $this->nurseService->reviewObservation(
+            $note,
+            $user,
+            $validated['review_notes'] ?? null
+        );
+
+        $message = "Flagged observation for Bed " .
+            ($note->admission?->currentBed?->bed_number ?? 'Inpatient') .
+            " ({$note->admission?->patient?->name}) reviewed and marked clinically verified.";
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'data' => $reviewedNote,
+            ]);
+        }
+
+        return back()->with('success', $message);
+    }
+
+    /**
+     * Printable Bedside Vital Signs Flowsheet & Observation Sheet.
+     */
+    public function printFlowsheet(Request $request, Admission $admission): View
+    {
+        $user = $request->user();
+        if (!$user->hasPermission('nursing.view') && !$user->hasRole(['nurse', 'doctor', 'super_admin', 'administrator'])) {
+            abort(403, 'Unauthorized.');
+        }
+
+        $trendData = $this->nurseService->getPatientVitalTrends($admission);
+
+        return view('portal.nurse.print_flowsheet', $trendData);
+    }
 }
 

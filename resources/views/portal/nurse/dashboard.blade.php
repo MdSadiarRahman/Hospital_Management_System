@@ -507,6 +507,9 @@
                                             title="Record Medication Administration">
                                             <i class="bi bi-capsule"></i>
                                         </button>
+                                        <a href="{{ route('portal.nurse.admissions.trends', $adm) }}" class="btn btn-outline-teal" title="View Vital Trends">
+                                            <i class="bi bi-graph-up"></i>
+                                        </a>
                                         <a href="{{ route('portal.nurse.admissions.dossier', $adm) }}" class="btn btn-outline-secondary" title="View Patient Nursing Dossier">
                                             <i class="bi bi-eye"></i>
                                         </a>
@@ -843,6 +846,25 @@
                                     <span class="input-group-text">/min</span>
                                 </div>
                                 <small class="text-muted">Normal: 12 - 20 /min</small>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="vitalsWeight" class="form-label fw-semibold text-dark">Patient Body Weight (Where appropriate)</label>
+                                <div class="input-group">
+                                    <input type="number" step="0.1" name="weight" id="vitalsWeight" class="form-control" placeholder="e.g. 68.5" min="1.0" max="300.0">
+                                    <select name="weight_unit" class="form-select" style="max-width: 80px;">
+                                        <option value="kg">kg</option>
+                                        <option value="lbs">lbs</option>
+                                    </select>
+                                </div>
+                                <small class="text-muted">Clinical tracking / fluid balance</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="vitalsTime" class="form-label fw-semibold text-dark">Observation Date & Time</label>
+                                <input type="datetime-local" name="recorded_at" id="vitalsTime" class="form-control" value="{{ now()->format('Y-m-d\TH:i') }}">
+                                <small class="text-muted">Observation timestamp</small>
                             </div>
                         </div>
 
