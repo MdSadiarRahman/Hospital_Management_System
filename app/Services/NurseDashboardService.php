@@ -12,9 +12,11 @@ use App\Models\MedicationAdministration;
 use App\Models\NursingNote;
 use App\Models\Patient;
 use App\Models\Prescription;
+use App\Models\PrescriptionItem;
 use App\Models\ShiftSchedule;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -410,7 +412,7 @@ class NurseDashboardService
     }
 
     /**
-     * Record a medication administration event (MAR).
+     * Record a medication administration event (eMAR).
      */
     public function recordMedicationAdministration(Admission $admission, array $data, User $nurse): MedicationAdministration
     {
@@ -419,15 +421,62 @@ class NurseDashboardService
         }
 
         return DB::transaction(function () use ($admission, $data, $nurse) {
+            $prescriptionItem = null;
+            $prescriptionId = !empty($data['prescription_id']) ? (int) $data['prescription_id'] : null;
+
+            if (!empty($data['prescription_item_id'])) {
+                $prescriptionItem = PrescriptionItem::with('prescription.consultation.visit')->find($data['prescription_item_id']);
+                if ($prescriptionItem) {
+                    $prescription = $prescriptionItem->prescription;
+                    if ($prescription && $prescription->status !== 'approved') {
+                        throw new InvalidArgumentException("Cannot administer medication from an unapproved doctor prescription (status: {$prescription->status}).");
+                    }
+                    if ($prescription) {
+                        $prescriptionId = $prescription->id;
+                    }
+                    if (empty($data['medicine_name'])) {
+                        $data['medicine_name'] = $prescriptionItem->medicine_name;
+                    }
+                }
+            }
+
             $administeredAt = !empty($data['administered_at']) ? Carbon::parse($data['administered_at']) : now();
+            $shift = !empty($data['scheduled_shift']) ? $data['scheduled_shift'] : $this->getShiftFromTime($administeredAt);
+            $status = $data['status'] ?? 'administered';
+
+            // Prevent duplicate administration records where applicable
+            if ($status === 'administered' && $prescriptionItem) {
+                $isPrn = str_contains(strtoupper($prescriptionItem->frequency ?? ''), 'PRN') 
+                    || str_contains(strtoupper($prescriptionItem->instructions ?? ''), 'PRN')
+                    || str_contains(strtoupper($prescriptionItem->frequency ?? ''), 'SOS');
+
+                if (!$isPrn) {
+                    $existing = MedicationAdministration::where('admission_id', $admission->id)
+                        ->where('prescription_item_id', $prescriptionItem->id)
+                        ->where('status', 'administered')
+                        ->where('scheduled_shift', $shift)
+                        ->whereDate('administered_at', $administeredAt->toDateString())
+                        ->exists();
+
+                    if ($existing) {
+                        $shiftLabel = ucfirst($shift);
+                        throw new InvalidArgumentException("Medication '{$data['medicine_name']}' has already been recorded as administered for the {$shiftLabel} shift on {$administeredAt->format('d M Y')}. If correcting a dose, use the amendment option.");
+                    }
+                }
+            }
 
             $mar = MedicationAdministration::create([
                 'admission_id' => $admission->id,
-                'prescription_item_id' => !empty($data['prescription_item_id']) ? (int) $data['prescription_item_id'] : null,
+                'prescription_id' => $prescriptionId,
+                'prescription_item_id' => $prescriptionItem?->id,
                 'medicine_name' => trim($data['medicine_name']),
                 'dose_given' => trim($data['dose_given']),
+                'route' => $data['route'] ?? 'Oral',
+                'scheduled_time' => !empty($data['scheduled_time']) ? Carbon::parse($data['scheduled_time']) : null,
+                'scheduled_shift' => $shift,
                 'nurse_id' => $nurse->id,
-                'status' => $data['status'] ?? 'administered',
+                'status' => $status,
+                'withheld_reason' => !empty($data['withheld_reason']) ? trim($data['withheld_reason']) : null,
                 'remarks' => !empty($data['remarks']) ? trim($data['remarks']) : null,
                 'administered_at' => $administeredAt,
             ]);
@@ -442,9 +491,13 @@ class NurseDashboardService
                 'new_values' => [
                     'admission_id' => $admission->id,
                     'admission_number' => $admission->admission_number,
+                    'prescription_item_id' => $mar->prescription_item_id,
                     'medicine_name' => $mar->medicine_name,
                     'dose_given' => $mar->dose_given,
+                    'route' => $mar->route,
+                    'scheduled_shift' => $mar->scheduled_shift,
                     'status' => $mar->status,
+                    'withheld_reason' => $mar->withheld_reason,
                     'remarks' => $mar->remarks,
                     'administered_at' => $mar->administered_at->toDateTimeString(),
                 ],
@@ -455,6 +508,246 @@ class NurseDashboardService
 
             return $mar;
         });
+    }
+
+    /**
+     * Maintain correction history when an authorized nurse/doctor amends an eMAR dose record.
+     */
+    public function correctMedicationAdministration(MedicationAdministration $mar, array $data, User $actor): MedicationAdministration
+    {
+        return DB::transaction(function () use ($mar, $data, $actor) {
+            $lockedMar = MedicationAdministration::where('id', $mar->id)->lockForUpdate()->firstOrFail();
+
+            $oldValues = [
+                'dose_given' => $lockedMar->dose_given,
+                'route' => $lockedMar->route,
+                'status' => $lockedMar->status,
+                'withheld_reason' => $lockedMar->withheld_reason,
+                'remarks' => $lockedMar->remarks,
+                'administered_at' => $lockedMar->administered_at?->toDateTimeString(),
+            ];
+
+            $administeredAt = !empty($data['administered_at']) ? Carbon::parse($data['administered_at']) : $lockedMar->administered_at;
+
+            $lockedMar->update([
+                'dose_given' => trim($data['dose_given']),
+                'route' => $data['route'] ?? $lockedMar->route,
+                'status' => $data['status'],
+                'withheld_reason' => !empty($data['withheld_reason']) ? trim($data['withheld_reason']) : null,
+                'remarks' => !empty($data['remarks']) ? trim($data['remarks']) : null,
+                'administered_at' => $administeredAt,
+                'is_corrected' => true,
+                'correction_reason' => trim($data['correction_reason']),
+                'corrected_by' => $actor->id,
+                'corrected_at' => now(),
+            ]);
+
+            $newValues = [
+                'dose_given' => $lockedMar->dose_given,
+                'route' => $lockedMar->route,
+                'status' => $lockedMar->status,
+                'withheld_reason' => $lockedMar->withheld_reason,
+                'remarks' => $lockedMar->remarks,
+                'administered_at' => $lockedMar->administered_at?->toDateTimeString(),
+                'correction_reason' => $lockedMar->correction_reason,
+                'corrected_by' => $actor->id,
+                'corrected_at' => now()->toDateTimeString(),
+            ];
+
+            AuditLog::create([
+                'user_id' => $actor->id,
+                'event' => 'medication.corrected',
+                'auditable_type' => MedicationAdministration::class,
+                'auditable_id' => $lockedMar->id,
+                'old_values' => $oldValues,
+                'new_values' => $newValues,
+                'ip_address' => request()->ip() ?? '127.0.0.1',
+                'user_agent' => request()->userAgent() ?? 'System',
+                'created_at' => now(),
+            ]);
+
+            return $lockedMar;
+        });
+    }
+
+    /**
+     * Retrieve patient eMAR schedule and daily flowsheet across 8-hour shifts.
+     */
+    public function getPatientMarSchedule(Admission $admission, ?string $targetDate = null): array
+    {
+        $admission->loadMissing([
+            'patient',
+            'department',
+            'attendingDoctor.staffProfile',
+            'currentBedAssignment.bed.department',
+        ]);
+
+        $date = $targetDate ? Carbon::parse($targetDate)->startOfDay() : today()->startOfDay();
+
+        // Authorized (approved) prescriptions only
+        $approvedPrescriptions = Prescription::where('status', 'approved')
+            ->where(function (Builder $q) use ($admission) {
+                if ($admission->visit_id) {
+                    $q->whereHas('consultation', fn($cq) => $cq->where('visit_id', $admission->visit_id));
+                }
+                $q->orWhereHas('consultation.visit', fn($vq) => $vq->where('patient_id', $admission->patient_id));
+            })
+            ->with(['consultation.doctor.staffProfile', 'consultation.diagnoses', 'items'])
+            ->latest('created_at')
+            ->get();
+
+        // Administrations recorded for the selected date
+        $dayAdministrations = MedicationAdministration::where('admission_id', $admission->id)
+            ->whereDate('administered_at', $date)
+            ->with(['nurse.staffProfile', 'correctedBy.staffProfile', 'prescriptionItem'])
+            ->orderBy('administered_at', 'asc')
+            ->get();
+
+        // Build schedule grid across 3 shifts
+        $scheduledItems = [];
+        $totalScheduledSlots = 0;
+        $administeredCount = 0;
+        $withheldCount = 0;
+        $missedCount = 0;
+        $refusedCount = 0;
+
+        foreach ($approvedPrescriptions as $prescription) {
+            foreach ($prescription->items as $item) {
+                $shifts = $this->parseFrequencyToShifts($item->frequency);
+                $itemSlots = [];
+
+                foreach (['morning', 'evening', 'night'] as $shiftKey) {
+                    $isScheduled = in_array($shiftKey, $shifts);
+                    if ($isScheduled) {
+                        $totalScheduledSlots++;
+                    }
+
+                    $record = $dayAdministrations->first(function ($adm) use ($item, $shiftKey) {
+                        return $adm->prescription_item_id == $item->id && $adm->scheduled_shift === $shiftKey;
+                    });
+
+                    if ($record) {
+                        if ($record->status === 'administered') $administeredCount++;
+                        elseif ($record->status === 'withheld') $withheldCount++;
+                        elseif ($record->status === 'missed') $missedCount++;
+                        elseif ($record->status === 'refused') $refusedCount++;
+                    }
+
+                    $itemSlots[$shiftKey] = [
+                        'is_scheduled' => $isScheduled,
+                        'record' => $record,
+                        'status' => $record ? $record->status : ($isScheduled ? 'due' : 'not_scheduled'),
+                    ];
+                }
+
+                $scheduledItems[] = [
+                    'prescription' => $prescription,
+                    'item' => $item,
+                    'shifts' => $shifts,
+                    'slots' => $itemSlots,
+                ];
+            }
+        }
+
+        $pendingCount = max(0, $totalScheduledSlots - ($administeredCount + $withheldCount + $missedCount + $refusedCount));
+
+        // Full administration history for this admission
+        $history = MedicationAdministration::where('admission_id', $admission->id)
+            ->with(['nurse.staffProfile', 'correctedBy.staffProfile', 'prescriptionItem', 'prescription'])
+            ->orderBy('administered_at', 'desc')
+            ->get();
+
+        return [
+            'admission' => $admission,
+            'patient' => $admission->patient,
+            'targetDate' => $date,
+            'approvedPrescriptions' => $approvedPrescriptions,
+            'scheduledItems' => $scheduledItems,
+            'stats' => [
+                'total_scheduled' => $totalScheduledSlots,
+                'administered' => $administeredCount,
+                'withheld' => $withheldCount,
+                'missed' => $missedCount,
+                'refused' => $refusedCount,
+                'pending' => $pendingCount,
+                'total_history' => $history->count(),
+            ],
+            'history' => $history,
+        ];
+    }
+
+    /**
+     * Map clinical frequency strings to ward shift windows.
+     */
+    public function parseFrequencyToShifts(?string $frequency): array
+    {
+        if (!$frequency) {
+            return ['morning'];
+        }
+
+        $f = strtoupper(trim($frequency));
+
+        // Format 1-0-1 or 1+0+1
+        if (preg_match('/^(\d)\s*[-+]\s*(\d)\s*[-+]\s*(\d)$/', $f, $matches)) {
+            $shifts = [];
+            if ((int)$matches[1] > 0) $shifts[] = 'morning';
+            if ((int)$matches[2] > 0) $shifts[] = 'evening';
+            if ((int)$matches[3] > 0) $shifts[] = 'night';
+            return !empty($shifts) ? $shifts : ['morning'];
+        }
+
+        // Format 1-0 or 1-1
+        if (preg_match('/^(\d)\s*[-+]\s*(\d)$/', $f, $matches)) {
+            $shifts = [];
+            if ((int)$matches[1] > 0) $shifts[] = 'morning';
+            if ((int)$matches[2] > 0) $shifts[] = 'night';
+            return !empty($shifts) ? $shifts : ['morning'];
+        }
+
+        return match ($f) {
+            'TDS', 'TID' => ['morning', 'evening', 'night'],
+            'BD', 'BID' => ['morning', 'night'],
+            'OD', 'QD' => ['morning'],
+            'QDS', 'QID' => ['morning', 'evening', 'night'],
+            'PRN', 'SOS' => ['morning', 'evening', 'night'],
+            'STAT' => ['morning'],
+            default => ['morning', 'night'],
+        };
+    }
+
+    /**
+     * Determine shift window from timestamp.
+     */
+    public function getShiftFromTime(Carbon $time): string
+    {
+        $hour = (int) $time->format('H');
+        if ($hour >= 8 && $hour < 16) {
+            return 'morning';
+        } elseif ($hour >= 16 && $hour < 24) {
+            return 'evening';
+        } else {
+            return 'night';
+        }
+    }
+
+    /**
+     * Master Inpatient eMAR Ledger across Ward.
+     */
+    public function getMarLedger(array $filters = [], int $perPage = 20): LengthAwarePaginator
+    {
+        $query = MedicationAdministration::with([
+            'admission.patient',
+            'admission.currentBedAssignment.bed',
+            'admission.department',
+            'nurse.staffProfile',
+            'correctedBy.staffProfile',
+            'prescriptionItem',
+            'prescription',
+        ])
+        ->filter($filters)
+        ->recent();
+
+        return $query->paginate($perPage)->withQueryString();
     }
 
     /**

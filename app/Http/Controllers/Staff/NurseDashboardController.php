@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Nurse\CorrectMedicationAdministrationRequest;
 use App\Http\Requests\Nurse\StoreMedicationAdministrationRequest;
 use App\Http\Requests\Nurse\StoreVitalsRequest;
 use App\Http\Requests\Nurse\UpdateBedCleaningRequest;
 use App\Models\Admission;
 use App\Models\Bed;
+use App\Models\MedicationAdministration;
 use App\Services\NurseDashboardService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -70,30 +72,119 @@ class NurseDashboardController extends Controller
     }
 
     /**
-     * Record a medication administration event (MAR).
+     * Record a medication administration event (eMAR).
      */
     public function storeMedication(StoreMedicationAdministrationRequest $request, Admission $admission): RedirectResponse|JsonResponse
     {
-        $mar = $this->nurseService->recordMedicationAdministration($admission, $request->validated(), $request->user());
+        try {
+            $mar = $this->nurseService->recordMedicationAdministration($admission, $request->validated(), $request->user());
 
-        $statusLabel = match ($mar->status) {
-            'administered' => 'administered',
-            'omitted' => 'omitted',
-            'refused' => 'marked as refused',
-            default => 'recorded',
-        };
+            $statusLabel = match ($mar->status) {
+                'administered' => 'administered',
+                'missed' => 'logged as missed',
+                'withheld' => 'marked as withheld',
+                'refused' => 'marked as refused',
+                'omitted' => 'omitted',
+                default => 'recorded',
+            };
 
-        $message = "Medication '{$mar->medicine_name}' ({$mar->dose_given}) successfully {$statusLabel} for {$admission->patient?->name}.";
+            $message = "Medication '{$mar->medicine_name}' ({$mar->dose_given}) successfully {$statusLabel} for {$admission->patient?->name}.";
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                    'data' => $mar,
+                ]);
+            }
+
+            return back()->with('success', $message);
+        } catch (\InvalidArgumentException $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+
+            return back()->withErrors(['medicine_name' => $e->getMessage()])->withInput();
+        }
+    }
+
+    /**
+     * Amend an existing eMAR record with mandatory correction reasoning.
+     */
+    public function correctMedication(CorrectMedicationAdministrationRequest $request, MedicationAdministration $mar): RedirectResponse|JsonResponse
+    {
+        $updatedMar = $this->nurseService->correctMedicationAdministration($mar, $request->validated(), $request->user());
+
+        $message = "eMAR record for '{$updatedMar->medicine_name}' amended successfully. Clinical correction reason recorded.";
 
         if ($request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'data' => $mar,
+                'data' => $updatedMar,
             ]);
         }
 
         return back()->with('success', $message);
+    }
+
+    /**
+     * Display Master Inpatient Medication Administration Record (eMAR) Ledger across ward.
+     */
+    public function marIndex(Request $request): View
+    {
+        $user = $request->user();
+        if (!$user->hasPermission('nursing.view') && !$user->hasRole(['nurse', 'doctor', 'super_admin', 'administrator'])) {
+            abort(403, 'Unauthorized access to Medication Administration Records.');
+        }
+
+        $filters = $request->only(['admission_id', 'status', 'shift', 'nurse_id', 'date_from', 'date_to']);
+
+        $marRecords = $this->nurseService->getMarLedger($filters, 20);
+
+        $activeAdmissions = Admission::where('status', 'admitted')->with('patient', 'currentBedAssignment.bed')->get();
+        $nurses = \App\Models\User::whereHas('roles', fn($q) => $q->where('name', 'nurse'))->get();
+
+        return view('portal.nurse.mar_index', [
+            'marRecords' => $marRecords,
+            'activeAdmissions' => $activeAdmissions,
+            'nurses' => $nurses,
+            'filters' => $filters,
+            'totalAdministered' => MedicationAdministration::where('status', 'administered')->count(),
+            'totalWithheld' => MedicationAdministration::where('status', 'withheld')->count(),
+            'totalMissed' => MedicationAdministration::where('status', 'missed')->count(),
+            'totalRefused' => MedicationAdministration::where('status', 'refused')->count(),
+        ]);
+    }
+
+    /**
+     * Inpatient specific eMAR flowsheet and 8-hour shift schedule.
+     */
+    public function patientMarFlowsheet(Request $request, Admission $admission): View|JsonResponse
+    {
+        $user = $request->user();
+        if (!$user->hasPermission('nursing.view') && !$user->hasRole(['nurse', 'doctor', 'super_admin', 'administrator'])) {
+            abort(403, 'Unauthorized access to patient eMAR flowsheet.');
+        }
+
+        $targetDate = $request->input('date', today()->toDateString());
+        $scheduleData = $this->nurseService->getPatientMarSchedule($admission, $targetDate);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'admission_number' => $admission->admission_number,
+                'patient_name' => $admission->patient?->name,
+                'target_date' => $targetDate,
+                'stats' => $scheduleData['stats'],
+                'scheduled_items' => $scheduleData['scheduledItems'],
+            ]);
+        }
+
+        return view('portal.nurse.mar_flowsheet', $scheduleData);
     }
 
     /**

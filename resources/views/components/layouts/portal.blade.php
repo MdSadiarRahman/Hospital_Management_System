@@ -99,7 +99,7 @@
             ['title' => 'Assigned Inpatients', 'icon' => 'people-fill', 'slug' => 'patients', 'url' => route('portal.nurse') . '#inpatients-section'],
             ['title' => 'Nursing Observations', 'icon' => 'clipboard2-pulse', 'slug' => 'observations', 'url' => route('portal.nurse.observations')],
             ['title' => 'Bedside Vitals Ledger', 'icon' => 'heart-pulse', 'slug' => 'vitals', 'url' => route('portal.nurse') . '#vitals-section'],
-            ['title' => 'Medication Records (MAR)', 'icon' => 'capsule', 'slug' => 'mar', 'url' => route('portal.nurse') . '#mar-section'],
+            ['title' => 'Medication Records (MAR)', 'icon' => 'capsule', 'slug' => 'mar', 'url' => route('portal.nurse.mar')],
             ['title' => 'Shift & Duty Handover', 'icon' => 'journal-medical', 'slug' => 'shift', 'url' => route('portal.nurse') . '#shift-section'],
             ['title' => 'Bed Transfers & Ledger', 'icon' => 'arrow-left-right', 'slug' => 'transfers', 'url' => route('portal.beds.transfers')],
         ],

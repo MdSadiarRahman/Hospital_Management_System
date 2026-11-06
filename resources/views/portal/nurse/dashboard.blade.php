@@ -610,13 +610,18 @@
                 <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
                     <div>
                         <h6 class="fw-bold text-navy mb-0">
-                            <i class="bi bi-capsule text-primary me-2"></i>Medication Administration Records (MAR)
+                            <i class="bi bi-capsule text-primary me-2"></i>Medication Administration Records (eMAR)
                         </h6>
                         <small class="text-muted-hms">Doctor-prescribed dose delivery and omission log</small>
                     </div>
-                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#recordMarModal">
-                        <i class="bi bi-plus-circle me-1"></i> New Dose
-                    </button>
+                    <div class="d-flex align-items-center gap-1">
+                        <a href="{{ route('portal.nurse.mar') }}" class="btn btn-sm btn-outline-secondary" title="View Full eMAR Ledger">
+                            <i class="bi bi-list-ul me-1"></i> Ledger
+                        </a>
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#recordMarModal">
+                            <i class="bi bi-plus-circle me-1"></i> New Dose
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -635,21 +640,35 @@
                                         <td class="ps-3">
                                             <span class="fw-bold">{{ $mar->administered_at->format('h:i A') }}</span>
                                             <div class="text-muted-hms small">{{ $mar->administered_at->format('d M Y') }}</div>
+                                            <span class="badge bg-light text-secondary border mt-1" style="font-size: 0.65rem;">
+                                                {{ ucfirst($mar->scheduled_shift ?? 'Shift') }}
+                                            </span>
                                         </td>
                                         <td>
                                             <div class="fw-bold text-navy">{{ $mar->admission?->patient?->name }}</div>
                                             <span class="badge bg-navy px-1 py-0 font-monospace">
                                                 {{ $mar->admission?->currentBed?->bed_number ?? 'Bed' }}
                                             </span>
+                                            @if($mar->admission_id)
+                                                <a href="{{ route('portal.nurse.admissions.mar-flowsheet', $mar->admission_id) }}" class="d-block small text-teal text-decoration-none mt-1" style="font-size: 0.7rem;">
+                                                    <i class="bi bi-calendar2-range me-1"></i>Flowsheet
+                                                </a>
+                                            @endif
                                         </td>
                                         <td>
                                             <div class="fw-bold text-dark">{{ $mar->medicine_name }}</div>
                                             <span class="badge bg-secondary-subtle text-dark">{{ $mar->dose_given }}</span>
+                                            <span class="badge bg-light text-dark border" style="font-size: 0.65rem;">{{ $mar->route ?? 'Oral' }}</span>
                                         </td>
                                         <td>
                                             <span class="badge bg-{{ $mar->status_badge_class }}">
                                                 {{ $mar->status_label }}
                                             </span>
+                                            @if($mar->status === 'withheld' && $mar->withheld_reason)
+                                                <div class="text-warning small text-truncate mt-1" style="max-width: 160px;" title="Hold: {{ $mar->withheld_reason }}">
+                                                    <strong>Hold:</strong> {{ $mar->withheld_reason }}
+                                                </div>
+                                            @endif
                                             @if($mar->remarks)
                                                 <div class="text-muted small text-truncate mt-1" style="max-width: 160px;" title="{{ $mar->remarks }}">
                                                     {{ $mar->remarks }}
@@ -920,18 +939,51 @@
                                 <input type="text" name="dose_given" id="marDose" class="form-control" placeholder="e.g. 1g IV, 500mg PO" required>
                             </div>
                             <div class="col-6">
-                                <label for="marStatus" class="form-label fw-semibold text-dark">Delivery State <span class="text-danger">*</span></label>
-                                <select name="status" id="marStatus" class="form-select" required onchange="toggleMarRemarks(this.value)">
-                                    <option value="administered">Administered (Given)</option>
-                                    <option value="omitted">Omitted (Skipped)</option>
-                                    <option value="refused">Refused by Patient</option>
+                                <label for="marRoute" class="form-label fw-semibold text-dark">Route</label>
+                                <select name="route" id="marRoute" class="form-select">
+                                    <option value="Oral" selected>Oral</option>
+                                    <option value="IV Push">IV Push</option>
+                                    <option value="IV Infusion">IV Infusion</option>
+                                    <option value="IM">IM</option>
+                                    <option value="SC">SC</option>
+                                    <option value="Inhalation">Inhalation (Nebulizer)</option>
+                                    <option value="Topical">Topical</option>
+                                    <option value="Sublingual">Sublingual</option>
+                                    <option value="Rectal">Rectal</option>
+                                    <option value="Other">Other</option>
                                 </select>
                             </div>
                         </div>
 
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label for="marShift" class="form-label fw-semibold text-dark">Shift</label>
+                                <select name="scheduled_shift" id="marShift" class="form-select">
+                                    <option value="morning">Morning (8 AM – 4 PM)</option>
+                                    <option value="evening">Evening (4 PM – 12 AM)</option>
+                                    <option value="night">Night (12 AM – 8 AM)</option>
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label for="marStatus" class="form-label fw-semibold text-dark">Administration Status <span class="text-danger">*</span></label>
+                                <select name="status" id="marStatus" class="form-select" required onchange="toggleMarRemarks(this.value)">
+                                    <option value="administered" selected>Administered (Given)</option>
+                                    <option value="withheld">Withheld (Clinical Hold)</option>
+                                    <option value="missed">Missed Dose</option>
+                                    <option value="refused">Refused by Patient</option>
+                                    <option value="omitted">Omitted (Skipped)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 d-none" id="marWithheldContainer">
+                            <label for="marWithheldReason" class="form-label fw-semibold text-dark">Withheld Reason <span class="text-danger">*</span></label>
+                            <input type="text" name="withheld_reason" id="marWithheldReason" class="form-control" placeholder="Required: Clinical reason for hold (e.g. Hypotension, NPO)...">
+                        </div>
+
                         <div class="mb-3" id="marRemarksContainer">
-                            <label for="marRemarks" class="form-label fw-semibold text-dark">Remarks / Clinical Reason</label>
-                            <textarea name="remarks" id="marRemarks" rows="2" class="form-control" placeholder="Optional for given meds. Mandatory if omitted or refused..."></textarea>
+                            <label for="marRemarks" class="form-label fw-semibold text-dark">Remarks / Bedside Notes</label>
+                            <textarea name="remarks" id="marRemarks" rows="2" class="form-control" placeholder="Optional for given meds. Mandatory if missed, omitted, or refused..."></textarea>
                         </div>
                     </div>
                     <div class="modal-footer bg-light">
@@ -983,9 +1035,20 @@
 
         function toggleMarRemarks(status) {
             const remarks = document.getElementById('marRemarks');
-            if (status === 'omitted' || status === 'refused') {
+            const withheldContainer = document.getElementById('marWithheldContainer');
+            const withheldInput = document.getElementById('marWithheldReason');
+
+            if (status === 'withheld') {
+                withheldContainer.classList.remove('d-none');
+                withheldInput.required = true;
+            } else {
+                withheldContainer.classList.add('d-none');
+                withheldInput.required = false;
+            }
+
+            if (status === 'missed' || status === 'omitted' || status === 'refused') {
                 remarks.required = true;
-                remarks.placeholder = "Required: Clinical justification or patient reason for omitting/refusing...";
+                remarks.placeholder = "Required: Clinical justification or patient reason for missed/omitted/refused dose...";
             } else {
                 remarks.required = false;
                 remarks.placeholder = "Optional observations, patient tolerance, or IV line status...";

@@ -157,6 +157,12 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::get('/nursing-observations', [NurseDashboardController::class, 'observationsIndex'])
         ->middleware('role:nurse,doctor,administrator,super_admin')
         ->name('nurse.observations');
+    Route::get('/nursing-mar', [NurseDashboardController::class, 'marIndex'])
+        ->middleware('role:nurse,doctor,administrator,super_admin')
+        ->name('nurse.mar');
+    Route::get('/nurse/admissions/{admission}/mar-flowsheet', [NurseDashboardController::class, 'patientMarFlowsheet'])
+        ->middleware('role:nurse,doctor,administrator,super_admin')
+        ->name('nurse.admissions.mar-flowsheet');
     Route::get('/nurse/admissions/{admission}/trends', [NurseDashboardController::class, 'vitalsTrends'])
         ->middleware('role:nurse,doctor,administrator,super_admin')
         ->name('nurse.admissions.trends');
@@ -172,6 +178,9 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::post('/nurse/admissions/{admission}/medications', [NurseDashboardController::class, 'storeMedication'])
         ->middleware('role:nurse,administrator,super_admin,doctor')
         ->name('nurse.medications.store');
+    Route::post('/nursing-mar/{mar}/correct', [NurseDashboardController::class, 'correctMedication'])
+        ->middleware('role:nurse,doctor,administrator,super_admin')
+        ->name('nurse.medications.correct');
     Route::post('/nurse/beds/{bed}/readiness', [NurseDashboardController::class, 'updateBedStatus'])
         ->middleware('role:nurse,ot_ward_staff,administrator,super_admin')
         ->name('nurse.beds.update-status');
