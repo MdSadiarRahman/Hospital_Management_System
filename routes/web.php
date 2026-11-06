@@ -15,6 +15,7 @@ use App\Http\Controllers\Staff\ConsultationController;
 use App\Http\Controllers\Staff\DepartmentController;
 use App\Http\Controllers\Staff\DoctorDashboardController;
 use App\Http\Controllers\Staff\DoctorScheduleController;
+use App\Http\Controllers\Staff\LabOrderController;
 use App\Http\Controllers\Staff\LabTestCatalogController;
 use App\Http\Controllers\Staff\NurseDashboardController;
 use App\Http\Controllers\Staff\PatientLinkingController;
@@ -202,10 +203,17 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
         return view('previews.billing');
     })->middleware('role:billing_staff')->name('billing');
 
-    // Diagnostic Laboratory Workstation & Test Catalog
-    Route::get('/lab', function () {
-        return view('previews.lab');
-    })->middleware('role:lab_staff')->name('lab');
+    // Diagnostic Laboratory Orders & Workbench
+    Route::get('/lab', [LabOrderController::class, 'index'])->name('lab');
+    Route::get('/lab-orders', [LabOrderController::class, 'index'])->name('lab-orders.index');
+    Route::get('/lab-orders/create', [LabOrderController::class, 'create'])->name('lab-orders.create');
+    Route::post('/lab-orders', [LabOrderController::class, 'store'])->name('lab-orders.store');
+    Route::get('/lab-orders/{labOrder}', [LabOrderController::class, 'show'])->name('lab-orders.show');
+    Route::post('/lab-orders/{labOrder}/samples', [LabOrderController::class, 'collectSample'])->name('lab-orders.samples.store');
+    Route::post('/lab-orders/{labOrder}/status', [LabOrderController::class, 'updateStatus'])->name('lab-orders.update-status');
+    Route::post('/lab-orders/items/{labOrderItem}/status', [LabOrderController::class, 'updateItemStatus'])->name('lab-orders.items.update-status');
+    Route::post('/lab-orders/{labOrder}/assign-partner', [LabOrderController::class, 'assignPartner'])->name('lab-orders.assign-partner');
+    Route::get('/lab-orders/{labOrder}/print-slip', [LabOrderController::class, 'printSlip'])->name('lab-orders.print-slip');
 
     // Diagnostic Laboratory Test Catalog (Configurable Test Master)
     Route::get('/lab-catalog', [LabTestCatalogController::class, 'index'])->name('lab-catalog.index');

@@ -112,6 +112,17 @@ class LabTestCatalog extends Model
     */
 
     /**
+     * Alias for code to support both 'code' and 'test_code'.
+     */
+    protected function testCode(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->code,
+            set: fn($value) => ['code' => $value],
+        );
+    }
+
+    /**
      * Alias for standard_charge to support both 'price' and 'standard_charge'.
      */
     protected function price(): Attribute

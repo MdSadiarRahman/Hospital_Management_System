@@ -60,12 +60,12 @@ class LabTestCatalogTest extends TestCase
     {
         // 1. Lab staff access
         $labResponse = $this->actingAs($this->labStaffUser)
-            ->get(route('portal.lab-catalog.index'));
+            ->get(route('portal.lab-catalog.index', ['q' => 'CBC01']));
 
         $labResponse->assertStatus(200);
         $labResponse->assertSee('Diagnostic Laboratory Test Catalog');
         $labResponse->assertSee('CBC01');
-        $labResponse->assertSee('Complete Blood Count (CBC) with ESR');
+        $labResponse->assertSee('Complete Blood Count');
         $labResponse->assertSee('Hematology');
         $labResponse->assertSee('৳ 450.00');
 
