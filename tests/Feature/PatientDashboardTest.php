@@ -179,7 +179,7 @@ class PatientDashboardTest extends TestCase
         $authorizedResponse = $this->actingAs($patientA)->get('/patient/prescriptions/' . $prescriptionA->id);
         $authorizedResponse->assertStatus(200);
         $authorizedResponse->assertSee($prescriptionA->consultation->doctor->name);
-        $authorizedResponse->assertSee('Official Digital Rx');
+        $authorizedResponse->assertSee('Digital Prescription');
 
         // 2. Patient B attempts to view Patient A's prescription -> MUST BE 403 FORBIDDEN
         $unauthorizedResponse = $this->actingAs($userB)->get('/patient/prescriptions/' . $prescriptionA->id);
@@ -197,7 +197,7 @@ class PatientDashboardTest extends TestCase
         $userB = User::factory()->create(['user_type' => 'patient', 'is_active' => true]);
         $userB->assignRole('patient');
         $clinicalB = Patient::create([
-            'patient_code' => 'MCNH-2026-' . rand(5000, 9999),
+            'patient_code' => 'MCNH-2026-' . rand(100000, 999999),
             'user_id' => $userB->id,
             'name' => 'Patient B Lab',
             'date_of_birth' => '1995-01-01',

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             DepartmentAndBedSeeder::class,
             SystemSettingsSeeder::class,
             UserSeeder::class,
+            LabTestCatalogSeeder::class,
             PatientClinicalDataSeeder::class,
             NursingDataSeeder::class,
         ]);

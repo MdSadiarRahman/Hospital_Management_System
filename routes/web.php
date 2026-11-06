@@ -15,6 +15,7 @@ use App\Http\Controllers\Staff\ConsultationController;
 use App\Http\Controllers\Staff\DepartmentController;
 use App\Http\Controllers\Staff\DoctorDashboardController;
 use App\Http\Controllers\Staff\DoctorScheduleController;
+use App\Http\Controllers\Staff\LabTestCatalogController;
 use App\Http\Controllers\Staff\NurseDashboardController;
 use App\Http\Controllers\Staff\PatientLinkingController;
 use App\Http\Controllers\Staff\PatientMasterController;
@@ -201,10 +202,20 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
         return view('previews.billing');
     })->middleware('role:billing_staff')->name('billing');
 
-    // Diagnostic Laboratory Workstation
+    // Diagnostic Laboratory Workstation & Test Catalog
     Route::get('/lab', function () {
         return view('previews.lab');
     })->middleware('role:lab_staff')->name('lab');
+
+    // Diagnostic Laboratory Test Catalog (Configurable Test Master)
+    Route::get('/lab-catalog', [LabTestCatalogController::class, 'index'])->name('lab-catalog.index');
+    Route::get('/lab-catalog/create', [LabTestCatalogController::class, 'create'])->name('lab-catalog.create');
+    Route::post('/lab-catalog', [LabTestCatalogController::class, 'store'])->name('lab-catalog.store');
+    Route::get('/lab-catalog/{labTest}', [LabTestCatalogController::class, 'show'])->name('lab-catalog.show');
+    Route::get('/lab-catalog/{labTest}/edit', [LabTestCatalogController::class, 'edit'])->name('lab-catalog.edit');
+    Route::put('/lab-catalog/{labTest}', [LabTestCatalogController::class, 'update'])->name('lab-catalog.update');
+    Route::post('/lab-catalog/{labTest}/toggle-status', [LabTestCatalogController::class, 'toggleStatus'])->name('lab-catalog.toggle-status');
+    Route::get('/api/lab-catalog/search', [LabTestCatalogController::class, 'apiSearch'])->name('api.lab-catalog.search');
 
     // OT & Inpatient Ward Station
     Route::get('/ot-ward', function () {

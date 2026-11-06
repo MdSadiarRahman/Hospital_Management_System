@@ -79,6 +79,7 @@
             ['title' => 'Staff Management', 'icon' => 'people', 'slug' => 'staff', 'url' => '#'],
             ['title' => 'Departments & Wards', 'icon' => 'diagram-3', 'slug' => 'departments', 'url' => '#'],
             ['title' => '10 Beds & Tariffs', 'icon' => 'door-open', 'slug' => 'beds', 'url' => '#'],
+            ['title' => 'Lab Test Catalog', 'icon' => 'card-checklist', 'slug' => 'lab-catalog', 'url' => route('portal.lab-catalog.index')],
             ['title' => 'Billing & Revenue', 'icon' => 'cash-stack', 'slug' => 'financials', 'url' => '#'],
             ['title' => 'Audit & Security Logs', 'icon' => 'shield-check', 'slug' => 'audit', 'url' => '#'],
             ['title' => 'System Settings', 'icon' => 'gear', 'slug' => 'settings', 'url' => '#'],
@@ -125,7 +126,7 @@
             ['title' => 'Barcode Sample Collection', 'icon' => 'upc-scan', 'slug' => 'samples', 'url' => '#'],
             ['title' => 'Upload Secure PDF Reports', 'icon' => 'file-earmark-pdf', 'slug' => 'reports', 'url' => '#'],
             ['title' => 'Partner Laboratories', 'icon' => 'buildings', 'slug' => 'partners', 'url' => '#'],
-            ['title' => 'Lab Test Catalog', 'icon' => 'list-check', 'slug' => 'catalog', 'url' => '#'],
+            ['title' => 'Lab Test Catalog', 'icon' => 'card-checklist', 'slug' => 'lab-catalog', 'url' => route('portal.lab-catalog.index')],
         ],
         'patient' => [
             ['title' => 'Health Overview', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/patient')],
