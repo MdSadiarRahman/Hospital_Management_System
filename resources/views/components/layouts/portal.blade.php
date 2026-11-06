@@ -86,6 +86,7 @@
         'doctor' => [
             ['title' => 'Clinical Dashboard', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.doctor')],
             ['title' => 'OPD Patient Queue', 'icon' => 'person-lines-fill', 'slug' => 'queue', 'url' => route('portal.doctor') . '#consultation-queue'],
+            ['title' => 'Consultations History', 'icon' => 'journal-medical', 'slug' => 'consultations', 'url' => route('portal.consultations.index')],
             ['title' => 'Inpatient Care (10 Beds)', 'icon' => 'hospital', 'slug' => 'inpatients', 'url' => route('portal.beds.occupancy')],
             ['title' => 'Doctor Appointments', 'icon' => 'calendar2-check', 'slug' => 'appointments', 'url' => route('portal.appointments.index')],
             ['title' => 'Bed Transfers & Ledger', 'icon' => 'arrow-left-right', 'slug' => 'transfers', 'url' => route('portal.beds.transfers')],

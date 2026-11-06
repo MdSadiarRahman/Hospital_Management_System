@@ -12,7 +12,7 @@ class ConsultationPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermission('consultations.view');
+        return $user->hasPermission('consultations.view') || $user->hasRole(['doctor', 'super_admin', 'administrator', 'nurse']);
     }
 
     /**
@@ -21,10 +21,10 @@ class ConsultationPolicy
     public function view(User $user, Consultation $consultation): bool
     {
         if ($user->user_type === 'patient') {
-            return $user->patient && $consultation->patient_id === $user->patient->id;
+            return $user->patient && $consultation->visit?->patient_id === $user->patient->id;
         }
 
-        return $user->hasPermission('consultations.view');
+        return $user->hasPermission('consultations.view') || $user->hasRole(['doctor', 'super_admin', 'administrator', 'nurse']);
     }
 
     /**
@@ -32,23 +32,41 @@ class ConsultationPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermission('consultations.create');
+        return $user->hasPermission('consultations.create') || $user->hasRole(['doctor', 'super_admin', 'administrator']);
     }
 
     /**
      * Determine whether the doctor can update a consultation.
+     * Protects clinical records: only the authoring doctor or administrator can modify.
      */
     public function update(User $user, Consultation $consultation): bool
     {
-        return $user->hasPermission('consultations.update');
+        if ($user->hasRole(['super_admin', 'administrator'])) {
+            return true;
+        }
+
+        if ($consultation->doctor_id === $user->id) {
+            return $user->hasPermission('consultations.update') || $user->hasRole('doctor');
+        }
+
+        return false;
     }
 
     /**
      * Determine whether the user can delete a consultation.
+     * Legal healthcare standard: Finalized consultations are permanent legal records and cannot be deleted.
      */
     public function delete(User $user, Consultation $consultation): bool
     {
-        return $user->hasPermission('consultations.delete');
+        if ($consultation->status === 'finalized') {
+            return false;
+        }
+
+        if ($user->hasRole('super_admin')) {
+            return true;
+        }
+
+        return $consultation->doctor_id === $user->id && $user->hasRole('doctor');
     }
 
     /**
@@ -56,7 +74,11 @@ class ConsultationPolicy
      */
     public function approve(User $user, Consultation $consultation): bool
     {
-        return $user->hasPermission('consultations.approve');
+        if ($user->hasRole(['super_admin', 'administrator'])) {
+            return true;
+        }
+
+        return $consultation->doctor_id === $user->id && $user->hasRole('doctor');
     }
 
     /**
@@ -65,9 +87,9 @@ class ConsultationPolicy
     public function print(User $user, Consultation $consultation): bool
     {
         if ($user->user_type === 'patient') {
-            return $user->patient && $consultation->patient_id === $user->patient->id;
+            return $user->patient && $consultation->visit?->patient_id === $user->patient->id;
         }
 
-        return $user->hasPermission('consultations.print');
+        return $user->hasPermission('consultations.print') || $user->hasRole(['doctor', 'super_admin', 'administrator', 'nurse', 'receptionist']);
     }
 }

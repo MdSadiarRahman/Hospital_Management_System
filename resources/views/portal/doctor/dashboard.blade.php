@@ -311,9 +311,15 @@
                                                 <a href="{{ route('portal.doctor.patient-history', $visit->patient_id) }}" class="btn btn-outline-secondary" title="View Patient Clinical Dossier">
                                                     <i class="bi bi-clock-history"></i> Dossier
                                                 </a>
-                                                <a href="{{ route('portal.visits.show', $visit) }}" class="btn btn-teal fw-semibold">
-                                                    <i class="bi bi-pencil-square"></i> Attend
-                                                </a>
+                                                @if($visit->consultation)
+                                                    <a href="{{ route('portal.consultations.show', $visit->consultation) }}" class="btn btn-teal fw-semibold">
+                                                        <i class="bi bi-file-earmark-medical"></i> Consultation
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('portal.consultations.create', $visit) }}" class="btn btn-teal fw-semibold">
+                                                        <i class="bi bi-pencil-square"></i> Attend
+                                                    </a>
+                                                @endif
                                             </div>
                                         </td>
                                     </tr>
@@ -722,11 +728,19 @@
                                             <span class="badge bg-success text-white">{{ ucfirst($c->status) }}</span>
                                         </td>
                                         <td class="text-end">
-                                            @if($c->visit?->patient_id)
-                                                <a href="{{ route('portal.doctor.patient-history', $c->visit->patient_id) }}" class="btn btn-sm btn-outline-teal">
-                                                    <i class="bi bi-clock-history"></i> Dossier
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{{ route('portal.consultations.show', $c) }}" class="btn btn-outline-teal" title="View Consultation Dossier">
+                                                    <i class="bi bi-folder2-open"></i>
                                                 </a>
-                                            @endif
+                                                <a href="{{ route('portal.consultations.print', $c) }}" target="_blank" class="btn btn-outline-primary" title="Print Prescription">
+                                                    <i class="bi bi-printer"></i>
+                                                </a>
+                                                @if($c->visit?->patient_id)
+                                                    <a href="{{ route('portal.doctor.patient-history', $c->visit->patient_id) }}" class="btn btn-outline-secondary" title="Patient Dossier">
+                                                        <i class="bi bi-person"></i>
+                                                    </a>
+                                                @endif
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty

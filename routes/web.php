@@ -11,6 +11,7 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\Staff\AdmissionController;
 use App\Http\Controllers\Staff\AppointmentController;
 use App\Http\Controllers\Staff\BedController;
+use App\Http\Controllers\Staff\ConsultationController;
 use App\Http\Controllers\Staff\DepartmentController;
 use App\Http\Controllers\Staff\DoctorDashboardController;
 use App\Http\Controllers\Staff\DoctorScheduleController;
@@ -124,6 +125,17 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::get('/doctor/search-patients', [DoctorDashboardController::class, 'searchPatients'])
         ->middleware('role:doctor,administrator,super_admin,nurse')
         ->name('doctor.search-patients');
+
+    // Doctor Clinical Consultations & Prescriptions
+    Route::get('/consultations', [ConsultationController::class, 'index'])->name('consultations.index');
+    Route::get('/consultations/create/{visit}', [ConsultationController::class, 'create'])->name('consultations.create');
+    Route::post('/consultations', [ConsultationController::class, 'store'])->name('consultations.store');
+    Route::get('/consultations/{consultation}', [ConsultationController::class, 'show'])->name('consultations.show');
+    Route::get('/consultations/{consultation}/edit', [ConsultationController::class, 'edit'])->name('consultations.edit');
+    Route::put('/consultations/{consultation}', [ConsultationController::class, 'update'])->name('consultations.update');
+    Route::post('/consultations/{consultation}/finalize', [ConsultationController::class, 'finalize'])->name('consultations.finalize');
+    Route::get('/consultations/{consultation}/print', [ConsultationController::class, 'print'])->name('consultations.print');
+    Route::get('/consultations/patient/{patient}/history', [ConsultationController::class, 'patientHistory'])->name('consultations.patient-history');
 
     // Nurse Ward Station
     Route::get('/nurse', function () {

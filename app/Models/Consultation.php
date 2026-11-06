@@ -52,4 +52,53 @@ class Consultation extends Model
     {
         return $this->hasMany(LabOrder::class);
     }
+
+    public function auditLogs(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(AuditLog::class, 'auditable')->latest('created_at');
+    }
+
+    public function getPatientAttribute(): ?Patient
+    {
+        return $this->visit?->patient;
+    }
+
+    public function getIsFinalizedAttribute(): bool
+    {
+        return $this->status === 'finalized';
+    }
+
+    public function getStatusBadgeClassAttribute(): string
+    {
+        return match ($this->status) {
+            'finalized' => 'success',
+            'draft' => 'warning',
+            default => 'secondary',
+        };
+    }
+
+    public function scopeDraft($query)
+    {
+        return $query->where('status', 'draft');
+    }
+
+    public function scopeFinalized($query)
+    {
+        return $query->where('status', 'finalized');
+    }
+
+    public function scopeSearch($query, ?string $term)
+    {
+        if (empty($term)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($term) {
+            $q->where('chief_complaints', 'like', "%{$term}%")
+              ->orWhere('clinical_notes', 'like', "%{$term}%")
+              ->orWhereHas('diagnoses', fn($dq) => $dq->where('condition_name', 'like', "%{$term}%")->orWhere('icd_code', 'like', "%{$term}%"))
+              ->orWhereHas('visit.patient', fn($pq) => $pq->where('name', 'like', "%{$term}%")->orWhere('patient_code', 'like', "%{$term}%"))
+              ->orWhereHas('doctor', fn($docQ) => $docQ->where('name', 'like', "%{$term}%"));
+        });
+    }
 }
