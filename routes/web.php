@@ -19,6 +19,7 @@ use App\Http\Controllers\Staff\LabOrderController;
 use App\Http\Controllers\Staff\LabReportController;
 use App\Http\Controllers\Staff\LabTestCatalogController;
 use App\Http\Controllers\Staff\NurseDashboardController;
+use App\Http\Controllers\Staff\OperationController;
 use App\Http\Controllers\Staff\PatientLinkingController;
 use App\Http\Controllers\Staff\PatientMasterController;
 use App\Http\Controllers\Staff\PrescriptionController;
@@ -238,10 +239,42 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::post('/lab-catalog/{labTest}/toggle-status', [LabTestCatalogController::class, 'toggleStatus'])->name('lab-catalog.toggle-status');
     Route::get('/api/lab-catalog/search', [LabTestCatalogController::class, 'apiSearch'])->name('api.lab-catalog.search');
 
+    // Operation Management & OT Suite (Clinical Staff: Doctor, Nurse, OT/Ward Staff, Administrators)
+    Route::middleware('role:doctor,nurse,ot_ward_staff,administrator,super_admin')->group(function () {
+        Route::get('/operations', [OperationController::class, 'index'])->name('operations.index');
+        Route::get('/operations/calendar', [OperationController::class, 'calendar'])->name('operations.calendar');
+        Route::get('/operations/create', [OperationController::class, 'create'])
+            ->middleware('role:doctor,administrator,super_admin')
+            ->name('operations.create');
+        Route::post('/operations', [OperationController::class, 'store'])
+            ->middleware('role:doctor,administrator,super_admin')
+            ->name('operations.store');
+        Route::get('/operations/{operation}', [OperationController::class, 'show'])->name('operations.show');
+        Route::post('/operations/{operation}/reschedule', [OperationController::class, 'reschedule'])
+            ->middleware('role:doctor,administrator,super_admin')
+            ->name('operations.reschedule');
+        Route::post('/operations/{operation}/cancel', [OperationController::class, 'cancel'])
+            ->middleware('role:doctor,administrator,super_admin')
+            ->name('operations.cancel');
+        Route::post('/operations/{operation}/start', [OperationController::class, 'start'])
+            ->middleware('role:doctor,administrator,super_admin')
+            ->name('operations.start');
+        Route::post('/operations/{operation}/complete', [OperationController::class, 'complete'])
+            ->middleware('role:doctor,administrator,super_admin')
+            ->name('operations.complete');
+        Route::post('/operations/{operation}/notes', [OperationController::class, 'recordNotes'])
+            ->middleware('role:doctor,administrator,super_admin')
+            ->name('operations.notes');
+        Route::post('/operations/{operation}/observations', [OperationController::class, 'storeObservation'])
+            ->middleware('role:doctor,nurse,administrator,super_admin')
+            ->name('operations.observations.store');
+        Route::get('/operations/{operation}/print', [OperationController::class, 'printReport'])->name('operations.print');
+    });
+
     // OT & Inpatient Ward Station
     Route::get('/ot-ward', function () {
-        return view('previews.nurse');
-    })->middleware('role:ot_ward_staff,nurse')->name('ot-ward');
+        return redirect()->route('portal.operations.index');
+    })->middleware('role:ot_ward_staff,nurse,administrator,super_admin,doctor')->name('ot-ward');
 
     // Staff Patient Account Verification & Record Linking
     Route::get('/patient-linking', [PatientLinkingController::class, 'index'])

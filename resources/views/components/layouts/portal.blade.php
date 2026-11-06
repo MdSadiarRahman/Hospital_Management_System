@@ -81,6 +81,7 @@
             ['title' => '10 Beds & Tariffs', 'icon' => 'door-open', 'slug' => 'beds', 'url' => '#'],
             ['title' => 'Diagnostic Lab Orders', 'icon' => 'clipboard2-pulse', 'slug' => 'lab-orders', 'url' => route('portal.lab-orders.index')],
             ['title' => 'Diagnostic Test Reports', 'icon' => 'file-earmark-medical', 'slug' => 'lab-reports', 'url' => route('portal.lab-reports.index')],
+            ['title' => 'Operation Theatre (OT)', 'icon' => 'scissors', 'slug' => 'operations', 'url' => route('portal.operations.index')],
             ['title' => 'Lab Test Catalog', 'icon' => 'card-checklist', 'slug' => 'lab-catalog', 'url' => route('portal.lab-catalog.index')],
             ['title' => 'Billing & Revenue', 'icon' => 'cash-stack', 'slug' => 'financials', 'url' => '#'],
             ['title' => 'Audit & Security Logs', 'icon' => 'shield-check', 'slug' => 'audit', 'url' => '#'],
@@ -95,6 +96,7 @@
             ['title' => 'Doctor Appointments', 'icon' => 'calendar2-check', 'slug' => 'appointments', 'url' => route('portal.appointments.index')],
             ['title' => 'Bed Transfers & Ledger', 'icon' => 'arrow-left-right', 'slug' => 'transfers', 'url' => route('portal.beds.transfers')],
             ['title' => 'Diagnostic Lab Orders', 'icon' => 'clipboard2-pulse', 'slug' => 'lab-orders', 'url' => route('portal.lab-orders.index')],
+            ['title' => 'Operation Theatre (OT)', 'icon' => 'scissors', 'slug' => 'operations', 'url' => route('portal.operations.index')],
         ],
         'nurse' => [
             ['title' => 'Nursing Station', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.nurse')],
@@ -103,6 +105,7 @@
             ['title' => 'Nursing Observations', 'icon' => 'clipboard2-pulse', 'slug' => 'observations', 'url' => route('portal.nurse.observations')],
             ['title' => 'Bedside Vitals Ledger', 'icon' => 'heart-pulse', 'slug' => 'vitals', 'url' => route('portal.nurse') . '#vitals-section'],
             ['title' => 'Medication Records (MAR)', 'icon' => 'capsule', 'slug' => 'mar', 'url' => route('portal.nurse.mar')],
+            ['title' => 'Operation Theatre (OT)', 'icon' => 'scissors', 'slug' => 'operations', 'url' => route('portal.operations.index')],
             ['title' => 'Shift & Duty Handover', 'icon' => 'journal-medical', 'slug' => 'shift', 'url' => route('portal.nurse') . '#shift-section'],
             ['title' => 'Bed Transfers & Ledger', 'icon' => 'arrow-left-right', 'slug' => 'transfers', 'url' => route('portal.beds.transfers')],
         ],
