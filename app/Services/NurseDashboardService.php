@@ -1,0 +1,621 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Admission;
+use App\Models\AuditLog;
+use App\Models\Bed;
+use App\Models\BedStatusHistory;
+use App\Models\Department;
+use App\Models\DoctorSchedule;
+use App\Models\MedicationAdministration;
+use App\Models\NursingNote;
+use App\Models\Patient;
+use App\Models\Prescription;
+use App\Models\ShiftSchedule;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
+
+class NurseDashboardService
+{
+    /**
+     * Compile complete Nurse Ward Station dashboard payload.
+     *
+     * @param User $currentUser Authenticated user
+     * @param array $filters Query parameters (department_id, shift, q)
+     * @return array
+     */
+    public function getNurseDashboardData(User $currentUser, array $filters = []): array
+    {
+        $targetNurse = $this->resolveTargetNurse($currentUser, $filters);
+        $selectedDeptId = !empty($filters['department_id']) && $filters['department_id'] !== 'all'
+            ? (int) $filters['department_id']
+            : null;
+        $selectedShift = !empty($filters['shift']) && in_array($filters['shift'], ['morning', 'evening', 'night'])
+            ? $filters['shift']
+            : null;
+        $searchTerm = !empty($filters['q']) ? trim($filters['q']) : null;
+
+        // 1. Nurse Profile & Current Shift Determination
+        $targetNurse->loadMissing(['staffProfile.department', 'staffProfile.departments']);
+        $shiftInfo = $this->resolveShiftInformation($targetNurse);
+
+        // 2. Clinical Departments for Filtering
+        $clinicalDepartments = Department::where('is_clinical', true)->orderBy('name')->get();
+
+        // 3. 10-Bed Inpatient Ward Bedside Monitor
+        $coreBedNumbers = ['EM-01', 'EM-02', 'GYN-01', 'GYN-02', 'SUR-01', 'SUR-02', 'GEN-01', 'GEN-02', 'GEN-03', 'GEN-04'];
+        $wardBedsQuery = Bed::query()
+            ->with([
+                'department',
+                'currentAssignment.admission.patient',
+                'currentAssignment.admission.attendingDoctor.staffProfile',
+                'currentAssignment.admission.nursingNotes' => fn($q) => $q->latest('recorded_at')->take(1),
+            ]);
+
+        if ($selectedDeptId) {
+            $wardBedsQuery->where('department_id', $selectedDeptId);
+        } else {
+            // Prioritize the 10 core beds or first 10 inpatient beds
+            $wardBedsQuery->whereIn('bed_number', $coreBedNumbers)
+                ->orderByRaw("FIELD(bed_number, 'EM-01', 'EM-02', 'GYN-01', 'GYN-02', 'SUR-01', 'SUR-02', 'GEN-01', 'GEN-02', 'GEN-03', 'GEN-04')");
+        }
+
+        $wardBeds = $wardBedsQuery->get();
+        if ($wardBeds->isEmpty()) {
+            $wardBeds = Bed::with([
+                'department',
+                'currentAssignment.admission.patient',
+                'currentAssignment.admission.attendingDoctor.staffProfile',
+                'currentAssignment.admission.nursingNotes' => fn($q) => $q->latest('recorded_at')->take(1),
+            ])->orderBy('bed_number')->take(10)->get();
+        }
+
+        // Ward Bed Summary Metrics
+        $totalWardBeds = $wardBeds->count();
+        $occupiedBedsCount = $wardBeds->where('status', 'occupied')->count();
+        $availableBedsCount = $wardBeds->where('status', 'available')->count();
+        $cleaningBedsCount = $wardBeds->where('status', 'cleaning')->count();
+        $maintenanceBedsCount = $wardBeds->where('status', 'maintenance')->count();
+        $occupancyPercentage = $totalWardBeds > 0 ? (int) round(($occupiedBedsCount / $totalWardBeds) * 100) : 0;
+
+        // 4. Assigned Inpatients & Active Admissions
+        $activeAdmissionsQuery = Admission::where('status', 'admitted')
+            ->with([
+                'patient.contacts',
+                'department',
+                'attendingDoctor.staffProfile',
+                'currentBedAssignment.bed.department',
+                'nursingNotes' => fn($q) => $q->latest('recorded_at')->take(5),
+                'medicationAdministrations' => fn($q) => $q->latest('administered_at')->take(5),
+                'treatmentPlans' => fn($q) => $q->where('status', 'active'),
+                'visit.consultation.prescription.items',
+            ])
+            ->orderBy('admission_date', 'desc');
+
+        if ($selectedDeptId) {
+            $activeAdmissionsQuery->where('department_id', $selectedDeptId);
+        }
+
+        if ($searchTerm) {
+            $activeAdmissionsQuery->where(function (Builder $q) use ($searchTerm) {
+                $q->where('admission_number', 'like', "%{$searchTerm}%")
+                  ->orWhereHas('patient', function (Builder $pq) use ($searchTerm) {
+                      $pq->where('name', 'like', "%{$searchTerm}%")
+                        ->orWhere('patient_code', 'like', "%{$searchTerm}%")
+                        ->orWhere('phone', 'like', "%{$searchTerm}%");
+                  })
+                  ->orWhereHas('currentBedAssignment.bed', function (Builder $bq) use ($searchTerm) {
+                      $bq->where('bed_number', 'like', "%{$searchTerm}%")
+                        ->orWhere('room_number', 'like', "%{$searchTerm}%");
+                  });
+            });
+        }
+
+        $activeAdmissions = $activeAdmissionsQuery->get();
+
+        // 5. Recent Bedside Vitals Ledger across Inpatient Ward
+        $recentVitalsQuery = NursingNote::with([
+            'nurse.staffProfile',
+            'admission.patient',
+            'admission.currentBedAssignment.bed',
+            'admission.department',
+        ])
+        ->orderBy('recorded_at', 'desc');
+
+        if ($selectedShift) {
+            $recentVitalsQuery->where('shift', $selectedShift);
+        }
+
+        if ($selectedDeptId) {
+            $recentVitalsQuery->whereHas('admission', fn($q) => $q->where('department_id', $selectedDeptId));
+        }
+
+        $recentVitals = $recentVitalsQuery->take(15)->get();
+
+        // 6. Recent Medication Administration Records (MAR) Ledger
+        $recentMarQuery = MedicationAdministration::with([
+            'nurse.staffProfile',
+            'admission.patient',
+            'admission.currentBedAssignment.bed',
+            'prescriptionItem',
+        ])
+        ->orderBy('administered_at', 'desc');
+
+        if ($selectedDeptId) {
+            $recentMarQuery->whereHas('admission', fn($q) => $q->where('department_id', $selectedDeptId));
+        }
+
+        $recentMedicationAdministrations = $recentMarQuery->take(15)->get();
+
+        // 7. Today's MAR Doses Statistics
+        $todayMarDosesCount = MedicationAdministration::whereDate('administered_at', today())->count();
+
+        // 8. Pending Nursing Tasks & Critical Alerts
+        $pendingTasks = $this->calculatePendingTasks($activeAdmissions, $wardBeds);
+
+        // 9. All Nurses for Supervisor Switcher (if Super Admin or Admin)
+        $allNurses = $currentUser->hasRole(['super_admin', 'administrator'])
+            ? User::whereHas('roles', fn($q) => $q->where('name', 'nurse'))->with('staffProfile.department')->get()
+            : collect([$targetNurse]);
+
+        // 10. Summary Metrics Card Data (Bento Grid)
+        $metrics = [
+            'total_inpatients' => $activeAdmissions->count(),
+            'occupied_beds' => $occupiedBedsCount,
+            'total_beds' => $totalWardBeds,
+            'occupancy_percentage' => $occupancyPercentage,
+            'available_beds' => $availableBedsCount,
+            'cleaning_beds' => $cleaningBedsCount,
+            'maintenance_beds' => $maintenanceBedsCount,
+            'vitals_due_count' => count($pendingTasks['vitals_due']),
+            'medications_due_count' => count($pendingTasks['medications_due']),
+            'critical_alerts_count' => count($pendingTasks['abnormal_vitals']),
+            'today_mar_doses' => $todayMarDosesCount,
+            'current_shift_name' => $shiftInfo['shift_label'],
+            'current_shift_type' => $shiftInfo['shift_type'],
+            'current_shift_hours' => $shiftInfo['hours'],
+            'on_duty_doctor' => $shiftInfo['on_duty_doctor'],
+        ];
+
+        return [
+            'nurse' => $targetNurse,
+            'allNurses' => $allNurses,
+            'shiftInfo' => $shiftInfo,
+            'clinicalDepartments' => $clinicalDepartments,
+            'selectedDeptId' => $selectedDeptId,
+            'selectedShift' => $selectedShift,
+            'searchTerm' => $searchTerm,
+            'wardBeds' => $wardBeds,
+            'activeAdmissions' => $activeAdmissions,
+            'recentVitals' => $recentVitals,
+            'recentMedicationAdministrations' => $recentMedicationAdministrations,
+            'pendingTasks' => $pendingTasks,
+            'metrics' => $metrics,
+        ];
+    }
+
+    /**
+     * Record patient bedside vital signs and nursing observation note.
+     */
+    public function recordVitals(Admission $admission, array $data, User $nurse): NursingNote
+    {
+        if ($admission->status !== 'admitted') {
+            throw new InvalidArgumentException("Cannot record bedside vitals for non-active admission #{$admission->admission_number}.");
+        }
+
+        return DB::transaction(function () use ($admission, $data, $nurse) {
+            $shift = !empty($data['shift']) ? $data['shift'] : $this->getCurrentShiftType();
+            $recordedAt = !empty($data['recorded_at']) ? Carbon::parse($data['recorded_at']) : now();
+
+            $note = NursingNote::create([
+                'admission_id' => $admission->id,
+                'nurse_id' => $nurse->id,
+                'shift' => $shift,
+                'temperature' => isset($data['temperature']) && $data['temperature'] !== '' ? (float) $data['temperature'] : null,
+                'blood_pressure' => !empty($data['blood_pressure']) ? trim($data['blood_pressure']) : null,
+                'pulse_rate' => isset($data['pulse_rate']) && $data['pulse_rate'] !== '' ? (int) $data['pulse_rate'] : null,
+                'respiratory_rate' => isset($data['respiratory_rate']) && $data['respiratory_rate'] !== '' ? (int) $data['respiratory_rate'] : null,
+                'spo2' => isset($data['spo2']) && $data['spo2'] !== '' ? (float) $data['spo2'] : null,
+                'observations' => trim($data['observations']),
+                'recorded_at' => $recordedAt,
+            ]);
+
+            // Audit Trail
+            AuditLog::create([
+                'user_id' => $nurse->id,
+                'event' => 'nursing_vitals.recorded',
+                'auditable_type' => NursingNote::class,
+                'auditable_id' => $note->id,
+                'old_values' => null,
+                'new_values' => [
+                    'admission_id' => $admission->id,
+                    'admission_number' => $admission->admission_number,
+                    'patient_id' => $admission->patient_id,
+                    'shift' => $note->shift,
+                    'temperature' => $note->temperature,
+                    'blood_pressure' => $note->blood_pressure,
+                    'pulse_rate' => $note->pulse_rate,
+                    'respiratory_rate' => $note->respiratory_rate,
+                    'spo2' => $note->spo2,
+                    'recorded_at' => $note->recorded_at->toDateTimeString(),
+                ],
+                'ip_address' => request()->ip() ?? '127.0.0.1',
+                'user_agent' => request()->userAgent() ?? 'System',
+                'created_at' => now(),
+            ]);
+
+            return $note;
+        });
+    }
+
+    /**
+     * Record a medication administration event (MAR).
+     */
+    public function recordMedicationAdministration(Admission $admission, array $data, User $nurse): MedicationAdministration
+    {
+        if ($admission->status !== 'admitted') {
+            throw new InvalidArgumentException("Cannot record medication administration for non-active admission #{$admission->admission_number}.");
+        }
+
+        return DB::transaction(function () use ($admission, $data, $nurse) {
+            $administeredAt = !empty($data['administered_at']) ? Carbon::parse($data['administered_at']) : now();
+
+            $mar = MedicationAdministration::create([
+                'admission_id' => $admission->id,
+                'prescription_item_id' => !empty($data['prescription_item_id']) ? (int) $data['prescription_item_id'] : null,
+                'medicine_name' => trim($data['medicine_name']),
+                'dose_given' => trim($data['dose_given']),
+                'nurse_id' => $nurse->id,
+                'status' => $data['status'] ?? 'administered',
+                'remarks' => !empty($data['remarks']) ? trim($data['remarks']) : null,
+                'administered_at' => $administeredAt,
+            ]);
+
+            // Audit Trail
+            AuditLog::create([
+                'user_id' => $nurse->id,
+                'event' => 'medication.administered',
+                'auditable_type' => MedicationAdministration::class,
+                'auditable_id' => $mar->id,
+                'old_values' => null,
+                'new_values' => [
+                    'admission_id' => $admission->id,
+                    'admission_number' => $admission->admission_number,
+                    'medicine_name' => $mar->medicine_name,
+                    'dose_given' => $mar->dose_given,
+                    'status' => $mar->status,
+                    'remarks' => $mar->remarks,
+                    'administered_at' => $mar->administered_at->toDateTimeString(),
+                ],
+                'ip_address' => request()->ip() ?? '127.0.0.1',
+                'user_agent' => request()->userAgent() ?? 'System',
+                'created_at' => now(),
+            ]);
+
+            return $mar;
+        });
+    }
+
+    /**
+     * Update bed cleaning / sanitization readiness status.
+     */
+    public function updateBedReadiness(Bed $bed, string $newStatus, User $user, ?string $notes = null): Bed
+    {
+        return DB::transaction(function () use ($bed, $newStatus, $user, $notes) {
+            $lockedBed = Bed::where('id', $bed->id)->lockForUpdate()->firstOrFail();
+            $oldStatus = $lockedBed->status;
+
+            if ($oldStatus === 'occupied' && $newStatus === 'available') {
+                throw new InvalidArgumentException("Cannot mark an occupied bed as available without discharging or transferring the patient first.");
+            }
+
+            $lockedBed->update(['status' => $newStatus]);
+
+            BedStatusHistory::create([
+                'bed_id' => $lockedBed->id,
+                'from_status' => $oldStatus,
+                'to_status' => $newStatus,
+                'changed_by' => $user->id,
+                'reason' => 'Nursing ward bed readiness update',
+                'notes' => $notes,
+            ]);
+
+            AuditLog::create([
+                'user_id' => $user->id,
+                'event' => 'bed.readiness_updated',
+                'auditable_type' => Bed::class,
+                'auditable_id' => $lockedBed->id,
+                'old_values' => ['status' => $oldStatus],
+                'new_values' => [
+                    'status' => $newStatus,
+                    'notes' => $notes,
+                ],
+                'ip_address' => request()->ip() ?? '127.0.0.1',
+                'user_agent' => request()->userAgent() ?? 'System',
+                'created_at' => now(),
+            ]);
+
+            return $lockedBed;
+        });
+    }
+
+    /**
+     * Retrieve complete patient admission nursing dossier (Read-Only clinical records).
+     */
+    public function getAdmissionNursingDossier(Admission $admission, User $nurse): array
+    {
+        $admission->loadMissing([
+            'patient.contacts',
+            'department',
+            'attendingDoctor.staffProfile',
+            'currentBedAssignment.bed.department',
+            'bedAssignments.bed',
+            'nursingNotes.nurse.staffProfile',
+            'medicationAdministrations.nurse.staffProfile',
+            'medicationAdministrations.prescriptionItem',
+            'treatmentPlans.records',
+        ]);
+
+        // Approved Prescriptions for this Inpatient (Read-Only)
+        $approvedPrescriptions = Prescription::where('status', 'approved')
+            ->where(function (Builder $q) use ($admission) {
+                if ($admission->visit_id) {
+                    $q->whereHas('consultation', fn($cq) => $cq->where('visit_id', $admission->visit_id));
+                }
+                $q->orWhereHas('consultation.visit', fn($vq) => $vq->where('patient_id', $admission->patient_id));
+            })
+            ->with(['consultation.doctor.staffProfile', 'consultation.diagnoses', 'items'])
+            ->latest('created_at')
+            ->get();
+
+        // Latest Vitals Snapshot
+        $latestVitals = $admission->nursingNotes->sortByDesc('recorded_at')->first();
+
+        return [
+            'admission' => $admission,
+            'patient' => $admission->patient,
+            'bed' => $admission->currentBed,
+            'latestVitals' => $latestVitals,
+            'nursingNotes' => $admission->nursingNotes->sortByDesc('recorded_at'),
+            'medicationAdministrations' => $admission->medicationAdministrations->sortByDesc('administered_at'),
+            'treatmentPlans' => $admission->treatmentPlans,
+            'approvedPrescriptions' => $approvedPrescriptions,
+        ];
+    }
+
+    /**
+     * Search active inpatients for quick bedside lookup.
+     */
+    public function searchInpatients(string $term, User $nurse): Collection
+    {
+        return Admission::where('status', 'admitted')
+            ->where(function (Builder $q) use ($term) {
+                $q->where('admission_number', 'like', "%{$term}%")
+                  ->orWhereHas('patient', function (Builder $pq) use ($term) {
+                      $pq->where('name', 'like', "%{$term}%")
+                        ->orWhere('patient_code', 'like', "%{$term}%")
+                        ->orWhere('phone', 'like', "%{$term}%");
+                  })
+                  ->orWhereHas('currentBedAssignment.bed', function (Builder $bq) use ($term) {
+                      $bq->where('bed_number', 'like', "%{$term}%")
+                        ->orWhere('room_number', 'like', "%{$term}%");
+                  });
+            })
+            ->with([
+                'patient',
+                'department',
+                'currentBedAssignment.bed',
+                'attendingDoctor',
+                'nursingNotes' => fn($q) => $q->latest('recorded_at')->take(1),
+            ])
+            ->take(10)
+            ->get();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Internal Helper Methods
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Resolve target nurse account.
+     */
+    protected function resolveTargetNurse(User $currentUser, array $filters = []): User
+    {
+        if ($currentUser->hasRole(['super_admin', 'administrator']) && !empty($filters['nurse_id'])) {
+            $candidate = User::where('id', $filters['nurse_id'])
+                ->whereHas('roles', fn($q) => $q->where('name', 'nurse'))
+                ->first();
+
+            if ($candidate) {
+                return $candidate;
+            }
+        }
+
+        if ($currentUser->hasRole('nurse')) {
+            return $currentUser;
+        }
+
+        // Fallback for admin or supervisor viewing ward station
+        $defaultNurse = User::whereHas('roles', fn($q) => $q->where('name', 'nurse'))->first();
+
+        return $defaultNurse ?? $currentUser;
+    }
+
+    /**
+     * Resolve shift details, schedules, and on-duty escalation contacts.
+     */
+    protected function resolveShiftInformation(User $nurse): array
+    {
+        $today = today()->toDateString();
+        $currentHour = (int) now()->format('H');
+
+        $activeShiftType = match (true) {
+            $currentHour >= 8 && $currentHour < 16 => 'morning',
+            $currentHour >= 16 && $currentHour < 24 => 'evening',
+            default => 'night',
+        };
+
+        // Check assigned ShiftSchedule in DB
+        $todaySchedule = null;
+        if ($nurse->staffProfile) {
+            $todaySchedule = ShiftSchedule::where('staff_profile_id', $nurse->staffProfile->id)
+                ->where('shift_date', $today)
+                ->first();
+        }
+
+        $shiftType = $todaySchedule?->shift_type ?? $activeShiftType;
+
+        $hours = match ($shiftType) {
+            'morning' => '08:00 AM – 04:00 PM',
+            'evening' => '04:00 PM – 12:00 AM',
+            'night' => '12:00 AM – 08:00 AM',
+            default => '08:00 AM – 04:00 PM',
+        };
+
+        $shiftLabel = match ($shiftType) {
+            'morning' => 'Morning Shift (8 AM – 4 PM)',
+            'evening' => 'Evening Shift (4 PM – 12 AM)',
+            'night' => 'Night Shift (12 AM – 8 AM)',
+            default => ucfirst($shiftType),
+        };
+
+        // On-duty Emergency Doctor for this shift
+        $dayName = strtolower(now()->format('l'));
+        $onDutyDoctorSchedule = DoctorSchedule::where('day_of_week', $dayName)
+            ->where('is_active', true)
+            ->with(['doctor.staffProfile', 'department'])
+            ->first();
+
+        $onDutyDoctorName = $onDutyDoctorSchedule?->doctor?->name
+            ?? User::whereHas('roles', fn($q) => $q->where('name', 'doctor'))->first()?->name
+            ?? 'Dr. On-Duty Emergency Officer';
+
+        // Upcoming shifts for this nurse
+        $upcomingShifts = collect();
+        if ($nurse->staffProfile) {
+            $upcomingShifts = ShiftSchedule::where('staff_profile_id', $nurse->staffProfile->id)
+                ->where('shift_date', '>=', $today)
+                ->with('department')
+                ->orderBy('shift_date', 'asc')
+                ->take(7)
+                ->get();
+        }
+
+        // Peer nurses on duty today
+        $peerNurses = User::whereHas('roles', fn($q) => $q->where('name', 'nurse'))
+            ->where('id', '!=', $nurse->id)
+            ->with('staffProfile')
+            ->take(5)
+            ->get();
+
+        return [
+            'shift_type' => $shiftType,
+            'shift_label' => $shiftLabel,
+            'hours' => $hours,
+            'today_schedule' => $todaySchedule,
+            'on_duty_doctor' => $onDutyDoctorName,
+            'upcoming_shifts' => $upcomingShifts,
+            'peer_nurses' => $peerNurses,
+            'date_formatted' => now()->format('l, d F Y'),
+        ];
+    }
+
+    /**
+     * Compute current shift slug.
+     */
+    protected function getCurrentShiftType(): string
+    {
+        $hour = (int) now()->format('H');
+
+        return match (true) {
+            $hour >= 8 && $hour < 16 => 'morning',
+            $hour >= 16 && $hour < 24 => 'evening',
+            default => 'night',
+        };
+    }
+
+    /**
+     * Calculate pending nursing tasks and clinical alerts.
+     */
+    protected function calculatePendingTasks(Collection $activeAdmissions, Collection $wardBeds): array
+    {
+        $vitalsDue = [];
+        $medicationsDue = [];
+        $abnormalVitals = [];
+        $unassignedAdmissions = [];
+
+        $eightHoursAgo = now()->subHours(8);
+
+        foreach ($activeAdmissions as $admission) {
+            // 1. Bed assignment check
+            if (!$admission->currentBedAssignment) {
+                $unassignedAdmissions[] = [
+                    'admission' => $admission,
+                    'patient' => $admission->patient,
+                    'reason' => 'Patient admitted but bed is pending assignment',
+                ];
+            }
+
+            // 2. Vitals check (last recorded > 8 hours ago or never)
+            $latestVital = $admission->nursingNotes->first();
+            if (!$latestVital || $latestVital->recorded_at->lt($eightHoursAgo)) {
+                $vitalsDue[] = [
+                    'admission' => $admission,
+                    'patient' => $admission->patient,
+                    'bed' => $admission->currentBed,
+                    'last_checked' => $latestVital ? $latestVital->recorded_at->diffForHumans() : 'Never recorded',
+                    'hours_overdue' => $latestVital ? (int) $latestVital->recorded_at->diffInHours(now()) : 8,
+                ];
+            }
+
+            // 3. Clinical abnormal vitals alert
+            if ($latestVital && $latestVital->hasAbnormalVitals()) {
+                $abnormalVitals[] = [
+                    'admission' => $admission,
+                    'patient' => $admission->patient,
+                    'bed' => $admission->currentBed,
+                    'vital' => $latestVital,
+                    'is_fever' => $latestVital->isFever(),
+                    'is_hypoxia' => $latestVital->isHypoxia(),
+                    'is_tachycardia' => $latestVital->isTachycardia(),
+                    'is_bradycardia' => $latestVital->isBradycardia(),
+                ];
+            }
+
+            // 4. Approved prescriptions needing medication administration
+            $activeRx = $admission->visit?->consultation?->prescription;
+            if ($activeRx && $activeRx->status === 'approved' && $activeRx->items->isNotEmpty()) {
+                // Check if any medication was not administered today
+                $todayMeds = $admission->medicationAdministrations
+                    ->filter(fn($m) => $m->administered_at && $m->administered_at->isToday());
+
+                $medicationsDue[] = [
+                    'admission' => $admission,
+                    'patient' => $admission->patient,
+                    'bed' => $admission->currentBed,
+                    'prescription' => $activeRx,
+                    'prescribed_items_count' => $activeRx->items->count(),
+                    'administered_today_count' => $todayMeds->count(),
+                ];
+            }
+        }
+
+        // 5. Beds requiring cleaning
+        $cleaningBeds = $wardBeds->where('status', 'cleaning')->values();
+
+        return [
+            'vitals_due' => $vitalsDue,
+            'medications_due' => $medicationsDue,
+            'abnormal_vitals' => $abnormalVitals,
+            'unassigned_admissions' => $unassignedAdmissions,
+            'cleaning_beds' => $cleaningBeds,
+        ];
+    }
+}

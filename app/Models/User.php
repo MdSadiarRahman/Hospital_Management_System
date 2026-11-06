@@ -162,4 +162,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(TreatmentPlan::class, 'doctor_id');
     }
+
+    public function nursingNotes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(NursingNote::class, 'nurse_id');
+    }
+
+    public function medicationAdministrations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(MedicationAdministration::class, 'nurse_id');
+    }
+
+    public function isNurse(): bool
+    {
+        return $this->hasRole('nurse');
+    }
 }

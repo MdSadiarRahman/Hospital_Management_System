@@ -15,6 +15,7 @@ use App\Http\Controllers\Staff\ConsultationController;
 use App\Http\Controllers\Staff\DepartmentController;
 use App\Http\Controllers\Staff\DoctorDashboardController;
 use App\Http\Controllers\Staff\DoctorScheduleController;
+use App\Http\Controllers\Staff\NurseDashboardController;
 use App\Http\Controllers\Staff\PatientLinkingController;
 use App\Http\Controllers\Staff\PatientMasterController;
 use App\Http\Controllers\Staff\PrescriptionController;
@@ -149,10 +150,25 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::get('/prescriptions/{prescription}/print', [PrescriptionController::class, 'print'])->name('prescriptions.print');
     Route::get('/prescriptions/patient/{patient}/history', [PrescriptionController::class, 'patientHistory'])->name('prescriptions.patient-history');
 
-    // Nurse Ward Station
-    Route::get('/nurse', function () {
-        return view('previews.nurse');
-    })->middleware('role:nurse')->name('nurse');
+    // Nurse Ward Station & Inpatient Clinical Care
+    Route::get('/nurse', [NurseDashboardController::class, 'index'])
+        ->middleware('role:nurse,administrator,super_admin')
+        ->name('nurse');
+    Route::post('/nurse/admissions/{admission}/vitals', [NurseDashboardController::class, 'storeVitals'])
+        ->middleware('role:nurse,administrator,super_admin,doctor')
+        ->name('nurse.vitals.store');
+    Route::post('/nurse/admissions/{admission}/medications', [NurseDashboardController::class, 'storeMedication'])
+        ->middleware('role:nurse,administrator,super_admin,doctor')
+        ->name('nurse.medications.store');
+    Route::post('/nurse/beds/{bed}/readiness', [NurseDashboardController::class, 'updateBedStatus'])
+        ->middleware('role:nurse,ot_ward_staff,administrator,super_admin')
+        ->name('nurse.beds.update-status');
+    Route::get('/nurse/admissions/{admission}/dossier', [NurseDashboardController::class, 'admissionDossier'])
+        ->middleware('role:nurse,doctor,administrator,super_admin')
+        ->name('nurse.admissions.dossier');
+    Route::get('/nurse/search-inpatients', [NurseDashboardController::class, 'searchInpatients'])
+        ->middleware('role:nurse,doctor,administrator,super_admin')
+        ->name('nurse.search-inpatients');
 
     // Reception & Patient Intake Desk
     Route::get('/reception', function () {

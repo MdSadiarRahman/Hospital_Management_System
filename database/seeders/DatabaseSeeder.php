@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             SystemSettingsSeeder::class,
             UserSeeder::class,
             PatientClinicalDataSeeder::class,
+            NursingDataSeeder::class,
         ]);
     }
 }
