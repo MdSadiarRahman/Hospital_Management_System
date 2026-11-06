@@ -20,6 +20,7 @@ use App\Http\Controllers\Staff\LabReportController;
 use App\Http\Controllers\Staff\LabTestCatalogController;
 use App\Http\Controllers\Staff\NurseDashboardController;
 use App\Http\Controllers\Staff\OperationController;
+use App\Http\Controllers\Staff\ReferralController;
 use App\Http\Controllers\Staff\PatientLinkingController;
 use App\Http\Controllers\Staff\PatientMasterController;
 use App\Http\Controllers\Staff\PrescriptionController;
@@ -275,6 +276,25 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::get('/ot-ward', function () {
         return redirect()->route('portal.operations.index');
     })->middleware('role:ot_ward_staff,nurse,administrator,super_admin,doctor')->name('ot-ward');
+
+    // Emergency Referral & External ICU/CCU Transfer Management (Clinical Staff)
+    Route::middleware('role:doctor,nurse,administrator,super_admin')->group(function () {
+        Route::get('/referrals', [ReferralController::class, 'index'])->name('referrals.index');
+        Route::get('/referrals/create', [ReferralController::class, 'create'])
+            ->middleware('role:doctor,administrator,super_admin')
+            ->name('referrals.create');
+        Route::post('/referrals', [ReferralController::class, 'store'])
+            ->middleware('role:doctor,administrator,super_admin')
+            ->name('referrals.store');
+        Route::get('/referrals/{referral}', [ReferralController::class, 'show'])->name('referrals.show');
+        Route::post('/referrals/{referral}/dispatch', [ReferralController::class, 'dispatch'])->name('referrals.dispatch');
+        Route::post('/referrals/{referral}/complete', [ReferralController::class, 'complete'])->name('referrals.complete');
+        Route::post('/referrals/{referral}/cancel', [ReferralController::class, 'cancel'])
+            ->middleware('role:doctor,administrator,super_admin')
+            ->name('referrals.cancel');
+        Route::post('/referrals/{referral}/assessment', [ReferralController::class, 'updateAssessment'])->name('referrals.assessment.update');
+        Route::get('/referrals/{referral}/print', [ReferralController::class, 'printSlip'])->name('referrals.print');
+    });
 
     // Staff Patient Account Verification & Record Linking
     Route::get('/patient-linking', [PatientLinkingController::class, 'index'])

@@ -91,6 +91,11 @@ class Patient extends Model
         return $this->hasMany(Operation::class);
     }
 
+    public function referrals(): HasMany
+    {
+        return $this->hasMany(Referral::class);
+    }
+
     public function consultations(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
     {
         return $this->hasManyThrough(Consultation::class, Visit::class);
