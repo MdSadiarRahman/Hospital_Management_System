@@ -171,12 +171,19 @@ class LabOrderController extends Controller
      */
     public function updateStatus(UpdateOrderStatusRequest $request, LabOrder $labOrder): RedirectResponse|JsonResponse
     {
-        $updatedOrder = $this->labOrderService->updateOrderStatus(
-            $labOrder,
-            $request->input('status'),
-            $request->user(),
-            $request->input('notes')
-        );
+        try {
+            $updatedOrder = $this->labOrderService->updateOrderStatus(
+                $labOrder,
+                $request->input('status'),
+                $request->user(),
+                $request->input('notes')
+            );
+        } catch (\InvalidArgumentException $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+            }
+            return back()->with('error', $e->getMessage());
+        }
 
         $message = "Order #{$updatedOrder->order_number} status updated to '{$updatedOrder->status_label}'.";
 
@@ -196,12 +203,19 @@ class LabOrderController extends Controller
      */
     public function updateItemStatus(UpdateOrderItemStatusRequest $request, LabOrderItem $labOrderItem): RedirectResponse|JsonResponse
     {
-        $updatedItem = $this->labOrderService->updateItemStatus(
-            $labOrderItem,
-            $request->input('status'),
-            $request->user(),
-            $request->input('notes')
-        );
+        try {
+            $updatedItem = $this->labOrderService->updateItemStatus(
+                $labOrderItem,
+                $request->input('status'),
+                $request->user(),
+                $request->input('notes')
+            );
+        } catch (\InvalidArgumentException $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $e->getMessage()], 422);
+            }
+            return back()->with('error', $e->getMessage());
+        }
 
         $message = "Test '{$updatedItem->test_name}' status updated to '{$updatedItem->status_label}'.";
 

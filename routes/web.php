@@ -16,6 +16,7 @@ use App\Http\Controllers\Staff\DepartmentController;
 use App\Http\Controllers\Staff\DoctorDashboardController;
 use App\Http\Controllers\Staff\DoctorScheduleController;
 use App\Http\Controllers\Staff\LabOrderController;
+use App\Http\Controllers\Staff\LabReportController;
 use App\Http\Controllers\Staff\LabTestCatalogController;
 use App\Http\Controllers\Staff\NurseDashboardController;
 use App\Http\Controllers\Staff\PatientLinkingController;
@@ -214,6 +215,18 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::post('/lab-orders/items/{labOrderItem}/status', [LabOrderController::class, 'updateItemStatus'])->name('lab-orders.items.update-status');
     Route::post('/lab-orders/{labOrder}/assign-partner', [LabOrderController::class, 'assignPartner'])->name('lab-orders.assign-partner');
     Route::get('/lab-orders/{labOrder}/print-slip', [LabOrderController::class, 'printSlip'])->name('lab-orders.print-slip');
+
+    // Diagnostic Laboratory Reports & Results Management
+    Route::get('/lab-reports', [LabReportController::class, 'index'])->name('lab-reports.index');
+    Route::get('/lab-reports/items/{labOrderItem}/internal', [LabReportController::class, 'createInternal'])->name('lab-reports.create-internal');
+    Route::post('/lab-reports/items/{labOrderItem}/internal', [LabReportController::class, 'storeInternal'])->name('lab-reports.store-internal');
+    Route::get('/lab-reports/items/{labOrderItem}/external', [LabReportController::class, 'createExternal'])->name('lab-reports.create-external');
+    Route::post('/lab-reports/items/{labOrderItem}/external', [LabReportController::class, 'storeExternal'])->name('lab-reports.store-external');
+    Route::get('/lab-reports/{labReport}', [LabReportController::class, 'show'])->name('lab-reports.show');
+    Route::post('/lab-reports/{labReport}/review', [LabReportController::class, 'review'])->name('lab-reports.review');
+    Route::get('/lab-reports/{labReport}/stream', [LabReportController::class, 'stream'])->name('lab-reports.stream');
+    Route::get('/lab-reports/{labReport}/download', [LabReportController::class, 'download'])->name('lab-reports.download');
+    Route::get('/lab-reports/{labReport}/print', [LabReportController::class, 'printReport'])->name('lab-reports.print');
 
     // Diagnostic Laboratory Test Catalog (Configurable Test Master)
     Route::get('/lab-catalog', [LabTestCatalogController::class, 'index'])->name('lab-catalog.index');

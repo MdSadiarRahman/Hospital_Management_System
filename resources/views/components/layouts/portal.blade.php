@@ -80,6 +80,7 @@
             ['title' => 'Departments & Wards', 'icon' => 'diagram-3', 'slug' => 'departments', 'url' => '#'],
             ['title' => '10 Beds & Tariffs', 'icon' => 'door-open', 'slug' => 'beds', 'url' => '#'],
             ['title' => 'Diagnostic Lab Orders', 'icon' => 'clipboard2-pulse', 'slug' => 'lab-orders', 'url' => route('portal.lab-orders.index')],
+            ['title' => 'Diagnostic Test Reports', 'icon' => 'file-earmark-medical', 'slug' => 'lab-reports', 'url' => route('portal.lab-reports.index')],
             ['title' => 'Lab Test Catalog', 'icon' => 'card-checklist', 'slug' => 'lab-catalog', 'url' => route('portal.lab-catalog.index')],
             ['title' => 'Billing & Revenue', 'icon' => 'cash-stack', 'slug' => 'financials', 'url' => '#'],
             ['title' => 'Audit & Security Logs', 'icon' => 'shield-check', 'slug' => 'audit', 'url' => '#'],
@@ -124,8 +125,8 @@
         'lab' => [
             ['title' => 'Laboratory Worklist', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/lab')],
             ['title' => 'Diagnostic Orders', 'icon' => 'clipboard2-pulse', 'slug' => 'lab-orders', 'url' => route('portal.lab-orders.index')],
+            ['title' => 'Diagnostic Test Reports', 'icon' => 'file-earmark-medical', 'slug' => 'lab-reports', 'url' => route('portal.lab-reports.index')],
             ['title' => 'Barcode Sample Collection', 'icon' => 'upc-scan', 'slug' => 'samples', 'url' => '#'],
-            ['title' => 'Upload Secure PDF Reports', 'icon' => 'file-earmark-pdf', 'slug' => 'reports', 'url' => '#'],
             ['title' => 'Partner Laboratories', 'icon' => 'buildings', 'slug' => 'partners', 'url' => '#'],
             ['title' => 'Lab Test Catalog', 'icon' => 'card-checklist', 'slug' => 'lab-catalog', 'url' => route('portal.lab-catalog.index')],
         ],

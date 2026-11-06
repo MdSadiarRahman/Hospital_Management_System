@@ -416,9 +416,24 @@ class DoctorDashboardService
 
             $lockedReport->update([
                 'findings_summary' => $updatedSummary,
+                'report_status' => 'reviewed',
                 'review_status' => 'reviewed',
                 'reviewed_by' => $doctor->id,
                 'reviewed_at' => now(),
+                'doctor_notes' => $clinicalNotes,
+            ]);
+
+            \App\Models\LabReportHistory::create([
+                'lab_report_id' => $lockedReport->id,
+                'action' => 'doctor_reviewed',
+                'changed_by' => $doctor->id,
+                'previous_status' => 'received',
+                'new_status' => 'reviewed',
+                'notes' => "Medically reviewed by Dr. {$doctor->name}." . ($clinicalNotes ? " Remarks: {$clinicalNotes}" : ''),
+                'metadata' => [
+                    'doctor_name' => $doctor->name,
+                    'doctor_notes' => $clinicalNotes,
+                ],
             ]);
 
             // Audit Trail

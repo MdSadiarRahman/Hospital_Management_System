@@ -222,14 +222,34 @@
                                         {{ $item->formatted_charge }}
                                     </td>
 
-                                    <!-- Update Status Action -->
+                                    <!-- Actions & Report -->
                                     <td class="text-end pe-4">
-                                        @if($order->is_editable && $item->status !== 'completed' && $item->status !== 'cancelled')
-                                            <button type="button" class="btn btn-sm btn-outline-teal" 
-                                                data-bs-toggle="modal" 
-                                                data-bs-target="#updateItemStatusModal_{{ $item->id }}">
-                                                <i class="bi bi-pencil-square"></i> Update
-                                            </button>
+                                        <div class="d-flex align-items-center justify-content-end gap-1">
+                                            @if($item->report)
+                                                <a href="{{ route('portal.lab-reports.show', $item->report->id) }}" class="btn btn-sm btn-outline-primary" title="View Diagnostic Report">
+                                                    <i class="bi bi-file-earmark-medical me-1"></i> Report
+                                                </a>
+                                            @else
+                                                @if($order->source === 'external')
+                                                    <a href="{{ route('portal.lab-reports.create-external', $item->id) }}" class="btn btn-sm btn-outline-warning" title="Upload External Report">
+                                                        <i class="bi bi-cloud-arrow-up me-1"></i> Upload
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('portal.lab-reports.create-internal', $item->id) }}" class="btn btn-sm btn-outline-teal" title="Record Internal Results">
+                                                        <i class="bi bi-pencil-square me-1"></i> Results
+                                                    </a>
+                                                @endif
+                                            @endif
+
+                                            @if($order->is_editable && $item->status !== 'completed' && $item->status !== 'cancelled')
+                                                <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#updateItemStatusModal_{{ $item->id }}"
+                                                    title="Change Test Status">
+                                                    <i class="bi bi-arrow-repeat"></i>
+                                                </button>
+                                            @endif
+                                        </div>
 
                                             <!-- Modal for updating individual test item status -->
                                             <div class="modal fade" id="updateItemStatusModal_{{ $item->id }}" tabindex="-1" aria-hidden="true">

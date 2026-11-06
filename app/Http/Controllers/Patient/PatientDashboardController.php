@@ -181,6 +181,11 @@ class PatientDashboardController extends Controller
         }
 
         // Check if physical report PDF exists in secure non-public storage
+        if ($report->file_path && \Illuminate\Support\Facades\Storage::disk('secure_reports')->exists($report->file_path)) {
+            $fileName = 'MeghnaClinic_' . ($report->orderItem->test_name ?? 'LabReport') . '_' . $report->id . '.pdf';
+            return response()->download(\Illuminate\Support\Facades\Storage::disk('secure_reports')->path($report->file_path), $fileName);
+        }
+
         $filePath = storage_path('app/secure_medical_reports/' . $report->file_path);
         if ($report->file_path && file_exists($filePath)) {
             $fileName = 'MeghnaClinic_' . ($report->orderItem->test_name ?? 'LabReport') . '_' . $report->id . '.pdf';

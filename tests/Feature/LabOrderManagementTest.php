@@ -133,9 +133,33 @@ class LabOrderManagementTest extends TestCase
      */
     public function test_doctor_can_create_lab_order_with_multiple_tests(): void
     {
+        $testPatient = Patient::create([
+            'patient_code' => 'MCNH-' . date('Y') . '-' . rand(100000, 999999),
+            'name' => 'Specific Order Test Patient ' . rand(100, 999),
+            'phone' => '01711' . rand(100000, 999999),
+            'gender' => 'female',
+            'date_of_birth' => '1995-05-15',
+            'is_verified' => true,
+        ]);
+
+        $testVisit = Visit::create([
+            'visit_number' => 'VST-' . date('Ymd') . '-' . rand(1000, 9999),
+            'patient_id' => $testPatient->id,
+            'visit_type' => 'regular',
+            'visit_date' => now(),
+            'status' => 'in_consultation',
+        ]);
+
+        $testConsultation = Consultation::create([
+            'visit_id' => $testVisit->id,
+            'doctor_id' => $this->doctorUser->id,
+            'status' => 'finalized',
+            'chief_complaints' => 'Fever and malaise for 4 days',
+        ]);
+
         $payload = [
-            'patient_id' => $this->patient->id,
-            'consultation_id' => $this->consultation->id,
+            'patient_id' => $testPatient->id,
+            'consultation_id' => $testConsultation->id,
             'priority' => 'urgent',
             'source' => 'internal',
             'notes' => 'Patient has persistent high-grade fever, investigate leukocytosis and UTI.',
@@ -148,13 +172,14 @@ class LabOrderManagementTest extends TestCase
         $response = $this->actingAs($this->doctorUser)
             ->post(route('portal.lab-orders.store'), $payload);
 
+        $response->assertSessionHasNoErrors();
         $response->assertRedirect();
         
-        $order = LabOrder::where('patient_id', $this->patient->id)->latest('id')->first();
+        $order = LabOrder::where('patient_id', $testPatient->id)->latest('id')->first();
         $this->assertNotNull($order);
         $this->assertStringStartsWith('LAB-', $order->order_number);
         $this->assertEquals($this->doctorUser->id, $order->doctor_id);
-        $this->assertEquals($this->consultation->id, $order->consultation_id);
+        $this->assertEquals($testConsultation->id, $order->consultation_id);
         $this->assertEquals('urgent', $order->priority);
         $this->assertEquals('internal', $order->source);
         $this->assertEquals('pending', $order->status);
@@ -224,6 +249,7 @@ class LabOrderManagementTest extends TestCase
         $response = $this->actingAs($this->labStaffUser)
             ->post(route('portal.lab-orders.samples.store', $order->id), $samplePayload);
 
+        $response->assertSessionHasNoErrors();
         $response->assertRedirect();
 
         // Sample created with traceability
@@ -345,6 +371,7 @@ class LabOrderManagementTest extends TestCase
                 'notes' => 'Dispatched to reference lab via courier service.',
             ]);
 
+        $response->assertSessionHasNoErrors();
         $response->assertRedirect();
         $order->refresh();
 

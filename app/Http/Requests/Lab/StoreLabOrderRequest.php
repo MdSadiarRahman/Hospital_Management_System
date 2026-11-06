@@ -17,6 +17,44 @@ class StoreLabOrderRequest extends FormRequest
     }
 
     /**
+     * Prepare inputs for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $mergeData = [];
+
+        // Support both simple array of test IDs [1, 2] and nested array [['lab_test_id' => 1]]
+        if ($this->has('tests') && is_array($this->input('tests'))) {
+            $normalized = [];
+            foreach ($this->input('tests') as $item) {
+                if (is_numeric($item)) {
+                    $normalized[] = [
+                        'lab_test_id' => (int) $item,
+                        'instructions' => null,
+                    ];
+                } elseif (is_array($item) && isset($item['lab_test_id'])) {
+                    $normalized[] = [
+                        'lab_test_id' => (int) $item['lab_test_id'],
+                        'instructions' => $item['instructions'] ?? null,
+                    ];
+                }
+            }
+            if (!empty($normalized)) {
+                $mergeData['tests'] = $normalized;
+            }
+        }
+
+        // Support notes alias for clinical_indication
+        if ($this->filled('notes') && !$this->filled('clinical_indication')) {
+            $mergeData['clinical_indication'] = $this->input('notes');
+        }
+
+        if (!empty($mergeData)) {
+            $this->merge($mergeData);
+        }
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
