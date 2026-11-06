@@ -11,6 +11,7 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\Staff\AdmissionController;
 use App\Http\Controllers\Staff\AppointmentController;
 use App\Http\Controllers\Staff\BedController;
+use App\Http\Controllers\Staff\BillingController;
 use App\Http\Controllers\Staff\ConsultationController;
 use App\Http\Controllers\Staff\DepartmentController;
 use App\Http\Controllers\Staff\DoctorDashboardController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\Staff\LabTestCatalogController;
 use App\Http\Controllers\Staff\NurseDashboardController;
 use App\Http\Controllers\Staff\OperationController;
 use App\Http\Controllers\Staff\ReferralController;
+use App\Http\Controllers\Staff\ServiceCatalogController;
 use App\Http\Controllers\Staff\PatientLinkingController;
 use App\Http\Controllers\Staff\PatientMasterController;
 use App\Http\Controllers\Staff\PrescriptionController;
@@ -201,10 +203,24 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
         return view('previews.reception');
     })->middleware('role:receptionist')->name('reception');
 
-    // Billing & Cashier Desk
-    Route::get('/billing', function () {
-        return view('previews.billing');
-    })->middleware('role:billing_staff')->name('billing');
+    // Billing & Cashier Desk / Service Catalog Management
+    Route::middleware('role:billing_staff,receptionist,administrator,super_admin,doctor')->group(function () {
+        Route::get('/billing', [BillingController::class, 'index'])->name('billing');
+        Route::get('/billing-invoices', [BillingController::class, 'index'])->name('billing.index');
+        Route::get('/billing/create', [BillingController::class, 'create'])->name('billing.create');
+        Route::post('/billing', [BillingController::class, 'store'])->name('billing.store');
+        Route::get('/billing/{bill}', [BillingController::class, 'show'])->name('billing.show');
+        Route::post('/billing/{bill}/items', [BillingController::class, 'addItem'])->name('billing.items.add');
+        Route::delete('/billing/{bill}/items/{item}', [BillingController::class, 'removeItem'])->name('billing.items.remove');
+        Route::post('/billing/{bill}/discount', [BillingController::class, 'applyDiscount'])->name('billing.discount.apply');
+        Route::get('/billing/{bill}/print', [BillingController::class, 'printInvoice'])->name('billing.print');
+
+        // Service Catalog & Pricing Master
+        Route::get('/service-catalog', [ServiceCatalogController::class, 'index'])->name('services.index');
+        Route::post('/service-catalog', [ServiceCatalogController::class, 'store'])->name('services.store');
+        Route::put('/service-catalog/{service}', [ServiceCatalogController::class, 'update'])->name('services.update');
+        Route::post('/service-catalog/{service}/toggle', [ServiceCatalogController::class, 'toggle'])->name('services.toggle');
+    });
 
     // Diagnostic Laboratory Orders & Workbench
     Route::get('/lab', [LabOrderController::class, 'index'])->name('lab');
