@@ -17,6 +17,7 @@ use App\Http\Controllers\Staff\DoctorDashboardController;
 use App\Http\Controllers\Staff\DoctorScheduleController;
 use App\Http\Controllers\Staff\PatientLinkingController;
 use App\Http\Controllers\Staff\PatientMasterController;
+use App\Http\Controllers\Staff\PrescriptionController;
 use App\Http\Controllers\Staff\StaffController;
 use App\Http\Controllers\Staff\VisitController;
 use Illuminate\Support\Facades\Route;
@@ -136,6 +137,17 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::post('/consultations/{consultation}/finalize', [ConsultationController::class, 'finalize'])->name('consultations.finalize');
     Route::get('/consultations/{consultation}/print', [ConsultationController::class, 'print'])->name('consultations.print');
     Route::get('/consultations/patient/{patient}/history', [ConsultationController::class, 'patientHistory'])->name('consultations.patient-history');
+
+    // Doctor Prescriptions & Regimen Management
+    Route::get('/prescriptions', [PrescriptionController::class, 'index'])->name('prescriptions.index');
+    Route::get('/prescriptions/create/{consultation}', [PrescriptionController::class, 'create'])->name('prescriptions.create');
+    Route::post('/prescriptions', [PrescriptionController::class, 'store'])->name('prescriptions.store');
+    Route::get('/prescriptions/{prescription}', [PrescriptionController::class, 'show'])->name('prescriptions.show');
+    Route::get('/prescriptions/{prescription}/edit', [PrescriptionController::class, 'edit'])->name('prescriptions.edit');
+    Route::put('/prescriptions/{prescription}', [PrescriptionController::class, 'update'])->name('prescriptions.update');
+    Route::post('/prescriptions/{prescription}/approve', [PrescriptionController::class, 'approve'])->name('prescriptions.approve');
+    Route::get('/prescriptions/{prescription}/print', [PrescriptionController::class, 'print'])->name('prescriptions.print');
+    Route::get('/prescriptions/patient/{patient}/history', [PrescriptionController::class, 'patientHistory'])->name('prescriptions.patient-history');
 
     // Nurse Ward Station
     Route::get('/nurse', function () {

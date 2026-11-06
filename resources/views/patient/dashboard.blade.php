@@ -387,6 +387,7 @@
                                         <small class="text-teal fw-semibold">
                                             {{ $rx->consultation?->doctor?->staffProfile?->specialization ?? 'General Healthcare & Surgery' }}
                                         </small>
+                                        <div class="small font-monospace text-teal fw-semibold mt-1">{{ $rx->prescription_number }}</div>
                                     </div>
                                     <span class="badge bg-teal-subtle text-teal border border-teal-subtle px-2 py-1">
                                         <i class="bi bi-calendar2-check me-1"></i> {{ $rx->created_at->format('d M Y') }}

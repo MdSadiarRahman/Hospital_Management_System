@@ -67,8 +67,12 @@ class ConsultationService
                 }
 
                 $prescription = $consultation->prescription()->create([
+                    'prescription_number' => Prescription::generatePrescriptionNumber(),
                     'advice' => $advice ?: 'Rest and maintain hydration.',
                     'follow_up_date' => !empty($data['follow_up_date']) ? Carbon::parse($data['follow_up_date'])->toDateString() : null,
+                    'status' => $isFinalizing ? 'approved' : 'draft',
+                    'approved_at' => $isFinalizing ? now() : null,
+                    'approved_by' => $isFinalizing ? $doctor->id : null,
                 ]);
 
                 if ($hasMeds) {
@@ -218,14 +222,24 @@ class ConsultationService
                 }
 
                 $prescription = $consultation->prescription ?: $consultation->prescription()->create([
+                    'prescription_number' => Prescription::generatePrescriptionNumber(),
                     'advice' => $advice ?: 'Rest and maintain hydration.',
                     'follow_up_date' => !empty($data['follow_up_date']) ? Carbon::parse($data['follow_up_date'])->toDateString() : null,
+                    'status' => 'draft',
                 ]);
 
-                $prescription->update([
-                    'advice' => $advice ?: ($prescription->advice ?: 'Rest and maintain hydration.'),
-                    'follow_up_date' => !empty($data['follow_up_date']) ? Carbon::parse($data['follow_up_date'])->toDateString() : $prescription->follow_up_date,
-                ]);
+                if (empty($prescription->prescription_number)) {
+                    $prescription->prescription_number = Prescription::generatePrescriptionNumber();
+                }
+
+                $prescription->advice = $advice ?: ($prescription->advice ?: 'Rest and maintain hydration.');
+                $prescription->follow_up_date = !empty($data['follow_up_date']) ? Carbon::parse($data['follow_up_date'])->toDateString() : $prescription->follow_up_date;
+                if ($isTransitioningToFinalized) {
+                    $prescription->status = 'approved';
+                    $prescription->approved_at = now();
+                    $prescription->approved_by = $actor->id;
+                }
+                $prescription->save();
 
                 if (isset($data['medications']) && is_array($data['medications'])) {
                     $prescription->items()->delete();
@@ -336,6 +350,16 @@ class ConsultationService
                 'status' => 'finalized',
                 'finalized_at' => now(),
             ]);
+
+            if ($consultation->prescription) {
+                if (empty($consultation->prescription->prescription_number)) {
+                    $consultation->prescription->prescription_number = Prescription::generatePrescriptionNumber();
+                }
+                $consultation->prescription->status = 'approved';
+                $consultation->prescription->approved_at = now();
+                $consultation->prescription->approved_by = $actor->id;
+                $consultation->prescription->save();
+            }
 
             $visit = $consultation->visit;
             if ($visit && $visit->status !== 'admitted') {

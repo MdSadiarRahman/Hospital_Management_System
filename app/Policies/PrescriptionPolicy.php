@@ -12,27 +12,31 @@ class PrescriptionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermission('prescriptions.view');
+        return $user->hasPermission('prescriptions.view') || $user->hasRole(['doctor', 'super_admin', 'administrator', 'nurse']);
     }
 
     /**
      * Determine whether the user can view the specific prescription.
+     * Rule: Patient can view only authorized (approved) prescriptions belonging to them.
      */
     public function view(User $user, Prescription $prescription): bool
     {
         if ($user->user_type === 'patient') {
-            return $user->patient && $prescription->patient_id === $user->patient->id;
+            return $user->patient &&
+                   $prescription->patient_id === $user->patient->id &&
+                   $prescription->is_approved;
         }
 
-        return $user->hasPermission('prescriptions.view');
+        return $user->hasPermission('prescriptions.view') || $user->hasRole(['doctor', 'super_admin', 'administrator', 'nurse']);
     }
 
     /**
      * Determine whether the doctor can create a prescription.
+     * Rule: Only authorized doctors or administrators can create.
      */
     public function create(User $user): bool
     {
-        return $user->hasPermission('prescriptions.create');
+        return $user->hasPermission('prescriptions.create') || $user->hasRole(['doctor', 'super_admin', 'administrator']);
     }
 
     /**
@@ -40,23 +44,28 @@ class PrescriptionPolicy
      */
     public function update(User $user, Prescription $prescription): bool
     {
-        return $user->hasPermission('prescriptions.update');
-    }
+        if ($user->hasRole(['super_admin', 'administrator'])) {
+            return true;
+        }
 
-    /**
-     * Determine whether the user can delete a prescription.
-     */
-    public function delete(User $user, Prescription $prescription): bool
-    {
-        return $user->hasPermission('prescriptions.delete');
+        if ($prescription->consultation?->doctor_id === $user->id) {
+            return $user->hasPermission('prescriptions.update') || $user->hasRole('doctor');
+        }
+
+        return false;
     }
 
     /**
      * Determine whether the doctor can sign/approve a prescription.
+     * Rule: Only authorized doctors can approve prescriptions.
      */
     public function approve(User $user, Prescription $prescription): bool
     {
-        return $user->hasPermission('prescriptions.approve');
+        if ($user->hasRole(['super_admin', 'administrator'])) {
+            return true;
+        }
+
+        return $prescription->consultation?->doctor_id === $user->id && $user->hasRole('doctor');
     }
 
     /**
@@ -65,9 +74,28 @@ class PrescriptionPolicy
     public function print(User $user, Prescription $prescription): bool
     {
         if ($user->user_type === 'patient') {
-            return $user->patient && $prescription->patient_id === $user->patient->id;
+            return $user->patient &&
+                   $prescription->patient_id === $user->patient->id &&
+                   $prescription->is_approved;
         }
 
-        return $user->hasPermission('prescriptions.print');
+        return $user->hasPermission('prescriptions.print') || $user->hasRole(['doctor', 'super_admin', 'administrator', 'nurse', 'receptionist']);
+    }
+
+    /**
+     * Determine whether the user can delete a prescription.
+     * Legal requirement: Approved prescriptions cannot be deleted.
+     */
+    public function delete(User $user, Prescription $prescription): bool
+    {
+        if ($prescription->is_approved) {
+            return false;
+        }
+
+        if ($user->hasRole('super_admin')) {
+            return true;
+        }
+
+        return $prescription->consultation?->doctor_id === $user->id && $user->hasRole('doctor');
     }
 }

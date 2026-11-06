@@ -39,8 +39,8 @@
                     </small>
                 </div>
                 <div class="text-end">
-                    <span class="badge bg-teal-subtle text-teal border px-3 py-1.5 fw-bold text-uppercase" style="font-size: 0.8rem;">
-                        Official Digital Rx
+                    <span class="badge bg-teal-subtle text-teal border px-3 py-1.5 fw-bold font-monospace" style="font-size: 0.85rem;">
+                        {{ $prescription->prescription_number ?? 'Official Digital Rx' }}
                     </span>
                     <div class="text-muted mt-2" style="font-size: 0.8rem;">
                         Date: <strong>{{ $prescription->created_at->format('d M Y') }}</strong>

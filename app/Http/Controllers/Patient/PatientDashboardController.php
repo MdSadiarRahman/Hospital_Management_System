@@ -66,8 +66,9 @@ class PatientDashboardController extends Controller
                 ->take(5)
                 ->get();
 
-            // 3. Available Prescriptions
+            // 3. Available Authorized Prescriptions Only
             $prescriptions = Prescription::whereHas('consultation.visit', fn ($q) => $q->where('patient_id', $patient->id))
+                ->where('status', 'approved')
                 ->with(['consultation.doctor.staffProfile.department', 'consultation.diagnoses', 'items'])
                 ->latest()
                 ->take(6)
@@ -154,8 +155,8 @@ class PatientDashboardController extends Controller
 
         $patient = Auth::user()->patient;
 
-        if (!$patient || $prescription->consultation->visit->patient_id !== $patient->id) {
-            abort(403, 'Unauthorized access: You can only view your own prescriptions.');
+        if (!$patient || $prescription->consultation->visit->patient_id !== $patient->id || !$prescription->is_approved) {
+            abort(403, 'Unauthorized access: You can only view your approved and authorized prescriptions.');
         }
 
         return view('patient.prescription-modal', compact('prescription', 'patient'));
