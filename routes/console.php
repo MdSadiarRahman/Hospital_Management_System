@@ -43,23 +43,67 @@ Artisan::command('export:gh-pages', function () {
         $this->info('Copied build assets to dist/build.');
     }
 
-    // 2. Helper to clean asset paths for GitHub Pages relative URL support
-    $fixAssetPaths = function (string $html) {
-        // Replace /build/ with ./build/
+    // 2. Comprehensive HTML Cleaner for GitHub Pages (Relative Assets & CDN Fallback)
+    $cleanHtml = function (string $html) {
+        // Strip any absolute host before /build/ and make it ./build/
+        $html = preg_replace('/https?:\/\/[^\/"\']+\/build\//', './build/', $html);
         $html = str_replace(['href="/build/', 'src="/build/'], ['href="./build/', 'src="./build/'], $html);
         $html = str_replace(['href="http://localhost:5173/', 'src="http://localhost:5173/'], ['href="./build/', 'src="./build/'], $html);
+
+        // Inject Bootstrap 5 & Bootstrap Icons CDN so styles and icons 100% load
+        $cdnStyles = '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">' . "\n"
+                   . '<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">' . "\n"
+                   . '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n"
+                   . '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n"
+                   . '<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">' . "\n";
+        $html = str_replace('</head>', $cdnStyles . '</head>', $html);
+
+        // Inject modern responsive style overrides for Bento cards and brand colors
+        $customStyles = '<style>' . "\n"
+                      . ':root { --hms-navy: #123B5D; --hms-teal: #087F8C; --hms-bg: #F4F7FA; }' . "\n"
+                      . 'body { font-family: "Inter", "Hind Siliguri", sans-serif; background-color: var(--hms-bg); }' . "\n"
+                      . '.text-navy { color: var(--hms-navy) !important; }' . "\n"
+                      . '.text-teal { color: var(--hms-teal) !important; }' . "\n"
+                      . '.bg-teal { background-color: var(--hms-teal) !important; }' . "\n"
+                      . '.btn-hms-primary { background-color: var(--hms-navy); color: #fff; border: none; }' . "\n"
+                      . '.btn-hms-primary:hover { background-color: #0e2d47; color: #fff; }' . "\n"
+                      . '.btn-hms-teal { background-color: var(--hms-teal); color: #fff; border: none; }' . "\n"
+                      . '.btn-hms-teal:hover { background-color: #066974; color: #fff; }' . "\n"
+                      . '.hms-card { border-radius: 12px; transition: transform 0.2s ease, box-shadow 0.2s ease; }' . "\n"
+                      . '.hover-lift:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important; }' . "\n"
+                      . '</style>' . "\n";
+        $html = str_replace('</head>', $customStyles . '</head>', $html);
+
+        // Replace route URLs
+        $routeMap = [
+            'previews/public' => './public-preview.html',
+            'previews/admin' => './admin.html',
+            'previews/doctor' => './doctor.html',
+            'previews/nurse' => './nurse.html',
+            'previews/reception' => './reception.html',
+            'previews/billing' => './billing.html',
+            'previews/lab' => './lab.html',
+            'previews/patient' => './patient.html',
+            'previews' => './index.html',
+        ];
+
+        foreach ($routeMap as $path => $dest) {
+            $html = preg_replace('/https?:\/\/[^\/"\']+\/' . preg_quote($path, '/') . '(?=[\/"\'\s#?]|$)/', $dest, $html);
+            $html = preg_replace('/([\'"])\/' . preg_quote($path, '/') . '(?=[\/"\'\s#?]|$)/', '$1' . $dest, $html);
+        }
+
+        // Clean any leftover localhost references
+        $html = str_replace('http://127.0.0.1:8000./', './', $html);
+        $html = str_replace('http://localhost:8000./', './', $html);
+        $html = str_replace('http://127.0.0.1:8000', '.', $html);
+        $html = str_replace('http://localhost', '.', $html);
+
         return $html;
     };
 
     // 3. Render previews.index as index.html
     $indexHtml = view('previews.index')->render();
-    $indexHtml = $fixAssetPaths($indexHtml);
-    // Replace preview URLs with static html links
-    $indexHtml = str_replace(
-        ['/previews/public', '/previews/admin', '/previews/doctor', '/previews/nurse', '/previews/reception', '/previews/billing', '/previews/lab', '/previews/patient'],
-        ['./public-preview.html', './admin.html', './doctor.html', './nurse.html', './reception.html', './billing.html', './lab.html', './patient.html'],
-        $indexHtml
-    );
+    $indexHtml = $cleanHtml($indexHtml);
     file_put_contents($distPath . DIRECTORY_SEPARATOR . 'index.html', $indexHtml);
     $this->info('Rendered index.html');
 
@@ -76,14 +120,7 @@ Artisan::command('export:gh-pages', function () {
 
     foreach ($views as $fileName => $viewName) {
         $html = view($viewName)->render();
-        $html = $fixAssetPaths($html);
-        // Replace links to back to index
-        $html = str_replace(['href="/previews"', 'href="{{ route(\'previews.index\') }}"'], 'href="./index.html"', $html);
-        $html = str_replace(
-            ['/previews/admin', '/previews/doctor', '/previews/nurse', '/previews/reception', '/previews/billing', '/previews/lab', '/previews/patient', '/previews/public'],
-            ['./admin.html', './doctor.html', './nurse.html', './reception.html', './billing.html', './lab.html', './patient.html', './public-preview.html'],
-            $html
-        );
+        $html = $cleanHtml($html);
         file_put_contents($distPath . DIRECTORY_SEPARATOR . "{$fileName}.html", $html);
         $this->info("Rendered {$fileName}.html");
     }
@@ -172,11 +209,22 @@ Artisan::command('export:gh-pages', function () {
 
     try {
         $publicHtml = view('public.index', $clinicSettings)->render();
-        $publicHtml = $fixAssetPaths($publicHtml);
+        $publicHtml = $cleanHtml($publicHtml);
+        // Map public navigation buttons
+        $publicHtml = str_replace(
+            ['href="/patient/login"', 'href="/portal/login"', 'href="/login"'],
+            ['href="./patient.html"', 'href="./admin.html"', 'href="./admin.html"'],
+            $publicHtml
+        );
+        $publicHtml = preg_replace('/https?:\/\/[^\/"\']+\/patient\/login/', './patient.html', $publicHtml);
+        $publicHtml = preg_replace('/https?:\/\/[^\/"\']+\/portal\/login/', './admin.html', $publicHtml);
+        $publicHtml = preg_replace('/https?:\/\/[^\/"\']+\/login/', './admin.html', $publicHtml);
+        $publicHtml = preg_replace('/https?:\/\/[^\/"\']+\/(#\w+)/', '$1', $publicHtml);
+
         // Add navigation links back to previews
-        $banner = '<div style="background:#087F8C;color:#fff;text-align:center;padding:8px 12px;font-size:14px;position:sticky;top:0;z-index:9999;">'
-            . '<span>🏥 Meghna Clinic Live Preview &bull; </span>'
-            . '<a href="./index.html" style="color:#fff;font-weight:bold;text-decoration:underline;margin-left:8px;">Switch to Portals Showcase (Admin / Doctor / Nurse / Patient)</a>'
+        $banner = '<div style="background:#087F8C;color:#fff;text-align:center;padding:10px 14px;font-size:14px;position:sticky;top:0;z-index:9999;box-shadow:0 2px 10px rgba(0,0,0,0.15);">'
+            . '<span>🏥 <strong>Meghna Clinic Live Showcase</strong> &bull; </span>'
+            . '<a href="./index.html" style="color:#fff;font-weight:bold;text-decoration:underline;margin-left:8px;">Switch to Portals Hub (Admin, Doctor, Nurse, Billing, Patient) &rarr;</a>'
             . '</div>';
         $publicHtml = preg_replace('/<body([^>]*)>/i', '<body$1>' . $banner, $publicHtml, 1);
         file_put_contents($distPath . DIRECTORY_SEPARATOR . 'public-preview.html', $publicHtml);
