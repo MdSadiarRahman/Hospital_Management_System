@@ -84,6 +84,7 @@
             ['title' => 'Operation Theatre (OT)', 'icon' => 'scissors', 'slug' => 'operations', 'url' => route('portal.operations.index')],
             ['title' => 'Emergency Referrals', 'icon' => 'box-arrow-up-right', 'slug' => 'referrals', 'url' => route('portal.referrals.index')],
             ['title' => 'Lab Test Catalog', 'icon' => 'card-checklist', 'slug' => 'lab-catalog', 'url' => route('portal.lab-catalog.index')],
+            ['title' => 'Discharge Clearances', 'icon' => 'box-arrow-right', 'slug' => 'discharges', 'url' => route('portal.discharges.index')],
             ['title' => 'Billing & Revenue', 'icon' => 'cash-stack', 'slug' => 'financials', 'url' => route('portal.billing.index')],
             ['title' => 'Service Catalog', 'icon' => 'tags', 'slug' => 'services', 'url' => route('portal.services.index')],
             ['title' => 'Audit & Security Logs', 'icon' => 'shield-check', 'slug' => 'audit', 'url' => '#'],
@@ -100,6 +101,7 @@
             ['title' => 'Diagnostic Lab Orders', 'icon' => 'clipboard2-pulse', 'slug' => 'lab-orders', 'url' => route('portal.lab-orders.index')],
             ['title' => 'Operation Theatre (OT)', 'icon' => 'scissors', 'slug' => 'operations', 'url' => route('portal.operations.index')],
             ['title' => 'Emergency Referrals', 'icon' => 'box-arrow-up-right', 'slug' => 'referrals', 'url' => route('portal.referrals.index')],
+            ['title' => 'Discharge Clearances', 'icon' => 'box-arrow-right', 'slug' => 'discharges', 'url' => route('portal.discharges.index')],
         ],
         'nurse' => [
             ['title' => 'Nursing Station', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.nurse')],
@@ -110,6 +112,7 @@
             ['title' => 'Medication Records (MAR)', 'icon' => 'capsule', 'slug' => 'mar', 'url' => route('portal.nurse.mar')],
             ['title' => 'Operation Theatre (OT)', 'icon' => 'scissors', 'slug' => 'operations', 'url' => route('portal.operations.index')],
             ['title' => 'Emergency Referrals', 'icon' => 'box-arrow-up-right', 'slug' => 'referrals', 'url' => route('portal.referrals.index')],
+            ['title' => 'Discharge Station', 'icon' => 'box-arrow-right', 'slug' => 'discharges', 'url' => route('portal.discharges.index')],
             ['title' => 'Shift & Duty Handover', 'icon' => 'journal-medical', 'slug' => 'shift', 'url' => route('portal.nurse') . '#shift-section'],
             ['title' => 'Bed Transfers & Ledger', 'icon' => 'arrow-left-right', 'slug' => 'transfers', 'url' => route('portal.beds.transfers')],
         ],

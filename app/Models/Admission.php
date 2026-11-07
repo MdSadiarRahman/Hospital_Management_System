@@ -27,9 +27,17 @@ class Admission extends Model
         'clinical_clearance',
         'clinical_clearance_at',
         'clinical_clearance_by',
+        'nursing_clearance',
+        'nursing_clearance_at',
+        'nursing_clearance_by',
+        'nursing_clearance_notes',
         'financial_clearance',
         'financial_clearance_at',
         'financial_clearance_by',
+        'financial_exception_allowed',
+        'financial_exception_reason',
+        'financial_exception_by',
+        'discharged_by',
         'status',
         'cancelled_by',
         'cancelled_at',
@@ -43,8 +51,11 @@ class Admission extends Model
             'discharge_date' => 'datetime',
             'clinical_clearance' => 'boolean',
             'clinical_clearance_at' => 'datetime',
+            'nursing_clearance' => 'boolean',
+            'nursing_clearance_at' => 'datetime',
             'financial_clearance' => 'boolean',
             'financial_clearance_at' => 'datetime',
+            'financial_exception_allowed' => 'boolean',
             'cancelled_at' => 'datetime',
         ];
     }
@@ -85,9 +96,29 @@ class Admission extends Model
         return $this->belongsTo(User::class, 'clinical_clearance_by');
     }
 
+    public function nursingClearanceBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'nursing_clearance_by');
+    }
+
     public function financialClearanceBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'financial_clearance_by');
+    }
+
+    public function financialExceptionBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'financial_exception_by');
+    }
+
+    public function dischargedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'discharged_by');
+    }
+
+    public function dischargeHistories(): HasMany
+    {
+        return $this->hasMany(DischargeHistory::class)->orderByDesc('created_at');
     }
 
     public function bedAssignments(): HasMany
@@ -219,6 +250,11 @@ class Admission extends Model
     public function getCurrentBedAttribute(): ?Bed
     {
         return $this->currentBedAssignment?->bed;
+    }
+
+    public function isReadyForDischarge(): bool
+    {
+        return $this->clinical_clearance && $this->financial_clearance && $this->status === 'admitted';
     }
 
     public function getStayDurationAttribute(): string

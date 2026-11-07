@@ -14,6 +14,7 @@ use App\Http\Controllers\Staff\BedController;
 use App\Http\Controllers\Staff\BillingController;
 use App\Http\Controllers\Staff\ConsultationController;
 use App\Http\Controllers\Staff\DepartmentController;
+use App\Http\Controllers\Staff\DischargeController;
 use App\Http\Controllers\Staff\DoctorDashboardController;
 use App\Http\Controllers\Staff\DoctorScheduleController;
 use App\Http\Controllers\Staff\LabOrderController;
@@ -416,6 +417,18 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::post('/admissions/{admission}/cancel', [AdmissionController::class, 'cancel'])->name('admissions.cancel');
     Route::get('/api/admissions/available-beds', [AdmissionController::class, 'getAvailableBedsApi'])->name('api.admissions.available-beds');
     Route::get('/api/admissions/patient/{patient}/visits', [AdmissionController::class, 'getPatientVisitsApi'])->name('api.admissions.patient-visits');
+
+    // Inpatient Discharge Management & Dual Clearances (Clinical & Financial)
+    Route::middleware('role:doctor,nurse,billing_staff,administrator,super_admin')->group(function () {
+        Route::get('/discharges', [DischargeController::class, 'index'])->name('discharges.index');
+        Route::get('/discharges/{admission}', [DischargeController::class, 'show'])->name('discharges.show');
+        Route::post('/discharges/{admission}/clinical', [DischargeController::class, 'clinicalClearance'])->name('discharges.clinical');
+        Route::post('/discharges/{admission}/nursing', [DischargeController::class, 'nursingClearance'])->name('discharges.nursing');
+        Route::post('/discharges/{admission}/financial', [DischargeController::class, 'financialClearance'])->name('discharges.financial');
+        Route::post('/discharges/{admission}/approve', [DischargeController::class, 'approve'])->name('discharges.approve');
+        Route::post('/discharges/{admission}/revoke', [DischargeController::class, 'revoke'])->name('discharges.revoke');
+        Route::get('/discharges/{admission}/print', [DischargeController::class, 'printSummary'])->name('discharges.print');
+    });
 
     // Staff Management, Allocation, & 8-Hour Shift Scheduling
     Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
