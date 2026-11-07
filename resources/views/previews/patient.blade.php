@@ -5,10 +5,10 @@
         subtitle="Patient ID: MCNH-2026-0042 &bull; Dinajpur Sadar &bull; Verified Self-Care Health Portal"
     >
         <x-slot:actions>
-            <x-button variant="outline-teal" size="sm">
+            <x-button variant="outline-teal" size="sm" href="{{ route('patient.prescriptions') }}">
                 <i class="bi bi-clock-history me-1"></i> My Health History
             </x-button>
-            <x-button variant="teal" size="sm">
+            <x-button variant="teal" size="sm" href="{{ route('patient.appointments.create') }}">
                 <i class="bi bi-calendar2-plus me-1"></i> Book Next Appointment
             </x-button>
         </x-slot:actions>
@@ -121,7 +121,7 @@
                                 <td>30 Oct 2026</td>
                                 <td><x-badge status="success">Verified PDF</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="outline-teal" size="sm">
+                                    <x-button variant="outline-teal" size="sm" href="{{ route('patient.lab-reports') }}">
                                         <i class="bi bi-file-earmark-arrow-down"></i> PDF
                                     </x-button>
                                 </td>
@@ -134,7 +134,7 @@
                                 <td>15 Oct 2026</td>
                                 <td><x-badge status="success">Verified PDF</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="outline-teal" size="sm">
+                                    <x-button variant="outline-teal" size="sm" href="{{ route('patient.lab-reports') }}">
                                         <i class="bi bi-file-earmark-arrow-down"></i> PDF
                                     </x-button>
                                 </td>

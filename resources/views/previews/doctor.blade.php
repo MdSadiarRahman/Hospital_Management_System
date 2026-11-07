@@ -5,11 +5,11 @@
         subtitle="Department of Gynecology, Obstetrics & General Surgery &bull; Dinajpur Chamber & Inpatient Care"
     >
         <x-slot:actions>
-            <x-button variant="outline-teal" size="sm">
+            <x-button variant="outline-teal" size="sm" href="{{ route('portal.patients.index') }}">
                 <i class="bi bi-clock-history me-1"></i> Patient History Lookup
             </x-button>
-            <x-button variant="teal" size="sm">
-                <i class="bi bi-file-earmark-medical me-1"></i> Write New Prescription
+            <x-button variant="teal" size="sm" href="{{ route('portal.prescriptions.index') }}">
+                <i class="bi bi-file-earmark-medical me-1"></i> Prescriptions Desk
             </x-button>
         </x-slot:actions>
     </x-page-header>
@@ -94,7 +94,7 @@
                                 <td>Lower abdominal pain, 32w ANC</td>
                                 <td><x-badge status="teal">In Chamber</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="teal" size="sm">Examine</x-button>
+                                    <x-button variant="teal" size="sm" href="{{ route('portal.doctor') }}">Examine</x-button>
                                 </td>
                             </tr>
                             <tr>
@@ -107,7 +107,7 @@
                                 <td>Post-op stitch check, 14 days</td>
                                 <td><x-badge status="warning">Next Up</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="outline-teal" size="sm">Call Next</x-button>
+                                    <x-button variant="outline-teal" size="sm" href="{{ route('portal.doctor') }}">Call Next</x-button>
                                 </td>
                             </tr>
                             <tr>
@@ -120,7 +120,7 @@
                                 <td>Severe nausea, 1st Trimester</td>
                                 <td><x-badge status="info">Waiting</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="outline-secondary" size="sm">View Vitals</x-button>
+                                    <x-button variant="outline-secondary" size="sm" href="{{ route('portal.nurse.observations') }}">View Vitals</x-button>
                                 </td>
                             </tr>
                         </tbody>
@@ -146,8 +146,8 @@
                             Abdominal Hysterectomy &bull; Vitals stable (BP 120/80, Pulse 76, Temp 98.4°F) &bull; IV Cipro 500mg running.
                         </p>
                         <div class="d-flex gap-2">
-                            <x-button variant="outline-teal" size="sm">Prescription & MAR</x-button>
-                            <x-button variant="outline-success" size="sm">Clear Discharge</x-button>
+                            <x-button variant="outline-teal" size="sm" href="{{ route('portal.prescriptions.index') }}">Prescription & MAR</x-button>
+                            <x-button variant="outline-success" size="sm" href="{{ route('portal.discharges.index') }}">Clear Discharge</x-button>
                         </div>
                     </div>
 
@@ -160,8 +160,8 @@
                             Threatened premature labor &bull; Bed rest &bull; Fetal heart rate regular 144 bpm &bull; Vitals checked by Sister Shima.
                         </p>
                         <div class="d-flex gap-2">
-                            <x-button variant="outline-teal" size="sm">Order USG Test</x-button>
-                            <x-button variant="outline-secondary" size="sm">Round Notes</x-button>
+                            <x-button variant="outline-teal" size="sm" href="{{ route('portal.lab-orders.create') }}">Order USG Test</x-button>
+                            <x-button variant="outline-secondary" size="sm" href="{{ route('portal.nurse.observations') }}">Round Notes</x-button>
                         </div>
                     </div>
                 </div>

@@ -25,6 +25,17 @@
     }
 @endphp
 
+@if($attributes->has('href'))
+<a
+    {{ $attributes->merge(['class' => $btnClass . ($disabled ? ' disabled' : '')]) }}
+    @if($disabled) tabindex="-1" aria-disabled="true" @endif
+>
+    @if($icon)
+        <i class="bi bi-{{ $icon }}" aria-hidden="true"></i>
+    @endif
+    {{ $slot }}
+</a>
+@else
 <button
     type="{{ $type }}"
     {{ $disabled ? 'disabled' : '' }}
@@ -35,3 +46,4 @@
     @endif
     {{ $slot }}
 </button>
+@endif

@@ -5,10 +5,10 @@
         subtitle="Sister Shima Begum &bull; Morning Shift (08:00 AM – 04:00 PM) &bull; Ward Station Desk"
     >
         <x-slot:actions>
-            <x-button variant="outline-teal" size="sm">
+            <x-button variant="outline-teal" size="sm" href="{{ route('portal.nurse') }}#shift-section">
                 <i class="bi bi-journal-medical me-1"></i> Shift Handover Notes
             </x-button>
-            <x-button variant="success" size="sm">
+            <x-button variant="success" size="sm" href="{{ route('portal.nurse.observations') }}">
                 <i class="bi bi-heart-pulse me-1"></i> Record Vital Signs
             </x-button>
         </x-slot:actions>
@@ -112,12 +112,12 @@
                                         <span class="text-teal fw-medium">IV Dextrose 5%</span>
                                     </div>
                                     <div class="d-flex gap-1">
-                                        <x-button variant="outline-teal" size="sm" class="flex-grow-1">Vitals</x-button>
-                                        <x-button variant="outline-primary" size="sm" class="flex-grow-1">MAR</x-button>
+                                        <x-button variant="outline-teal" size="sm" class="flex-grow-1" href="{{ route('portal.nurse.observations') }}">Vitals</x-button>
+                                        <x-button variant="outline-primary" size="sm" class="flex-grow-1" href="{{ route('portal.nurse.mar') }}">MAR</x-button>
                                     </div>
                                 @else
                                     <p class="text-muted-hms mb-2" style="font-size: 0.85rem;">{{ $patientNames[$i] }}</p>
-                                    <x-button variant="outline-success" size="sm" class="w-100">Ready for Admission</x-button>
+                                    <x-button variant="outline-success" size="sm" class="w-100" href="{{ route('portal.admissions.create') }}">Ready for Admission</x-button>
                                 @endif
                             </div>
                         </div>

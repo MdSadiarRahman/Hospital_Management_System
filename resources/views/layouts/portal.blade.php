@@ -81,82 +81,110 @@
     $displayRole = $userRoleTitle ?? $currentConfig['roleDisplay'];
 
     // Role-specific navigation items (Strict Role-Based Access Control)
+    // Role-specific navigation items (Strict Role-Based Access Control)
     $navMenus = match($role) {
         'admin' => [
-            ['title' => 'Overview', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/admin')],
+            ['title' => 'Overview', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.admin')],
+            ['title' => 'Reports & Analytics', 'icon' => 'bar-chart-line', 'slug' => 'reports', 'url' => route('portal.reports.index')],
             ['title' => 'Patient Registry', 'icon' => 'person-vcard', 'slug' => 'patients', 'url' => route('portal.patients.index')],
             ['title' => 'Doctor Appointments', 'icon' => 'calendar2-check', 'slug' => 'appointments', 'url' => route('portal.appointments.index')],
             ['title' => 'Doctor Schedules', 'icon' => 'calendar-week', 'slug' => 'doctor-schedules', 'url' => route('portal.doctor-schedules.index')],
             ['title' => 'Patient Visits', 'icon' => 'ticket-perforated', 'slug' => 'visits', 'url' => route('portal.visits.index')],
             ['title' => 'Inpatient Admissions', 'icon' => 'box-arrow-in-right', 'slug' => 'admissions', 'url' => route('portal.admissions.index')],
             ['title' => 'Staff Management', 'icon' => 'people', 'slug' => 'staff', 'url' => route('portal.staff.index')],
+            ['title' => 'Staff Shifts & Roster', 'icon' => 'calendar-range', 'slug' => 'shifts', 'url' => route('portal.staff.shifts')],
             ['title' => 'Departments & Wards', 'icon' => 'diagram-3', 'slug' => 'departments', 'url' => route('portal.departments.index')],
             ['title' => '10 Beds & Tariffs', 'icon' => 'door-open', 'slug' => 'beds', 'url' => route('portal.beds.index')],
-            ['title' => 'Billing & Revenue', 'icon' => 'cash-stack', 'slug' => 'financials', 'url' => '#'],
-            ['title' => 'Audit & Security Logs', 'icon' => 'shield-check', 'slug' => 'audit', 'url' => '#'],
-            ['title' => 'System Settings', 'icon' => 'gear', 'slug' => 'settings', 'url' => '#'],
+            ['title' => 'Bed Occupancy Board', 'icon' => 'grid-3x3-gap', 'slug' => 'occupancy', 'url' => route('portal.beds.occupancy')],
+            ['title' => 'Diagnostic Lab Orders', 'icon' => 'clipboard2-pulse', 'slug' => 'lab-orders', 'url' => route('portal.lab-orders.index')],
+            ['title' => 'Diagnostic Test Reports', 'icon' => 'file-earmark-medical', 'slug' => 'lab-reports', 'url' => route('portal.lab-reports.index')],
+            ['title' => 'Operation Theatre (OT)', 'icon' => 'scissors', 'slug' => 'operations', 'url' => route('portal.operations.index')],
+            ['title' => 'Emergency Referrals', 'icon' => 'box-arrow-up-right', 'slug' => 'referrals', 'url' => route('portal.referrals.index')],
+            ['title' => 'Lab Test Catalog', 'icon' => 'card-checklist', 'slug' => 'lab-catalog', 'url' => route('portal.lab-catalog.index')],
+            ['title' => 'Discharge Clearances', 'icon' => 'box-arrow-right', 'slug' => 'discharges', 'url' => route('portal.discharges.index')],
+            ['title' => 'Billing & Revenue', 'icon' => 'cash-stack', 'slug' => 'financials', 'url' => route('portal.billing.index')],
+            ['title' => 'Payments & Receipts', 'icon' => 'cash-coin', 'slug' => 'payments', 'url' => route('portal.payments.index')],
+            ['title' => 'Service Catalog', 'icon' => 'tags', 'slug' => 'services', 'url' => route('portal.services.index')],
+            ['title' => 'Audit & Security Logs', 'icon' => 'shield-check', 'slug' => 'audit', 'url' => route('portal.audit-logs.index')],
         ],
         'doctor' => [
-            ['title' => 'Clinical Dashboard', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/doctor')],
+            ['title' => 'Clinical Dashboard', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.doctor')],
+            ['title' => 'OPD Patient Queue', 'icon' => 'person-lines-fill', 'slug' => 'queue', 'url' => route('portal.doctor') . '#consultation-queue'],
+            ['title' => 'Consultations History', 'icon' => 'journal-medical', 'slug' => 'consultations', 'url' => route('portal.consultations.index')],
+            ['title' => 'Digital Prescriptions', 'icon' => 'capsule', 'slug' => 'prescriptions', 'url' => route('portal.prescriptions.index')],
             ['title' => 'Patient Registry', 'icon' => 'person-vcard', 'slug' => 'patients', 'url' => route('portal.patients.index')],
+            ['title' => 'Inpatient Care (10 Beds)', 'icon' => 'hospital', 'slug' => 'inpatients', 'url' => route('portal.beds.occupancy')],
             ['title' => 'Doctor Appointments', 'icon' => 'calendar2-check', 'slug' => 'appointments', 'url' => route('portal.appointments.index')],
             ['title' => 'My Consultation Hours', 'icon' => 'calendar-week', 'slug' => 'doctor-schedules', 'url' => route('portal.doctor-schedules.index')],
-            ['title' => 'OPD Patient Queue', 'icon' => 'person-lines-fill', 'slug' => 'queue', 'url' => '#'],
-            ['title' => 'Inpatient Rounds (10 Beds)', 'icon' => 'hospital', 'slug' => 'inpatients', 'url' => route('portal.admissions.index')],
-            ['title' => 'Prescriptions & MAR', 'icon' => 'file-earmark-medical', 'slug' => 'prescriptions', 'url' => '#'],
-            ['title' => 'Diagnostic Lab Orders', 'icon' => 'virus', 'slug' => 'labs', 'url' => '#'],
-            ['title' => 'OT Schedule', 'icon' => 'scissors', 'slug' => 'ot', 'url' => '#'],
-            ['title' => 'Discharge Clearance', 'icon' => 'clipboard-check', 'slug' => 'discharge', 'url' => '#'],
+            ['title' => 'Bed Transfers & Ledger', 'icon' => 'arrow-left-right', 'slug' => 'transfers', 'url' => route('portal.beds.transfers')],
+            ['title' => 'Diagnostic Lab Orders', 'icon' => 'clipboard2-pulse', 'slug' => 'lab-orders', 'url' => route('portal.lab-orders.index')],
+            ['title' => 'Diagnostic Test Reports', 'icon' => 'file-earmark-medical', 'slug' => 'lab-reports', 'url' => route('portal.lab-reports.index')],
+            ['title' => 'Operation Theatre (OT)', 'icon' => 'scissors', 'slug' => 'operations', 'url' => route('portal.operations.index')],
+            ['title' => 'Emergency Referrals', 'icon' => 'box-arrow-up-right', 'slug' => 'referrals', 'url' => route('portal.referrals.index')],
+            ['title' => 'Discharge Clearances', 'icon' => 'box-arrow-right', 'slug' => 'discharges', 'url' => route('portal.discharges.index')],
+            ['title' => 'Reports & Analytics', 'icon' => 'bar-chart-line', 'slug' => 'reports', 'url' => route('portal.reports.index')],
         ],
         'nurse' => [
-            ['title' => 'Nursing Station', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/nurse')],
-            ['title' => 'Patient Registry', 'icon' => 'person-vcard', 'slug' => 'patients', 'url' => route('portal.patients.index')],
-            ['title' => '10-Bed Live Station', 'icon' => 'door-open', 'slug' => 'beds', 'url' => route('portal.beds.index')],
-            ['title' => 'Record Vital Signs', 'icon' => 'heart-pulse', 'slug' => 'vitals', 'url' => '#'],
-            ['title' => 'Medication Administration', 'icon' => 'capsule', 'slug' => 'mar', 'url' => '#'],
-            ['title' => 'Shift Handover Notes', 'icon' => 'journal-medical', 'slug' => 'shift', 'url' => '#'],
-            ['title' => 'Emergency Intake Prep', 'icon' => 'truck', 'slug' => 'emergency', 'url' => '#'],
+            ['title' => 'Nursing Station', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.nurse')],
+            ['title' => '10-Bed Ward Monitor', 'icon' => 'door-open', 'slug' => 'beds', 'url' => route('portal.nurse') . '#ward-beds-section'],
+            ['title' => 'Assigned Inpatients', 'icon' => 'people-fill', 'slug' => 'patients', 'url' => route('portal.nurse') . '#inpatients-section'],
+            ['title' => 'Nursing Observations', 'icon' => 'clipboard2-pulse', 'slug' => 'observations', 'url' => route('portal.nurse.observations')],
+            ['title' => 'Bedside Vitals Ledger', 'icon' => 'heart-pulse', 'slug' => 'vitals', 'url' => route('portal.nurse') . '#vitals-section'],
+            ['title' => 'Medication Records (MAR)', 'icon' => 'capsule', 'slug' => 'mar', 'url' => route('portal.nurse.mar')],
+            ['title' => 'Inpatient Admissions', 'icon' => 'box-arrow-in-right', 'slug' => 'admissions', 'url' => route('portal.admissions.index')],
+            ['title' => 'Bed Transfers & Ledger', 'icon' => 'arrow-left-right', 'slug' => 'transfers', 'url' => route('portal.beds.transfers')],
+            ['title' => 'Operation Theatre (OT)', 'icon' => 'scissors', 'slug' => 'operations', 'url' => route('portal.operations.index')],
+            ['title' => 'Emergency Referrals', 'icon' => 'box-arrow-up-right', 'slug' => 'referrals', 'url' => route('portal.referrals.index')],
+            ['title' => 'Discharge Station', 'icon' => 'box-arrow-right', 'slug' => 'discharges', 'url' => route('portal.discharges.index')],
+            ['title' => 'Shift & Duty Handover', 'icon' => 'journal-medical', 'slug' => 'shift', 'url' => route('portal.nurse') . '#shift-section'],
         ],
         'reception' => [
-            ['title' => 'Reception Desk', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/reception')],
-            ['title' => 'Patient Registration', 'icon' => 'person-plus', 'slug' => 'patients', 'url' => route('portal.patients.index')],
+            ['title' => 'Reception Desk', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.reception')],
+            ['title' => 'Patient Registration', 'icon' => 'person-plus', 'slug' => 'patients', 'url' => route('portal.patients.create')],
+            ['title' => 'Patient Registry', 'icon' => 'person-vcard', 'slug' => 'patient-list', 'url' => route('portal.patients.index')],
             ['title' => 'Doctor Appointments', 'icon' => 'calendar2-check', 'slug' => 'appointments', 'url' => route('portal.appointments.index')],
             ['title' => 'Doctor Schedules', 'icon' => 'calendar-week', 'slug' => 'doctor-schedules', 'url' => route('portal.doctor-schedules.index')],
-            ['title' => 'Visit & Triage Intake', 'icon' => 'ticket-perforated', 'slug' => 'visits', 'url' => route('portal.visits.index')],
-            ['title' => 'Inpatient Admission', 'icon' => 'box-arrow-in-right', 'slug' => 'admissions', 'url' => route('portal.admissions.index')],
+            ['title' => 'Visit & Triage Intake', 'icon' => 'ticket-perforated', 'slug' => 'visits', 'url' => route('portal.visits.create')],
+            ['title' => 'Patient Visits List', 'icon' => 'card-list', 'slug' => 'visits-list', 'url' => route('portal.visits.index')],
+            ['title' => 'Inpatient Admission', 'icon' => 'box-arrow-in-right', 'slug' => 'admissions', 'url' => route('portal.admissions.create')],
+            ['title' => 'Admissions List', 'icon' => 'hospital', 'slug' => 'admissions-list', 'url' => route('portal.admissions.index')],
+            ['title' => '10-Bed Occupancy Board', 'icon' => 'door-open', 'slug' => 'beds', 'url' => route('portal.beds.occupancy')],
             ['title' => 'Verify & Link Accounts', 'icon' => 'person-check', 'slug' => 'linking', 'url' => route('portal.patient-linking.index')],
         ],
         'billing' => [
-            ['title' => 'Cashier Desk', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/billing')],
-            ['title' => 'Create Invoices', 'icon' => 'receipt', 'slug' => 'invoices', 'url' => '#'],
-            ['title' => 'Collect Payments', 'icon' => 'cash-coin', 'slug' => 'payments', 'url' => '#'],
-            ['title' => 'Pending Dues & Due Lists', 'icon' => 'exclamation-circle', 'slug' => 'dues', 'url' => '#'],
-            ['title' => 'Refund Vouchers', 'icon' => 'arrow-counterclockwise', 'slug' => 'refunds', 'url' => '#'],
-            ['title' => 'Financial Clearance', 'icon' => 'check2-all', 'slug' => 'clearance', 'url' => '#'],
+            ['title' => 'Cashier Desk', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.billing.index')],
+            ['title' => 'Create Invoices', 'icon' => 'receipt', 'slug' => 'invoices', 'url' => route('portal.billing.create')],
+            ['title' => 'Payments & Receipts', 'icon' => 'cash-coin', 'slug' => 'payments', 'url' => route('portal.payments.index')],
+            ['title' => 'Refund Vouchers', 'icon' => 'arrow-counterclockwise', 'slug' => 'refunds', 'url' => route('portal.refunds.index')],
+            ['title' => 'Service Catalog', 'icon' => 'tags', 'slug' => 'services', 'url' => route('portal.services.index')],
+            ['title' => 'Unpaid Invoices', 'icon' => 'exclamation-circle', 'slug' => 'dues', 'url' => route('portal.billing.index') . '?status=unpaid'],
+            ['title' => 'Paid Invoices', 'icon' => 'check2-all', 'slug' => 'paid', 'url' => route('portal.billing.index') . '?status=paid'],
+            ['title' => 'Financial Clearances', 'icon' => 'check2-square', 'slug' => 'clearance', 'url' => route('portal.discharges.index')],
+            ['title' => 'Financial Reports', 'icon' => 'bar-chart-line', 'slug' => 'reports', 'url' => route('portal.reports.index')],
         ],
         'lab' => [
-            ['title' => 'Laboratory Worklist', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/lab')],
-            ['title' => 'Diagnostic Orders', 'icon' => 'clipboard2-pulse', 'slug' => 'orders', 'url' => '#'],
-            ['title' => 'Barcode Sample Collection', 'icon' => 'upc-scan', 'slug' => 'samples', 'url' => '#'],
-            ['title' => 'Upload Secure PDF Reports', 'icon' => 'file-earmark-pdf', 'slug' => 'reports', 'url' => '#'],
-            ['title' => 'Partner Laboratories', 'icon' => 'buildings', 'slug' => 'partners', 'url' => '#'],
-            ['title' => 'Lab Test Catalog', 'icon' => 'list-check', 'slug' => 'catalog', 'url' => '#'],
+            ['title' => 'Laboratory Worklist', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.lab-orders.index')],
+            ['title' => 'Diagnostic Orders', 'icon' => 'clipboard2-pulse', 'slug' => 'orders', 'url' => route('portal.lab-orders.index')],
+            ['title' => 'Diagnostic Test Reports', 'icon' => 'file-earmark-medical', 'slug' => 'reports', 'url' => route('portal.lab-reports.index')],
+            ['title' => 'Sample Collection Queue', 'icon' => 'upc-scan', 'slug' => 'samples', 'url' => route('portal.lab-orders.index') . '?status=pending_sample'],
+            ['title' => 'Partner Laboratories', 'icon' => 'buildings', 'slug' => 'partners', 'url' => route('portal.lab-orders.index') . '?type=external'],
+            ['title' => 'Lab Test Catalog', 'icon' => 'list-check', 'slug' => 'catalog', 'url' => route('portal.lab-catalog.index')],
         ],
         'patient' => [
             ['title' => 'Health Overview', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('patient.dashboard')],
             ['title' => 'My Doctor Appointments', 'icon' => 'calendar-date', 'slug' => 'appointments', 'url' => route('patient.appointments.index')],
-            ['title' => 'Prescriptions & Advice', 'icon' => 'file-earmark-medical', 'slug' => 'prescriptions', 'url' => route('patient.dashboard') . '#prescriptions-section'],
-            ['title' => 'Diagnostic Test Reports', 'icon' => 'file-earmark-pdf', 'slug' => 'reports', 'url' => route('patient.dashboard') . '#reports-section'],
-            ['title' => 'Inpatient Bed Stays', 'icon' => 'hospital', 'slug' => 'admissions', 'url' => route('patient.dashboard') . '#admission-section'],
-            ['title' => 'Invoices & Receipts', 'icon' => 'receipt', 'slug' => 'billing', 'url' => route('patient.dashboard') . '#billing-section'],
-            ['title' => 'My Account & Guardians', 'icon' => 'person-gear', 'slug' => 'profile', 'url' => route('patient.profile')],
+            ['title' => 'Prescriptions & Advice', 'icon' => 'file-earmark-medical', 'slug' => 'prescriptions', 'url' => route('patient.prescriptions')],
+            ['title' => 'Diagnostic Test Reports', 'icon' => 'file-earmark-pdf', 'slug' => 'reports', 'url' => route('patient.lab-reports')],
+            ['title' => 'Inpatient Bed Stays', 'icon' => 'hospital', 'slug' => 'admissions', 'url' => route('patient.inpatient-stays')],
+            ['title' => 'Invoices & Receipts', 'icon' => 'receipt', 'slug' => 'billing', 'url' => route('patient.bills')],
+            ['title' => 'My Account & Profile', 'icon' => 'person-gear', 'slug' => 'profile', 'url' => route('patient.profile')],
         ],
         'ot_ward' => [
-            ['title' => 'OT & Ward Operations', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/portal/ot-ward')],
+            ['title' => 'OT & Ward Operations', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.operations.index')],
             ['title' => '10-Bed Inpatient Status', 'icon' => 'door-open', 'slug' => 'beds', 'url' => route('portal.beds.index')],
-            ['title' => 'OT Surgery Schedule', 'icon' => 'scissors', 'slug' => 'ot', 'url' => '#'],
-            ['title' => 'Pre-Op & Post-Op Checklist', 'icon' => 'clipboard-check', 'slug' => 'checklist', 'url' => '#'],
-            ['title' => 'Sterilization & Inventory', 'icon' => 'shield-check', 'slug' => 'sterilization', 'url' => '#'],
+            ['title' => 'Bed Occupancy Board', 'icon' => 'grid-3x3-gap', 'slug' => 'occupancy', 'url' => route('portal.beds.occupancy')],
+            ['title' => 'Bed Transfers & Ledger', 'icon' => 'arrow-left-right', 'slug' => 'transfers', 'url' => route('portal.beds.transfers')],
+            ['title' => 'Emergency Referrals', 'icon' => 'box-arrow-up-right', 'slug' => 'referrals', 'url' => route('portal.referrals.index')],
         ],
         default => [],
     };
@@ -369,18 +397,13 @@
                                 </x-badge>
                             </li>
                             <li>
-                                <a class="dropdown-item py-2" href="#">
+                                <a class="dropdown-item py-2" href="{{ Auth::check() && Auth::user()->user_type === 'patient' ? route('patient.profile') : route('portal.staff.shifts') }}">
                                     <i class="bi bi-person me-2 text-teal"></i> My Profile & Shift
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item py-2" href="#">
-                                    <i class="bi bi-key me-2 text-teal"></i> Change Password
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item py-2" href="#">
-                                    <i class="bi bi-shield-lock me-2 text-teal"></i> Active Permissions
+                                <a class="dropdown-item py-2" href="{{ Auth::check() && Auth::user()->user_type === 'patient' ? route('patient.profile') : route('portal.audit-logs.index') }}">
+                                    <i class="bi bi-shield-lock me-2 text-teal"></i> Security & Audit Logs
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>

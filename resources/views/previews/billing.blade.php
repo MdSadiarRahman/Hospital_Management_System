@@ -5,10 +5,10 @@
         subtitle="Aftab Ahmed &bull; Accounts Counter &bull; Invoices, Payment Settlements, and Dual Discharge Clearance"
     >
         <x-slot:actions>
-            <x-button variant="outline-teal" size="sm">
+            <x-button variant="outline-teal" size="sm" href="{{ route('portal.reports.index') }}">
                 <i class="bi bi-printer me-1"></i> Daily Collection Summary
             </x-button>
-            <x-button variant="primary" size="sm">
+            <x-button variant="primary" size="sm" href="{{ route('portal.billing.create') }}">
                 <i class="bi bi-plus-circle me-1"></i> Create Patient Invoice
             </x-button>
         </x-slot:actions>
@@ -100,7 +100,7 @@
                                 <td class="text-danger fw-bold tabular-nums">৳ 2,500.00</td>
                                 <td><x-badge status="warning">Partial Paid</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="teal" size="sm">Collect Due</x-button>
+                                    <x-button variant="teal" size="sm" href="{{ route('portal.billing.index') }}?status=unpaid">Collect Due</x-button>
                                 </td>
                             </tr>
                             <tr>
@@ -115,7 +115,7 @@
                                 <td class="tabular-nums">৳ 0.00</td>
                                 <td><x-badge status="success">Settled</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="outline-primary" size="sm">Print Receipt</x-button>
+                                    <x-button variant="outline-primary" size="sm" href="{{ route('portal.payments.index') }}">Print Receipt</x-button>
                                 </td>
                             </tr>
                             <tr>
@@ -130,7 +130,7 @@
                                 <td class="text-danger fw-bold tabular-nums">৳ 5,900.00</td>
                                 <td><x-badge status="danger">Unpaid</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="primary" size="sm">Settle Now</x-button>
+                                    <x-button variant="primary" size="sm" href="{{ route('portal.billing.index') }}?status=unpaid">Settle Now</x-button>
                                 </td>
                             </tr>
                         </tbody>

@@ -5,10 +5,10 @@
         subtitle="Md. Faruk Hossain &bull; Medical Technologist &bull; Internal Pathology & External Partner Diagnostics"
     >
         <x-slot:actions>
-            <x-button variant="outline-teal" size="sm">
+            <x-button variant="outline-teal" size="sm" href="{{ route('portal.lab-orders.index') }}?status=pending_sample">
                 <i class="bi bi-upc-scan me-1"></i> Scan Sample Barcode
             </x-button>
-            <x-button variant="teal" size="sm">
+            <x-button variant="teal" size="sm" href="{{ route('portal.lab-reports.index') }}">
                 <i class="bi bi-file-earmark-arrow-up me-1"></i> Upload Secure Report
             </x-button>
         </x-slot:actions>
@@ -101,7 +101,7 @@
                                 <td>Dr. Nasreen Sultana</td>
                                 <td><x-badge status="warning">Awaiting Results</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="teal" size="sm">Enter Values</x-button>
+                                    <x-button variant="teal" size="sm" href="{{ route('portal.lab-orders.index') }}">Enter Values</x-button>
                                 </td>
                             </tr>
                             <tr>
@@ -118,7 +118,7 @@
                                 <td>Dr. Tariqul Islam</td>
                                 <td><x-badge status="success">Verified PDF</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="outline-primary" size="sm">View PDF</x-button>
+                                    <x-button variant="outline-primary" size="sm" href="{{ route('portal.lab-reports.index') }}">View PDF</x-button>
                                 </td>
                             </tr>
                             <tr>
@@ -135,7 +135,7 @@
                                 <td>Dr. Nasreen Sultana</td>
                                 <td><x-badge status="info">Dispatched to Lab</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="outline-secondary" size="sm">Track Courier</x-button>
+                                    <x-button variant="outline-secondary" size="sm" href="{{ route('portal.lab-orders.index') }}?type=external">Track Courier</x-button>
                                 </td>
                             </tr>
                         </tbody>

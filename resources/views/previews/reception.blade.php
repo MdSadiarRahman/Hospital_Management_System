@@ -5,10 +5,10 @@
         subtitle="Kowshik Roy &bull; Main Entrance Desk &bull; Patient Registration, Triage & Bed Admissions"
     >
         <x-slot:actions>
-            <x-button variant="outline-teal" size="sm">
+            <x-button variant="outline-teal" size="sm" href="{{ route('portal.appointments.create') }}">
                 <i class="bi bi-calendar-plus me-1"></i> Book Appointment
             </x-button>
-            <x-button variant="primary" size="sm">
+            <x-button variant="primary" size="sm" href="{{ route('portal.patients.create') }}">
                 <i class="bi bi-person-plus me-1"></i> Register New Patient
             </x-button>
         </x-slot:actions>
@@ -97,7 +97,7 @@
                                 <td><x-badge status="danger">Emergency</x-badge></td>
                                 <td><x-badge status="warning">Triage Active</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="outline-teal" size="sm">Admit Bed</x-button>
+                                    <x-button variant="outline-teal" size="sm" href="{{ route('portal.admissions.create') }}">Admit Bed</x-button>
                                 </td>
                             </tr>
                             <tr>
@@ -108,7 +108,7 @@
                                 <td><x-badge status="teal">OPD Consultation</x-badge></td>
                                 <td><x-badge status="info">Serial #08</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="outline-secondary" size="sm">Print Token</x-button>
+                                    <x-button variant="outline-secondary" size="sm" href="{{ route('portal.visits.index') }}">Print Token</x-button>
                                 </td>
                             </tr>
                             <tr>
@@ -119,7 +119,7 @@
                                 <td><x-badge status="primary">Follow-up</x-badge></td>
                                 <td><x-badge status="success">Completed</x-badge></td>
                                 <td class="text-end">
-                                    <x-button variant="outline-primary" size="sm">View Bill</x-button>
+                                    <x-button variant="outline-primary" size="sm" href="{{ route('portal.billing.index') }}">View Bill</x-button>
                                 </td>
                             </tr>
                         </tbody>

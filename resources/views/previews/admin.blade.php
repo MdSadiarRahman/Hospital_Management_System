@@ -5,10 +5,10 @@
         subtitle="Meghna Clinic & Nursing Home operations, 10-bed ward status, 14 medical personnel, and financial health."
     >
         <x-slot:actions>
-            <x-button variant="outline-teal" size="sm">
+            <x-button variant="outline-teal" size="sm" href="{{ route('portal.reports.index') }}">
                 <i class="bi bi-file-earmark-arrow-down me-1"></i> Export Daily Report
             </x-button>
-            <x-button variant="primary" size="sm">
+            <x-button variant="primary" size="sm" href="{{ route('portal.staff.create') }}">
                 <i class="bi bi-person-plus me-1"></i> Register New Staff
             </x-button>
         </x-slot:actions>
