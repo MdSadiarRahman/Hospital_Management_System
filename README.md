@@ -1,5 +1,6 @@
 # Meghna Clinic and Nursing Home — Hospital Management System (HMS)
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Explore%20Application%20%E2%86%92-087F8C?style=for-the-badge&logo=googlechrome&logoColor=white)](https://mdsadiarrahman.github.io/Hospital_Management_System/)
 [![Laravel 12](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
 [![PHP 8.2+](https://img.shields.io/badge/PHP-8.2%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
 [![MySQL 8.0](https://img.shields.io/badge/MySQL-8.0%20(InnoDB)-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
@@ -7,6 +8,12 @@
 [![Tests Passing](https://img.shields.io/badge/Tests-336%20Passed%20(1947%20Assertions)-10B981?style=for-the-badge&logo=checkmarx&logoColor=white)](phpunit.xml)
 [![Security Audited](https://img.shields.io/badge/Security-OWASP%20Hardened-087F8C?style=for-the-badge&logo=dependabot&logoColor=white)](DEPLOYMENT.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+
+> 🌐 **Live Interactive Website & Layouts Showcase:**  
+> 👉 **[https://mdsadiarrahman.github.io/Hospital_Management_System/](https://mdsadiarrahman.github.io/Hospital_Management_System/)**  
+> *(Click the link above to explore the live hospital public website and interactive portal previews for Doctor, Nurse, Admin, Reception, Billing, Lab, and Patient)*
+
+---
 
 > **Meghna Clinic and Nursing Home**  
 > *Location:* Shohid Minar Mor, Dinajpur, Bangladesh  
