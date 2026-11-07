@@ -22,18 +22,6 @@ class PatientLoginRequest extends FormRequest
     }
 
     /**
-     * Prepare the data for validation.
-     * Temporary development default: auto-fill default patient credentials if omitted.
-     */
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'email' => $this->filled('email') ? $this->input('email') : 'patient@meghnaclinic.com',
-            'password' => $this->filled('password') ? $this->input('password') : 'Meghna@2026!',
-        ]);
-    }
-
-    /**
      * Get the validation rules that apply to the request.
      */
     public function rules(): array
