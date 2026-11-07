@@ -8,6 +8,7 @@ use App\Http\Controllers\Patient\PatientDashboardController;
 use App\Http\Controllers\Patient\PatientProfileController;
 use App\Http\Controllers\PublicAppointmentController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\Staff\AdminDashboardController;
 use App\Http\Controllers\Staff\AdmissionController;
 use App\Http\Controllers\Staff\AppointmentController;
 use App\Http\Controllers\Staff\BedController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\Staff\NurseDashboardController;
 use App\Http\Controllers\Staff\OperationController;
 use App\Http\Controllers\Staff\PaymentController;
 use App\Http\Controllers\Staff\ReferralController;
+use App\Http\Controllers\Staff\ReportController;
 use App\Http\Controllers\Staff\ServiceCatalogController;
 use App\Http\Controllers\Staff\PatientLinkingController;
 use App\Http\Controllers\Staff\PatientMasterController;
@@ -119,9 +121,9 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
     // Administrator Control Center
-    Route::get('/admin', function () {
-        return view('previews.admin');
-    })->middleware('role:super_admin,administrator')->name('admin');
+    Route::get('/admin', [AdminDashboardController::class, 'index'])
+        ->middleware('role:super_admin,administrator')
+        ->name('admin');
 
     // Doctor Clinical Workstation Dashboard & Patient Management
     Route::get('/doctor', [DoctorDashboardController::class, 'index'])
@@ -422,12 +424,19 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     Route::middleware('role:doctor,nurse,billing_staff,administrator,super_admin')->group(function () {
         Route::get('/discharges', [DischargeController::class, 'index'])->name('discharges.index');
         Route::get('/discharges/{admission}', [DischargeController::class, 'show'])->name('discharges.show');
-        Route::post('/discharges/{admission}/clinical', [DischargeController::class, 'clinicalClearance'])->name('discharges.clinical');
-        Route::post('/discharges/{admission}/nursing', [DischargeController::class, 'nursingClearance'])->name('discharges.nursing');
-        Route::post('/discharges/{admission}/financial', [DischargeController::class, 'financialClearance'])->name('discharges.financial');
+        Route::post('/discharges/{admission}/clinical', [DischargeController::class, 'clinicalClearance'])->name('discharges.clinical-clearance');
+        Route::post('/discharges/{admission}/nursing', [DischargeController::class, 'nursingClearance'])->name('discharges.nursing-clearance');
+        Route::post('/discharges/{admission}/financial', [DischargeController::class, 'financialClearance'])->name('discharges.financial-clearance');
         Route::post('/discharges/{admission}/approve', [DischargeController::class, 'approve'])->name('discharges.approve');
         Route::post('/discharges/{admission}/revoke', [DischargeController::class, 'revoke'])->name('discharges.revoke');
-        Route::get('/discharges/{admission}/print', [DischargeController::class, 'printSummary'])->name('discharges.print');
+        Route::get('/discharges/{admission}/print', [DischargeController::class, 'printSummary'])->name('discharges.print-summary');
+    });
+
+    // Comprehensive Hospital Reports Center (12 Clinical, Operational & Financial Reports)
+    Route::middleware('role:administrator,super_admin,doctor,nurse,receptionist,billing_staff')->group(function () {
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/{type}', [ReportController::class, 'show'])->name('reports.show');
+        Route::get('/reports/{type}/print', [ReportController::class, 'print'])->name('reports.print');
     });
 
     // Staff Management, Allocation, & 8-Hour Shift Scheduling

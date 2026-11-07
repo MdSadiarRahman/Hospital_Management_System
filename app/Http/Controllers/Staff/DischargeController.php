@@ -11,6 +11,7 @@ use App\Models\Admission;
 use App\Services\DischargeService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class DischargeController extends Controller
@@ -88,7 +89,13 @@ class DischargeController extends Controller
      */
     public function clinicalClearance(ClinicalClearanceRequest $request, Admission $admission): RedirectResponse
     {
-        $this->dischargeService->grantClinicalClearance($admission, $request->validated(), $request->user());
+        try {
+            $this->dischargeService->grantClinicalClearance($admission, $request->validated(), $request->user());
+        } catch (\InvalidArgumentException $e) {
+            throw ValidationException::withMessages([
+                'clinical_clearance' => $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('portal.discharges.show', $admission)
             ->with('success', "Doctor Clinical Clearance granted and Discharge Summary saved for {$admission->patient->name}.");
@@ -99,7 +106,13 @@ class DischargeController extends Controller
      */
     public function nursingClearance(NursingClearanceRequest $request, Admission $admission): RedirectResponse
     {
-        $this->dischargeService->grantNursingClearance($admission, $request->validated(), $request->user());
+        try {
+            $this->dischargeService->grantNursingClearance($admission, $request->validated(), $request->user());
+        } catch (\InvalidArgumentException $e) {
+            throw ValidationException::withMessages([
+                'nursing_clearance' => $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('portal.discharges.show', $admission)
             ->with('success', "Nursing discharge clearance recorded successfully.");
@@ -110,7 +123,13 @@ class DischargeController extends Controller
      */
     public function financialClearance(FinancialClearanceRequest $request, Admission $admission): RedirectResponse
     {
-        $this->dischargeService->grantFinancialClearance($admission, $request->validated(), $request->user());
+        try {
+            $this->dischargeService->grantFinancialClearance($admission, $request->validated(), $request->user());
+        } catch (\InvalidArgumentException $e) {
+            throw ValidationException::withMessages([
+                'financial_clearance' => $e->getMessage(),
+            ]);
+        }
 
         $msg = $request->boolean('allow_dues_exception')
             ? "Financial discharge clearance granted under authorized exception policy."
@@ -124,7 +143,17 @@ class DischargeController extends Controller
      */
     public function approve(ApproveDischargeRequest $request, Admission $admission): RedirectResponse
     {
-        $this->dischargeService->approveFinalDischarge($admission, $request->validated(), $request->user());
+        try {
+            $this->dischargeService->approveFinalDischarge($admission, $request->validated(), $request->user());
+        } catch (\InvalidArgumentException $e) {
+            $field = str_contains(strtolower($e->getMessage()), 'clinical clearance')
+                ? 'clinical_clearance'
+                : 'financial_clearance';
+
+            throw ValidationException::withMessages([
+                $field => $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('portal.discharges.show', $admission)
             ->with('success', "Patient #{$admission->patient->name} successfully discharged. Bed has been vacated and placed into cleaning status.");

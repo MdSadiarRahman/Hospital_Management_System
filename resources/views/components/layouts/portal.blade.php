@@ -75,7 +75,8 @@
     // Role-specific navigation items (Strict Role-Based Access Control)
     $navMenus = match($role) {
         'admin' => [
-            ['title' => 'Overview', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/admin')],
+            ['title' => 'Overview', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.admin')],
+            ['title' => 'Reports & Analytics', 'icon' => 'bar-chart-line', 'slug' => 'reports', 'url' => route('portal.reports.index')],
             ['title' => 'Staff Management', 'icon' => 'people', 'slug' => 'staff', 'url' => '#'],
             ['title' => 'Departments & Wards', 'icon' => 'diagram-3', 'slug' => 'departments', 'url' => '#'],
             ['title' => '10 Beds & Tariffs', 'icon' => 'door-open', 'slug' => 'beds', 'url' => '#'],
@@ -102,6 +103,7 @@
             ['title' => 'Operation Theatre (OT)', 'icon' => 'scissors', 'slug' => 'operations', 'url' => route('portal.operations.index')],
             ['title' => 'Emergency Referrals', 'icon' => 'box-arrow-up-right', 'slug' => 'referrals', 'url' => route('portal.referrals.index')],
             ['title' => 'Discharge Clearances', 'icon' => 'box-arrow-right', 'slug' => 'discharges', 'url' => route('portal.discharges.index')],
+            ['title' => 'Reports & Analytics', 'icon' => 'bar-chart-line', 'slug' => 'reports', 'url' => route('portal.reports.index')],
         ],
         'nurse' => [
             ['title' => 'Nursing Station', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.nurse')],
@@ -132,6 +134,7 @@
             ['title' => 'Service Catalog', 'icon' => 'tags', 'slug' => 'services', 'url' => route('portal.services.index')],
             ['title' => 'Unpaid Invoices', 'icon' => 'exclamation-circle', 'slug' => 'dues', 'url' => route('portal.billing.index') . '?status=unpaid'],
             ['title' => 'Paid Invoices', 'icon' => 'check2-all', 'slug' => 'paid', 'url' => route('portal.billing.index') . '?status=paid'],
+            ['title' => 'Financial Reports', 'icon' => 'bar-chart-line', 'slug' => 'reports', 'url' => route('portal.reports.index')],
         ],
         'lab' => [
             ['title' => 'Laboratory Worklist', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => url('/previews/lab')],
