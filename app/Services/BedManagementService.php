@@ -427,6 +427,12 @@ class BedManagementService
                 'notes' => $reason,
             ]);
 
+            try {
+                app(\App\Services\NotificationService::class)->notifyBedAssignmentUpdate($assignment, 'assigned');
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             return $assignment;
         });
     }
@@ -484,6 +490,12 @@ class BedManagementService
                 'user_agent' => request()->userAgent() ?? 'System',
                 'created_at' => now(),
             ]);
+
+            try {
+                app(\App\Services\NotificationService::class)->notifyBedAssignmentUpdate($newAssignment, 'transferred', $lockedSourceBed);
+            } catch (\Throwable $e) {
+                report($e);
+            }
 
             return $newAssignment;
         });

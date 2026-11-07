@@ -130,6 +130,12 @@ class BillingService
                 'created_at' => Carbon::now(),
             ]);
 
+            try {
+                app(\App\Services\NotificationService::class)->notifyBillingUpdate($bill, 'generated');
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             return $bill->fresh(['patient', 'items.service', 'createdBy', 'discountAuthorizedBy']);
         });
     }
@@ -317,6 +323,12 @@ class BillingService
                 'user_agent' => request()?->userAgent(),
                 'created_at' => Carbon::now(),
             ]);
+
+            try {
+                app(\App\Services\NotificationService::class)->notifyBillingUpdate($bill, 'generated');
+            } catch (\Throwable $e) {
+                report($e);
+            }
 
             return $bill->fresh(['patient', 'items.service', 'createdBy', 'discountAuthorizedBy']);
         });

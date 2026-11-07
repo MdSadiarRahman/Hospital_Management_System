@@ -92,6 +92,12 @@ class DischargeService
                 'created_at' => Carbon::now(),
             ]);
 
+            try {
+                app(\App\Services\NotificationService::class)->notifyDischargeUpdate($lockedAdmission, 'clinical_clearance');
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             return $lockedAdmission->fresh(['dischargeSummary', 'clinicalClearanceBy', 'dischargeHistories.performedBy']);
         });
     }
@@ -153,6 +159,12 @@ class DischargeService
                 'user_agent' => request()?->userAgent(),
                 'created_at' => Carbon::now(),
             ]);
+
+            try {
+                app(\App\Services\NotificationService::class)->notifyDischargeUpdate($lockedAdmission, 'nursing_clearance');
+            } catch (\Throwable $e) {
+                report($e);
+            }
 
             return $lockedAdmission->fresh(['nursingClearanceBy', 'dischargeHistories.performedBy']);
         });
@@ -258,6 +270,12 @@ class DischargeService
                 'created_at' => Carbon::now(),
             ]);
 
+            try {
+                app(\App\Services\NotificationService::class)->notifyDischargeUpdate($lockedAdmission, 'financial_clearance');
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             return $lockedAdmission->fresh(['bill', 'financialClearanceBy', 'financialExceptionBy', 'dischargeHistories.performedBy']);
         });
     }
@@ -352,6 +370,12 @@ class DischargeService
                 'user_agent' => request()?->userAgent(),
                 'created_at' => Carbon::now(),
             ]);
+
+            try {
+                app(\App\Services\NotificationService::class)->notifyDischargeUpdate($lockedAdmission, 'approved');
+            } catch (\Throwable $e) {
+                report($e);
+            }
 
             return $lockedAdmission->fresh([
                 'patient',

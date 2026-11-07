@@ -81,7 +81,7 @@ class BillingFoundationTest extends TestCase
 
         // Synthetic test patient
         $this->patient = Patient::create([
-            'patient_code' => 'MCNH-' . date('Y') . '-' . rand(1000, 9999),
+            'patient_code' => 'MCNH-' . date('Y') . '-' . rand(50000, 99999) . rand(100, 999),
             'name' => 'Test Billing Patient ' . rand(100, 999),
             'date_of_birth' => '1988-06-15',
             'gender' => 'female',

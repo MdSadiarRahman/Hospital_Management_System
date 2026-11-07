@@ -11,6 +11,7 @@ use App\Http\Controllers\PublicController;
 use App\Http\Controllers\Staff\AdminDashboardController;
 use App\Http\Controllers\Staff\AdmissionController;
 use App\Http\Controllers\Staff\AppointmentController;
+use App\Http\Controllers\Staff\AuditLogController;
 use App\Http\Controllers\Staff\BedController;
 use App\Http\Controllers\Staff\BillingController;
 use App\Http\Controllers\Staff\ConsultationController;
@@ -24,6 +25,7 @@ use App\Http\Controllers\Staff\LabTestCatalogController;
 use App\Http\Controllers\Staff\NurseDashboardController;
 use App\Http\Controllers\Staff\OperationController;
 use App\Http\Controllers\Staff\PaymentController;
+use App\Http\Controllers\Staff\PortalNotificationController;
 use App\Http\Controllers\Staff\ReferralController;
 use App\Http\Controllers\Staff\ReportController;
 use App\Http\Controllers\Staff\ServiceCatalogController;
@@ -438,6 +440,20 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
         Route::get('/reports/{type}', [ReportController::class, 'show'])->name('reports.show');
         Route::get('/reports/{type}/print', [ReportController::class, 'print'])->name('reports.print');
     });
+
+    // Immutable System Security Audit Logs (Strictly restricted to Administrator & Super Admin)
+    Route::middleware('role:administrator,super_admin')->group(function () {
+        Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+        Route::get('/audit-logs/print', [AuditLogController::class, 'print'])->name('audit-logs.print');
+        Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show'])->name('audit-logs.show');
+    });
+
+    // Staff Portal Notification Center (Role-Appropriate Alerts)
+    Route::get('/notifications', [PortalNotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread-count', [PortalNotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+    Route::post('/notifications/{id}/read', [PortalNotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/mark-all-read', [PortalNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{id}', [PortalNotificationController::class, 'destroy'])->name('notifications.destroy');
 
     // Staff Management, Allocation, & 8-Hour Shift Scheduling
     Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');

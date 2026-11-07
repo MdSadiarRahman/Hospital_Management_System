@@ -88,7 +88,7 @@
             ['title' => 'Discharge Clearances', 'icon' => 'box-arrow-right', 'slug' => 'discharges', 'url' => route('portal.discharges.index')],
             ['title' => 'Billing & Revenue', 'icon' => 'cash-stack', 'slug' => 'financials', 'url' => route('portal.billing.index')],
             ['title' => 'Service Catalog', 'icon' => 'tags', 'slug' => 'services', 'url' => route('portal.services.index')],
-            ['title' => 'Audit & Security Logs', 'icon' => 'shield-check', 'slug' => 'audit', 'url' => '#'],
+            ['title' => 'Audit & Security Logs', 'icon' => 'shield-check', 'slug' => 'audit', 'url' => route('portal.audit-logs.index')],
             ['title' => 'System Settings', 'icon' => 'gear', 'slug' => 'settings', 'url' => '#'],
         ],
         'doctor' => [
@@ -295,51 +295,70 @@
 
                 <!-- Right Action Bar: Notifications & User Profile -->
                 <div class="d-flex align-items-center gap-2">
+                    @php
+                        $portalUser = Auth::user();
+                        $portalUnreadCount = $portalUser ? \App\Models\SystemNotification::where('user_id', $portalUser->id)->where('is_read', false)->count() : 0;
+                        $portalRecentNotifications = $portalUser ? \App\Models\SystemNotification::where('user_id', $portalUser->id)->latest('created_at')->limit(5)->get() : collect();
+                    @endphp
                     <!-- Notification Bell Dropdown -->
                     <div class="dropdown">
                         <button class="hms-notification-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Clinical notifications">
                             <i class="bi bi-bell"></i>
-                            <span class="hms-notification-badge"></span>
+                            @if($portalUnreadCount > 0)
+                                <span class="hms-notification-badge">{{ $portalUnreadCount > 99 ? '99+' : $portalUnreadCount }}</span>
+                            @endif
                         </button>
-                        <div class="dropdown-menu dropdown-menu-end notification-dropdown">
-                            <div class="notification-header">
-                                <span class="fw-bold text-navy" style="font-size: 0.85rem;">Clinical Notifications</span>
-                                <span class="badge bg-danger-subtle text-danger" style="font-size: 0.7rem;">3 Unread</span>
+                        <div class="dropdown-menu dropdown-menu-end notification-dropdown shadow-sm" style="min-width: 330px; max-width: 380px;">
+                            <div class="notification-header d-flex align-items-center justify-content-between p-3 border-bottom">
+                                <span class="fw-bold text-navy" style="font-size: 0.85rem;">System &amp; Clinical Alerts</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    @if($portalUnreadCount > 0)
+                                        <span class="badge bg-danger-subtle text-danger" style="font-size: 0.7rem;">{{ $portalUnreadCount }} Unread</span>
+                                        <form method="POST" action="{{ route('portal.notifications.mark-all-read') }}" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="btn btn-link p-0 text-muted small text-decoration-none" style="font-size: 0.7rem;" title="Mark all as read">
+                                                <i class="bi bi-check-all"></i> Read all
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="badge bg-success-subtle text-success" style="font-size: 0.7rem;">All read</span>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="d-flex flex-column">
-                                <a href="#" class="notification-item unread">
-                                    <div class="rounded-circle bg-danger-subtle text-danger p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                        <i class="bi bi-heart-pulse"></i>
+                            <div class="d-flex flex-column" style="max-height: 320px; overflow-y: auto;">
+                                @forelse($portalRecentNotifications as $notif)
+                                    <div class="notification-item {{ $notif->is_read ? '' : 'unread' }} p-2.5 border-bottom d-flex align-items-start gap-2">
+                                        <div class="rounded-circle bg-{{ $notif->type_badge_class }}-subtle text-{{ $notif->type_badge_class }} p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">
+                                            <i class="bi bi-{{ $notif->type_icon }}"></i>
+                                        </div>
+                                        <div class="flex-grow-1 overflow-hidden" style="font-size: 0.8rem;">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <span class="fw-semibold text-navy text-truncate d-block">{{ $notif->title }}</span>
+                                                <span class="text-muted-hms flex-shrink-0 ms-1" style="font-size: 0.65rem;">{{ $notif->created_at->diffForHumans(null, true) }}</span>
+                                            </div>
+                                            <p class="text-muted-hms mb-1 text-truncate" style="font-size: 0.75rem;">{{ $notif->message }}</p>
+                                            <div class="d-flex align-items-center gap-2">
+                                                @if($notif->action_url)
+                                                    <a href="{{ $notif->action_url }}" class="text-teal small fw-semibold text-decoration-none" style="font-size: 0.7rem;">View Record &rarr;</a>
+                                                @endif
+                                                @if(!$notif->is_read)
+                                                    <form method="POST" action="{{ route('portal.notifications.read', $notif->id) }}" class="d-inline">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-link p-0 text-muted" style="font-size: 0.7rem;">Mark read</button>
+                                                    </form>
+                                                @endif
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div style="font-size: 0.8rem;">
-                                        <span class="fw-semibold d-block text-main">New Emergency Admission</span>
-                                        <span class="text-muted-hms d-block">Bed EM-01 occupied (MCNH-2026-0043)</span>
-                                        <span class="text-muted-hms" style="font-size: 0.7rem;">10 mins ago</span>
+                                @empty
+                                    <div class="p-4 text-center text-muted" style="font-size: 0.8rem;">
+                                        <i class="bi bi-bell-slash fs-4 d-block mb-1 text-muted-hms"></i>
+                                        No alerts or notifications.
                                     </div>
-                                </a>
-                                <a href="#" class="notification-item unread">
-                                    <div class="rounded-circle bg-teal-subtle text-teal p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                        <i class="bi bi-virus"></i>
-                                    </div>
-                                    <div style="font-size: 0.8rem;">
-                                        <span class="fw-semibold d-block text-main">Lab Report Ready</span>
-                                        <span class="text-muted-hms d-block">CBC test published for verification</span>
-                                        <span class="text-muted-hms" style="font-size: 0.7rem;">25 mins ago</span>
-                                    </div>
-                                </a>
-                                <a href="#" class="notification-item">
-                                    <div class="rounded-circle bg-success-subtle text-success p-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                                        <i class="bi bi-check2-circle"></i>
-                                    </div>
-                                    <div style="font-size: 0.8rem;">
-                                        <span class="fw-semibold d-block text-main">Payment Settled</span>
-                                        <span class="text-muted-hms d-block">Bill #BILL-0042 cleared (৳ 1,200.00)</span>
-                                        <span class="text-muted-hms" style="font-size: 0.7rem;">1 hour ago</span>
-                                    </div>
-                                </a>
+                                @endforelse
                             </div>
                             <div class="p-2 border-top text-center bg-light">
-                                <a href="#" class="text-teal fw-semibold text-decoration-none" style="font-size: 0.75rem;">View All Notifications</a>
+                                <a href="{{ route('portal.notifications.index') }}" class="text-teal fw-semibold text-decoration-none" style="font-size: 0.75rem;">Notification Center</a>
                             </div>
                         </div>
                     </div>

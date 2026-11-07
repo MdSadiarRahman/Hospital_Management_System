@@ -177,4 +177,19 @@ class User extends Authenticatable
     {
         return $this->hasRole('nurse');
     }
+
+    public function systemNotifications(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(SystemNotification::class)->latest();
+    }
+
+    public function unreadNotifications(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(SystemNotification::class)->where('is_read', false)->latest();
+    }
+
+    public function auditLogs(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(AuditLog::class)->latest('created_at');
+    }
 }

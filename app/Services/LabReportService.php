@@ -105,6 +105,12 @@ class LabReportService
                 ],
             ]);
 
+            try {
+                app(\App\Services\NotificationService::class)->notifyLabReportReady($report);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             return $report;
         });
     }
@@ -209,6 +215,12 @@ class LabReportService
                 ],
             ]);
 
+            try {
+                app(\App\Services\NotificationService::class)->notifyLabReportReady($report);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             return $report;
         });
     }
@@ -279,6 +291,12 @@ class LabReportService
                     'reviewed_at' => now()->toIso8601String(),
                 ],
             ]);
+
+            try {
+                app(\App\Services\NotificationService::class)->notifyLabReportReady($lockedReport);
+            } catch (\Throwable $e) {
+                report($e);
+            }
 
             return $lockedReport;
         });

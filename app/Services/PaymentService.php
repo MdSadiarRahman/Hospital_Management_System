@@ -158,6 +158,12 @@ class PaymentService
                 'created_at' => Carbon::now(),
             ]);
 
+            try {
+                app(\App\Services\NotificationService::class)->notifyBillingUpdate($lockedBill, "payment of BDT {$payment->amount} recorded");
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             return $payment->fresh(['bill.patient', 'receivedBy']);
         });
     }

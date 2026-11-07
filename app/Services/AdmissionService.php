@@ -176,6 +176,12 @@ class AdmissionService
                 'created_at' => now(),
             ]);
 
+            try {
+                app(\App\Services\NotificationService::class)->notifyAdmissionUpdate($admission, 'created');
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
             return $admission->fresh(['patient', 'visit', 'department', 'attendingDoctor', 'currentBedAssignment.bed']);
         });
     }
@@ -292,6 +298,12 @@ class AdmissionService
                 'user_agent' => request()->userAgent() ?? 'System',
                 'created_at' => now(),
             ]);
+
+            try {
+                app(\App\Services\NotificationService::class)->notifyAdmissionUpdate($lockedAdmission, 'cancelled');
+            } catch (\Throwable $e) {
+                report($e);
+            }
 
             return $lockedAdmission->fresh();
         });
