@@ -99,7 +99,9 @@ class LabTestCatalogTest extends TestCase
      */
     public function test_lab_staff_can_create_new_diagnostic_test(): void
     {
-        $code = 'URIC' . rand(10, 99);
+        do {
+            $code = 'URIC' . rand(10000, 99999);
+        } while (LabTestCatalog::where('code', $code)->exists());
         $payload = [
             'name' => 'Serum Uric Acid Test',
             'code' => $code,

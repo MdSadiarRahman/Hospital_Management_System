@@ -372,13 +372,21 @@ class LabOrderService
      */
     public function getOrderStatistics(): array
     {
+        $pendingSamples = LabOrder::where('status', 'pending')->count();
+        $inProcessing = LabOrder::whereIn('status', ['sample_collected', 'processing'])->count();
+        $externalReferrals = LabOrder::where('source', 'external')->count();
+
         return [
             'total_orders' => LabOrder::count(),
-            'pending_samples' => LabOrder::where('status', 'pending')->count(),
-            'in_processing' => LabOrder::whereIn('status', ['sample_collected', 'processing'])->count(),
+            'today_orders' => LabOrder::whereDate('created_at', today())->count(),
+            'pending_samples' => $pendingSamples,
+            'pending_sample' => $pendingSamples,
+            'in_processing' => $inProcessing,
+            'processing' => $inProcessing,
             'completed' => LabOrder::where('status', 'completed')->count(),
             'completed_today' => LabOrder::where('status', 'completed')->whereDate('updated_at', today())->count(),
-            'external_referrals' => LabOrder::where('source', 'external')->count(),
+            'external_referrals' => $externalReferrals,
+            'external_assigned' => $externalReferrals,
             'urgent_stat' => LabOrder::whereIn('priority', ['urgent', 'stat'])->where('status', '!=', 'completed')->count(),
             'samples_collected' => LabSample::count(),
         ];

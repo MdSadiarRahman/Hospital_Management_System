@@ -306,9 +306,9 @@ Route::prefix('portal')->middleware(['auth', 'staff'])->name('portal.')->group(f
     });
 
     // OT & Inpatient Ward Station
-    Route::get('/ot-ward', function () {
-        return redirect()->route('portal.operations.index');
-    })->middleware('role:ot_ward_staff,nurse,administrator,super_admin,doctor')->name('ot-ward');
+    Route::get('/ot-ward', [OperationController::class, 'index'])
+        ->middleware('role:ot_ward_staff,nurse,administrator,super_admin,doctor')
+        ->name('ot-ward');
 
     // Emergency Referral & External ICU/CCU Transfer Management (Clinical Staff)
     Route::middleware('role:doctor,nurse,administrator,super_admin')->group(function () {

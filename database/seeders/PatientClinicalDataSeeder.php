@@ -57,14 +57,12 @@ class PatientClinicalDataSeeder extends Seeder
             ]
         );
 
-        if (!$clinicalPatient->user_id) {
-            $clinicalPatient->update([
-                'user_id' => $patientUser->id,
-                'is_verified' => true,
-                'verified_by' => $receptionist?->id,
-                'verified_at' => now()->subDays(10),
-            ]);
-        }
+        $clinicalPatient->update([
+            'user_id' => $patientUser->id,
+            'is_verified' => true,
+            'verified_by' => $receptionist?->id,
+            'verified_at' => now()->subDays(10),
+        ]);
 
         // 2. Emergency Contact
         PatientContact::firstOrCreate(
@@ -191,6 +189,10 @@ class PatientClinicalDataSeeder extends Seeder
                 'clinical_indication' => 'Routine prenatal hematology baseline screening.',
             ]
         );
+        $labOrder->update([
+            'consultation_id' => $consultation->id,
+            'patient_id' => $clinicalPatient->id,
+        ]);
 
         $orderItem = LabOrderItem::firstOrCreate(
             ['lab_order_id' => $labOrder->id, 'lab_test_id' => $cbcTest->id],
@@ -201,7 +203,7 @@ class PatientClinicalDataSeeder extends Seeder
             ]
         );
 
-        LabReport::firstOrCreate(
+        LabReport::updateOrCreate(
             ['lab_order_item_id' => $orderItem->id],
             [
                 'file_path' => 'lab_reports/LAB-2026-0042_CBC.pdf',
@@ -214,6 +216,8 @@ class PatientClinicalDataSeeder extends Seeder
                     'ESR (Westergren)' => '18 mm in 1st hour',
                     'Hematocrit (PCV)' => '34.5 %',
                 ],
+                'source' => 'internal',
+                'report_status' => 'reviewed',
                 'review_status' => 'reviewed',
                 'reviewed_by' => $doctor->id,
                 'reviewed_at' => now()->subDays(4)->setTime(16, 30),

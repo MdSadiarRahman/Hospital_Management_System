@@ -239,14 +239,22 @@ class PatientAdmissionTest extends TestCase
     public function test_prevents_multiple_simultaneous_active_admissions_for_same_patient(): void
     {
         $patient = $this->createTestPatient();
+        do {
+            $bedNum1 = 'MULT-BED-1-' . rand(10000, 99999);
+        } while (Bed::where('bed_number', $bedNum1)->exists());
+
+        do {
+            $bedNum2 = 'MULT-BED-2-' . rand(10000, 99999);
+        } while (Bed::where('bed_number', $bedNum2)->exists());
+
         $bed1 = Bed::create([
-            'bed_number' => 'MULT-BED-1-' . rand(100, 999),
+            'bed_number' => $bedNum1,
             'category' => 'general',
             'status' => 'available',
             'daily_charge' => 500.00,
         ]);
         $bed2 = Bed::create([
-            'bed_number' => 'MULT-BED-2-' . rand(100, 999),
+            'bed_number' => $bedNum2,
             'category' => 'general',
             'status' => 'available',
             'daily_charge' => 500.00,

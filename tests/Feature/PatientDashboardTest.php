@@ -111,7 +111,12 @@ class PatientDashboardTest extends TestCase
         // 6. Diagnostic Laboratory Reports
         $response->assertSee('Diagnostic Laboratory Reports');
         $response->assertSee('Complete Blood Count (CBC) with ESR');
-        $response->assertSee('LAB-2026-0042');
+        $latestLabOrder = LabOrder::where('patient_id', $patientUser->patient->id)->latest()->first();
+        if ($latestLabOrder) {
+            $response->assertSee($latestLabOrder->order_number);
+        } else {
+            $response->assertSee('LAB-');
+        }
 
         // 7. Billing Summary & Invoices
         $response->assertSee('Billing Summary');

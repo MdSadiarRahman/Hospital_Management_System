@@ -109,7 +109,9 @@ class BedManagementFoundationTest extends TestCase
         $gynDept = Department::where('code', 'GYN')->first();
 
         // Create a test bed with all requested fields
-        $bedNumber = 'TEST-GYN-' . rand(100, 999);
+        do {
+            $bedNumber = 'TEST-GYN-' . rand(10000, 99999);
+        } while (Bed::where('bed_number', $bedNumber)->exists());
         $bed = $this->bedService->createBed([
             'bed_number' => $bedNumber,
             'room_number' => 'Cabin 204',
@@ -130,7 +132,9 @@ class BedManagementFoundationTest extends TestCase
         $this->assertFalse($bed->is_general);
 
         // General bed without department
-        $genBedNumber = 'TEST-GEN-' . rand(100, 999);
+        do {
+            $genBedNumber = 'TEST-GEN-' . rand(10000, 99999);
+        } while (Bed::where('bed_number', $genBedNumber)->exists());
         $genBed = $this->bedService->createBed([
             'bed_number' => $genBedNumber,
             'room_number' => 'Ward A',
@@ -150,8 +154,12 @@ class BedManagementFoundationTest extends TestCase
      */
     public function test_all_five_bed_statuses_supported_with_proper_scopes(): void
     {
+        do {
+            $statusBedNumber = 'STATUS-TEST-' . rand(10000, 99999);
+        } while (Bed::where('bed_number', $statusBedNumber)->exists());
+
         $testBed = Bed::create([
-            'bed_number' => 'STATUS-TEST-' . rand(100, 999),
+            'bed_number' => $statusBedNumber,
             'room_number' => 'Room 101',
             'category' => 'general',
             'status' => 'available',
