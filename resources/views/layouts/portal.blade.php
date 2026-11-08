@@ -306,20 +306,6 @@
                         </a>
                     </li>
                 @endforeach
-
-                <li class="hms-nav-section-title mt-3">Subsystems Switcher</li>
-                <li class="hms-nav-item">
-                    <a href="{{ url('/previews') }}" class="hms-nav-link">
-                        <i class="bi bi-grid-fill" aria-hidden="true"></i>
-                        <span>All 8 Layout Previews</span>
-                    </a>
-                </li>
-                <li class="hms-nav-item">
-                    <a href="{{ url('/previews/public') }}" class="hms-nav-link" target="_blank">
-                        <i class="bi bi-globe" aria-hidden="true"></i>
-                        <span>Public Website</span>
-                    </a>
-                </li>
             </ul>
 
             <!-- Sidebar Bottom Info -->
@@ -357,14 +343,6 @@
                             </a>
                         </li>
                     @endforeach
-
-                    <li class="hms-nav-section-title mt-3">Switch Layouts</li>
-                    <li class="hms-nav-item">
-                        <a href="{{ url('/previews') }}" class="hms-nav-link">
-                            <i class="bi bi-grid-fill"></i>
-                            <span>All 8 Layouts Index</span>
-                        </a>
-                    </li>
                 </ul>
                 <div class="p-3 border-top border-white border-opacity-10 text-white-50" style="font-size: 0.75rem;">
                     Shohid Minar Mor, Dinajpur | HMS Portal v1.0
