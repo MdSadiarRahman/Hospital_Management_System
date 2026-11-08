@@ -76,12 +76,132 @@
                 <a href="{{ route('home') }}#appointment" class="btn btn-hms-teal btn-hms-sm d-none d-md-inline-flex">
                     <i class="bi bi-calendar2-check"></i> Book Appointment
                 </a>
-                <a href="{{ route('patient.login') }}" class="btn btn-hms-outline-teal btn-hms-sm">
-                    <i class="bi bi-person"></i> Patient Portal
-                </a>
-                <a href="{{ route('portal.login') }}" class="btn btn-hms-primary btn-hms-sm">
-                    <i class="bi bi-shield-lock"></i> Staff Login
-                </a>
+
+                <!-- Hospital Portals Dropdown (Like BAUST Management Systems) -->
+                <div class="dropdown">
+                    <button class="btn btn-hms-primary btn-hms-sm dropdown-toggle d-inline-flex align-items-center gap-1.5 shadow-sm" type="button" id="hospitalPortalsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-grid-fill text-teal"></i>
+                        <span>Hospital Portals</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 p-2" aria-labelledby="hospitalPortalsDropdown" style="min-width: 320px; font-size: 0.85rem;">
+                        <li class="px-3 py-1.5 text-uppercase text-muted-hms fw-bold" style="font-size: 0.68rem; letter-spacing: 0.05em;">
+                            Patient Self-Care Subsystem
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('patient.login') }}">
+                                <span class="rounded bg-teal-subtle text-teal p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <i class="bi bi-person-circle fs-6"></i>
+                                </span>
+                                <div>
+                                    <span class="d-block fw-semibold text-navy">Patient Health Portal</span>
+                                    <span class="d-block text-muted-hms" style="font-size: 0.72rem;">Appointments, Rx &amp; Lab Reports</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('patient.register') }}">
+                                <span class="rounded bg-teal-subtle text-teal p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <i class="bi bi-person-plus-fill fs-6"></i>
+                                </span>
+                                <div>
+                                    <span class="d-block fw-semibold text-navy">New Patient Registration</span>
+                                    <span class="d-block text-muted-hms" style="font-size: 0.72rem;">Online Self-Care Registration</span>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li><hr class="dropdown-divider my-2"></li>
+
+                        <li class="px-3 py-1.5 text-uppercase text-muted-hms fw-bold" style="font-size: 0.68rem; letter-spacing: 0.05em;">
+                            Hospital Staff &amp; Clinical Portals
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('portal.login') }}">
+                                <span class="rounded bg-primary-subtle text-primary p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <i class="bi bi-shield-lock-fill fs-6"></i>
+                                </span>
+                                <div>
+                                    <span class="d-block fw-semibold text-navy">Unified Staff Portal Login</span>
+                                    <span class="d-block text-muted-hms" style="font-size: 0.72rem;">Role-based automatic workstation entry</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('previews.doctor') }}">
+                                <span class="rounded bg-info-subtle text-teal p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <i class="bi bi-heart-pulse-fill fs-6"></i>
+                                </span>
+                                <div>
+                                    <span class="d-block fw-semibold text-navy">Doctor Clinical Workstation</span>
+                                    <span class="d-block text-muted-hms" style="font-size: 0.72rem;">OPD Queue, Digital Rx, 10-Bed Rounds</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('previews.nurse') }}">
+                                <span class="rounded bg-success-subtle text-success p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <i class="bi bi-clipboard2-pulse fs-6"></i>
+                                </span>
+                                <div>
+                                    <span class="d-block fw-semibold text-navy">Nurse Ward Station</span>
+                                    <span class="d-block text-muted-hms" style="font-size: 0.72rem;">10 Inpatient Beds, MAR &amp; Vitals</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('previews.reception') }}">
+                                <span class="rounded bg-warning-subtle text-warning p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <i class="bi bi-person-vcard fs-6 text-dark"></i>
+                                </span>
+                                <div>
+                                    <span class="d-block fw-semibold text-navy">Reception &amp; Patient Intake</span>
+                                    <span class="d-block text-muted-hms" style="font-size: 0.72rem;">MRN Registry, Tokens &amp; Admissions</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('previews.billing') }}">
+                                <span class="rounded bg-danger-subtle text-danger p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <i class="bi bi-cash-stack fs-6"></i>
+                                </span>
+                                <div>
+                                    <span class="d-block fw-semibold text-navy">Billing &amp; Cashier Desk</span>
+                                    <span class="d-block text-muted-hms" style="font-size: 0.72rem;">Invoices, Payments &amp; Clearances</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('previews.lab') }}">
+                                <span class="rounded bg-info-subtle text-info p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <i class="bi bi-virus fs-6"></i>
+                                </span>
+                                <div>
+                                    <span class="d-block fw-semibold text-navy">Diagnostic Laboratory</span>
+                                    <span class="d-block text-muted-hms" style="font-size: 0.72rem;">Specimen &amp; Pathology Reports</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('previews.admin') }}">
+                                <span class="rounded bg-secondary-subtle text-secondary p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
+                                    <i class="bi bi-shield-check fs-6 text-navy"></i>
+                                </span>
+                                <div>
+                                    <span class="d-block fw-semibold text-navy">Hospital Administration</span>
+                                    <span class="d-block text-muted-hms" style="font-size: 0.72rem;">14 Staff, 10 Beds &amp; Audit Logs</span>
+                                </div>
+                            </a>
+                        </li>
+
+                        <li><hr class="dropdown-divider my-2"></li>
+
+                        <li>
+                            <a class="dropdown-item py-2 text-center text-teal fw-semibold rounded-2 bg-light" href="{{ route('previews.index') }}">
+                                <i class="bi bi-grid me-1"></i> Interactive Previews (All 8 Workstations) &rarr;
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <!-- Mobile Hamburger Toggle -->
@@ -118,16 +238,53 @@
                 </a>
                 <a href="{{ route('privacy') }}" class="public-nav-link {{ request()->routeIs('privacy') ? 'active' : '' }}" data-bs-dismiss="offcanvas">Privacy Policy</a>
             </div>
-            <div class="d-flex flex-column gap-2 pt-4 border-top">
+            <div class="d-flex flex-column gap-2 pt-3 border-top">
                 <a href="{{ route('home') }}#appointment" class="btn btn-hms-teal w-100" data-bs-dismiss="offcanvas">
                     <i class="bi bi-calendar2-check"></i> Book Appointment
                 </a>
-                <a href="{{ route('patient.login') }}" class="btn btn-hms-outline-teal w-100">
-                    <i class="bi bi-person"></i> Patient Portal
-                </a>
-                <a href="{{ route('portal.login') }}" class="btn btn-hms-primary w-100">
-                    <i class="bi bi-shield-lock"></i> Staff Login
-                </a>
+
+                <div class="p-2 rounded-3 bg-light border mt-2">
+                    <span class="d-block text-uppercase text-navy fw-bold mb-2 small" style="letter-spacing: 0.05em;">
+                        <i class="bi bi-grid-fill text-teal me-1"></i> Hospital Portals
+                    </span>
+                    <div class="d-flex flex-column gap-1.5">
+                        <a href="{{ route('patient.login') }}" class="btn btn-outline-teal btn-sm text-start d-flex align-items-center gap-2">
+                            <i class="bi bi-person-circle"></i>
+                            <span>Patient Health Portal</span>
+                        </a>
+                        <a href="{{ route('portal.login') }}" class="btn btn-hms-primary btn-sm text-start d-flex align-items-center gap-2">
+                            <i class="bi bi-shield-lock-fill"></i>
+                            <span>Unified Staff Login (All Roles)</span>
+                        </a>
+                        <a href="{{ route('previews.doctor') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
+                            <i class="bi bi-heart-pulse-fill text-teal"></i>
+                            <span>Doctor Clinical Workstation</span>
+                        </a>
+                        <a href="{{ route('previews.nurse') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
+                            <i class="bi bi-clipboard2-pulse text-success"></i>
+                            <span>Nurse Ward Station (10 Beds)</span>
+                        </a>
+                        <a href="{{ route('previews.reception') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
+                            <i class="bi bi-person-vcard text-warning"></i>
+                            <span>Reception &amp; Intake Desk</span>
+                        </a>
+                        <a href="{{ route('previews.billing') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
+                            <i class="bi bi-cash-stack text-danger"></i>
+                            <span>Billing &amp; Cashier Desk</span>
+                        </a>
+                        <a href="{{ route('previews.lab') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
+                            <i class="bi bi-virus text-info"></i>
+                            <span>Diagnostic Laboratory</span>
+                        </a>
+                        <a href="{{ route('previews.admin') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
+                            <i class="bi bi-shield-check text-primary"></i>
+                            <span>Hospital Administration</span>
+                        </a>
+                        <a href="{{ route('previews.index') }}" class="btn btn-light btn-sm text-center text-teal fw-semibold mt-1">
+                            <i class="bi bi-grid me-1"></i> View All 8 Layout Previews &rarr;
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

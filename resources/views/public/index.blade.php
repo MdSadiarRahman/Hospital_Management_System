@@ -975,6 +975,196 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </section>
 
+    <!-- Hospital Portals & Management Systems Section (One-Stop Access) -->
+    <section id="portals" class="py-5 bg-light border-top">
+        <div class="container-xl">
+            <div class="text-center max-w-700 mx-auto mb-5">
+                <span class="badge bg-teal-subtle text-teal px-3 py-1.5 rounded-pill fw-semibold mb-2" style="font-size: 0.85rem;">
+                    <i class="bi bi-grid-fill me-1"></i> Hospital Portals &amp; Workstations
+                </span>
+                <h2 class="h2 fw-bold text-navy">One-Stop Digital Healthcare Portals</h2>
+                <p class="text-muted-hms fs-6 mb-0">
+                    Direct access for patients, doctors, nurses, receptionists, billing officers, and administrative leadership on a single platform.
+                </p>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <!-- 1. Patient Portal -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 p-3 bg-white hover-lift">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="rounded bg-teal-subtle text-teal p-2.5 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                <i class="bi bi-person-circle fs-5"></i>
+                            </span>
+                            <span class="badge bg-teal-subtle text-teal small">Patient Self-Care</span>
+                        </div>
+                        <h5 class="fw-bold text-navy mb-1" style="font-size: 1rem;">Patient Portal</h5>
+                        <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
+                            Book consultations, view prescription history, download lab test reports, and view itemized bills.
+                        </p>
+                        <div class="d-flex gap-2">
+                            <a href="{{ route('patient.login') }}" class="btn btn-hms-teal btn-sm w-100">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Patient Login
+                            </a>
+                            <a href="{{ route('patient.register') }}" class="btn btn-outline-secondary btn-sm" title="Register New Patient">
+                                <i class="bi bi-person-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Doctor Clinical Workstation -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 p-3 bg-white hover-lift">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="rounded bg-primary-subtle text-primary p-2.5 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                <i class="bi bi-heart-pulse-fill fs-5 text-teal"></i>
+                            </span>
+                            <span class="badge bg-primary-subtle text-navy small">Clinical Care</span>
+                        </div>
+                        <h5 class="fw-bold text-navy mb-1" style="font-size: 1rem;">Doctor Workstation</h5>
+                        <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
+                            OPD consultation queue, digital prescription writing, diagnostic requisitions, and 10-bed ward rounds.
+                        </p>
+                        <a href="{{ route('previews.doctor') }}" class="btn btn-hms-outline-teal btn-sm w-100">
+                            <i class="bi bi-laptop me-1"></i> Doctor Portal
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 3. Nurse Ward Station -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 p-3 bg-white hover-lift">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="rounded bg-success-subtle text-success p-2.5 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                <i class="bi bi-clipboard2-pulse fs-5"></i>
+                            </span>
+                            <span class="badge bg-success-subtle text-success small">10 Inpatient Beds</span>
+                        </div>
+                        <h5 class="fw-bold text-navy mb-1" style="font-size: 1rem;">Nurse Ward Station</h5>
+                        <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
+                            Real-time bed occupancy, bedside vital signs logging, medication administration (MAR), and shift handover.
+                        </p>
+                        <a href="{{ route('previews.nurse') }}" class="btn btn-hms-outline-teal btn-sm w-100">
+                            <i class="bi bi-hospital me-1"></i> Nurse Station
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 4. Reception Desk -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 p-3 bg-white hover-lift">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="rounded bg-warning-subtle text-warning p-2.5 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                <i class="bi bi-person-vcard fs-5 text-dark"></i>
+                            </span>
+                            <span class="badge bg-warning-subtle text-dark small">Front Desk</span>
+                        </div>
+                        <h5 class="fw-bold text-navy mb-1" style="font-size: 1rem;">Reception Desk</h5>
+                        <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
+                            New patient registration, duplicate check (NID/Phone), visit tokens, and acute bed admissions.
+                        </p>
+                        <a href="{{ route('previews.reception') }}" class="btn btn-hms-outline-teal btn-sm w-100">
+                            <i class="bi bi-door-open me-1"></i> Reception Desk
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 5. Billing & Cashier Desk -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 p-3 bg-white hover-lift">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="rounded bg-danger-subtle text-danger p-2.5 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                <i class="bi bi-cash-stack fs-5"></i>
+                            </span>
+                            <span class="badge bg-danger-subtle text-danger small">Finance &amp; Dues</span>
+                        </div>
+                        <h5 class="fw-bold text-navy mb-1" style="font-size: 1rem;">Billing &amp; Cashier</h5>
+                        <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
+                            Itemized billing, advance collections, money receipts, service catalog, and financial discharge clearance.
+                        </p>
+                        <a href="{{ route('previews.billing') }}" class="btn btn-hms-outline-teal btn-sm w-100">
+                            <i class="bi bi-receipt me-1"></i> Cashier Desk
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 6. Diagnostic Laboratory -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 p-3 bg-white hover-lift">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="rounded bg-info-subtle text-info p-2.5 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                <i class="bi bi-virus fs-5"></i>
+                            </span>
+                            <span class="badge bg-info-subtle text-info small">Pathology</span>
+                        </div>
+                        <h5 class="fw-bold text-navy mb-1" style="font-size: 1rem;">Diagnostic Lab</h5>
+                        <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
+                            Test orders, barcode specimen tracking, internal hematology results, and external lab dispatch.
+                        </p>
+                        <a href="{{ route('previews.lab') }}" class="btn btn-hms-outline-teal btn-sm w-100">
+                            <i class="bi bi-clipboard-pulse me-1"></i> Lab Worklist
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 7. Hospital Administration -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 p-3 bg-white hover-lift">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="rounded bg-secondary-subtle text-navy p-2.5 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                <i class="bi bi-shield-check fs-5"></i>
+                            </span>
+                            <span class="badge bg-secondary-subtle text-navy small">Operations</span>
+                        </div>
+                        <h5 class="fw-bold text-navy mb-1" style="font-size: 1rem;">Admin Control Center</h5>
+                        <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
+                            14 staff management, 10 bed tariffs, daily revenue metrics, security audit logs, and analytics.
+                        </p>
+                        <a href="{{ route('previews.admin') }}" class="btn btn-hms-outline-teal btn-sm w-100">
+                            <i class="bi bi-gear me-1"></i> Admin Portal
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 8. Unified Staff Login -->
+                <div class="col-md-6 col-lg-3">
+                    <div class="card h-100 border-0 shadow-sm rounded-3 p-3 bg-primary text-white hover-lift" style="background-color: var(--hms-primary) !important;">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="rounded bg-white bg-opacity-10 text-white p-2.5 d-inline-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                <i class="bi bi-key-fill fs-5 text-teal"></i>
+                            </span>
+                            <span class="badge bg-teal text-white small">Unified Login</span>
+                        </div>
+                        <h5 class="fw-bold text-white mb-1" style="font-size: 1rem;">Staff Gateway</h5>
+                        <p class="text-white-50 small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
+                            Single sign-on entry for doctors, nurses, cashiers, receptionists, and hospital administrators.
+                        </p>
+                        <a href="{{ route('portal.login') }}" class="btn btn-hms-teal btn-sm w-100">
+                            <i class="bi bi-shield-lock-fill me-1"></i> Staff Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Previews Hub Banner -->
+            <div class="p-3 p-md-4 rounded-3 bg-white border d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 shadow-xs">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="rounded-circle bg-teal-subtle text-teal p-2.5 d-inline-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                        <i class="bi bi-grid-3x3-gap-fill fs-5"></i>
+                    </span>
+                    <div>
+                        <h6 class="fw-bold text-navy mb-0">Want to explore all hospital workstations without logging in?</h6>
+                        <span class="text-muted-hms small">Browse interactive layout previews for all 8 hospital roles with pre-filled clinical data.</span>
+                    </div>
+                </div>
+                <a href="{{ route('previews.index') }}" class="btn btn-hms-primary btn-sm flex-shrink-0">
+                    <i class="bi bi-arrow-right-circle me-1"></i> Explore All 8 Layout Previews
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- 10 & 11. Contact Information & Location Section -->
     <section id="contact" class="py-5 bg-white border-top">
         <div class="container-xl">
