@@ -111,9 +111,9 @@ class PatientDashboardTest extends TestCase
         // 6. Diagnostic Laboratory Reports
         $response->assertSee('Diagnostic Laboratory Reports');
         $response->assertSee('Complete Blood Count (CBC) with ESR');
-        $latestLabOrder = LabOrder::where('patient_id', $patientUser->patient->id)->latest()->first();
-        if ($latestLabOrder) {
-            $response->assertSee($latestLabOrder->order_number);
+        $latestLabReport = LabReport::whereHas('orderItem.labOrder', fn ($q) => $q->where('patient_id', $patientUser->patient->id))->latest()->first();
+        if ($latestLabReport && $latestLabReport->orderItem?->labOrder) {
+            $response->assertSee($latestLabReport->orderItem->labOrder->order_number);
         } else {
             $response->assertSee('LAB-');
         }
@@ -169,7 +169,7 @@ class PatientDashboardTest extends TestCase
         $userB = User::factory()->create(['user_type' => 'patient', 'is_active' => true]);
         $userB->assignRole('patient');
         $clinicalB = Patient::create([
-            'patient_code' => 'MCNH-2026-' . rand(5000, 9999),
+            'patient_code' => 'MCNH-' . date('Y') . '-' . rand(1000000, 9999999),
             'user_id' => $userB->id,
             'name' => 'Patient B Test',
             'date_of_birth' => '1995-01-01',
