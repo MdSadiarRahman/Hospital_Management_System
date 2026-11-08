@@ -2,7 +2,7 @@
     <!-- Page Header Component -->
     <x-page-header 
         title="Diagnostic Laboratory Workstation" 
-        subtitle="Md. Faruk Hossain &bull; Medical Technologist &bull; Internal Pathology & External Partner Diagnostics"
+        subtitle="{{ Auth::user()->name ?? 'Md. Faruk Hossain' }} &bull; Medical Technologist &bull; Internal Pathology & External Partner Diagnostics"
     >
         <x-slot:actions>
             <x-button variant="outline-teal" size="sm" href="{{ route('portal.lab-orders.index') }}?status=pending_sample">

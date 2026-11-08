@@ -1,8 +1,8 @@
 <x-layouts.patient title="Patient Self-Care Portal" activeNav="dashboard">
     <!-- Page Header Component -->
     <x-page-header 
-        title="Welcome back, Most. Rokeya Akhter" 
-        subtitle="Patient ID: MCNH-2026-0042 &bull; Dinajpur Sadar &bull; Verified Self-Care Health Portal"
+        title="Welcome back, {{ Auth::user()->name ?? 'Most. Rokeya Akhter' }}" 
+        subtitle="Patient ID: {{ Auth::user()?->patient?->patient_code ?? (Auth::check() ? 'Pending Verification' : 'MCNH-2026-0042') }} &bull; Dinajpur Sadar &bull; {{ Auth::user()?->patient?->is_verified ? 'Verified Self-Care Health Portal' : (Auth::check() ? 'Pending Verification Health Portal' : 'Verified Self-Care Health Portal') }}"
     >
         <x-slot:actions>
             <x-button variant="outline-teal" size="sm" href="{{ route('patient.prescriptions') }}">

@@ -1,7 +1,7 @@
 <x-layouts.doctor title="Doctor Clinical Workstation" activeNav="dashboard">
     <!-- Page Header Component -->
     <x-page-header 
-        title="Dr. Nasreen Sultana — Clinical Workstation" 
+        title="{{ Auth::check() ? (str_starts_with(Auth::user()->name, 'Dr.') ? Auth::user()->name : 'Dr. ' . Auth::user()->name) : 'Dr. Nasreen Sultana' }} — Clinical Workstation" 
         subtitle="Department of Gynecology, Obstetrics & General Surgery &bull; Dinajpur Chamber & Inpatient Care"
     >
         <x-slot:actions>

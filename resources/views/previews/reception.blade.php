@@ -2,7 +2,7 @@
     <!-- Page Header Component -->
     <x-page-header 
         title="Reception & Patient Intake Desk" 
-        subtitle="Kowshik Roy &bull; Main Entrance Desk &bull; Patient Registration, Triage & Bed Admissions"
+        subtitle="{{ Auth::user()->name ?? 'Kowshik Roy' }} &bull; Main Entrance Desk &bull; Patient Registration, Triage & Bed Admissions"
     >
         <x-slot:actions>
             <x-button variant="outline-teal" size="sm" href="{{ route('portal.appointments.create') }}">

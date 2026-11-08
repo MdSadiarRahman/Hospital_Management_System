@@ -8,6 +8,31 @@
 ])
 
 @php
+    $portalUser = Auth::user();
+
+    // Adapt role dynamically if authenticated
+    if ($portalUser) {
+        if ($portalUser->user_type === 'patient') {
+            $role = 'patient';
+        } elseif ($role === 'admin') {
+            if ($portalUser->hasRole(['super_admin', 'administrator'])) {
+                $role = 'admin';
+            } elseif ($portalUser->hasRole('doctor')) {
+                $role = 'doctor';
+            } elseif ($portalUser->hasRole('nurse')) {
+                $role = 'nurse';
+            } elseif ($portalUser->hasRole('receptionist')) {
+                $role = 'reception';
+            } elseif ($portalUser->hasRole('billing_staff')) {
+                $role = 'billing';
+            } elseif ($portalUser->hasRole('lab_staff')) {
+                $role = 'lab';
+            } elseif ($portalUser->hasRole('ot_ward_staff')) {
+                $role = 'ot_ward';
+            }
+        }
+    }
+
     // Role metadata & styling presets
     $roleConfigs = [
         'admin' => [
@@ -66,11 +91,60 @@
             'defaultName' => 'Most. Rokeya Akhter',
             'roleDisplay' => 'Patient (ID: MCNH-2026-0042)',
         ],
+        'ot_ward' => [
+            'title' => 'OT & Inpatient Ward Station',
+            'badge' => 'OT/Ward Staff',
+            'badgeStatus' => 'primary',
+            'avatarClass' => 'nurse',
+            'defaultName' => 'Md. Rafiqul Islam',
+            'roleDisplay' => 'OT & Ward Coordinator',
+        ],
     ];
 
     $currentConfig = $roleConfigs[$role] ?? $roleConfigs['admin'];
-    $displayName = $userName ?? $currentConfig['defaultName'];
-    $displayRole = $userRoleTitle ?? $currentConfig['roleDisplay'];
+
+    // Dynamic resolution of User Name, Designation, and Badges
+    if ($portalUser) {
+        $displayName = $userName ?? $portalUser->name;
+
+        if ($portalUser->user_type === 'patient') {
+            $patientRecord = $portalUser->patient;
+            if ($patientRecord && $patientRecord->is_verified) {
+                $displayRole = $userRoleTitle ?? ('Patient (ID: ' . $patientRecord->patient_code . ')');
+                $badgeText = 'Verified Patient';
+                $badgeStatus = 'teal';
+            } elseif ($patientRecord) {
+                $displayRole = $userRoleTitle ?? ('Patient (ID: ' . $patientRecord->patient_code . ' - Pending)');
+                $badgeText = 'Pending Verification';
+                $badgeStatus = 'warning';
+            } else {
+                $displayRole = $userRoleTitle ?? 'Patient (Pending In-Person Verification)';
+                $badgeText = 'Pending Verification';
+                $badgeStatus = 'warning';
+            }
+            $avatarClass = 'patient';
+        } else {
+            // Staff user
+            $staffProfile = $portalUser->staffProfile;
+            if ($userRoleTitle) {
+                $displayRole = $userRoleTitle;
+            } elseif ($staffProfile?->designation) {
+                $displayRole = $staffProfile->designation;
+            } else {
+                $firstRole = $portalUser->roles->first();
+                $displayRole = $firstRole?->title ?? $currentConfig['roleDisplay'];
+            }
+            $badgeText = $currentConfig['badge'];
+            $badgeStatus = $currentConfig['badgeStatus'];
+            $avatarClass = $currentConfig['avatarClass'];
+        }
+    } else {
+        $displayName = $userName ?? $currentConfig['defaultName'];
+        $displayRole = $userRoleTitle ?? $currentConfig['roleDisplay'];
+        $badgeText = $currentConfig['badge'];
+        $badgeStatus = $currentConfig['badgeStatus'];
+        $avatarClass = $currentConfig['avatarClass'];
+    }
 
     // Role-specific navigation items (Strict Role-Based Access Control)
     $navMenus = match($role) {
@@ -164,6 +238,13 @@
             ['title' => 'Invoices & Receipts', 'icon' => 'receipt', 'slug' => 'billing', 'url' => route('patient.bills')],
             ['title' => 'My Account & Profile', 'icon' => 'person-gear', 'slug' => 'profile', 'url' => route('patient.profile')],
         ],
+        'ot_ward' => [
+            ['title' => 'OT & Ward Operations', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.operations.index')],
+            ['title' => '10-Bed Inpatient Status', 'icon' => 'door-open', 'slug' => 'beds', 'url' => route('portal.beds.index')],
+            ['title' => 'Bed Occupancy Board', 'icon' => 'grid-3x3-gap', 'slug' => 'occupancy', 'url' => route('portal.beds.occupancy')],
+            ['title' => 'Bed Transfers & Ledger', 'icon' => 'arrow-left-right', 'slug' => 'transfers', 'url' => route('portal.beds.transfers')],
+            ['title' => 'Emergency Referrals', 'icon' => 'box-arrow-up-right', 'slug' => 'referrals', 'url' => route('portal.referrals.index')],
+        ],
         default => [],
     };
 @endphp
@@ -201,8 +282,8 @@
                     <span class="text-white fw-semibold" style="font-size: 0.8rem;">
                         <i class="bi bi-shield-lock-fill text-teal me-1"></i> {{ $currentConfig['title'] }}
                     </span>
-                    <x-badge :status="$currentConfig['badgeStatus']" :dot="false">
-                        {{ $currentConfig['badge'] }}
+                    <x-badge :status="$badgeStatus" :dot="false">
+                        {{ $badgeText }}
                     </x-badge>
                 </div>
             </div>
@@ -307,7 +388,7 @@
                 <!-- Right Action Bar: Notifications & User Profile -->
                 <div class="d-flex align-items-center gap-2">
                     @php
-                        $portalUser = Auth::user();
+                        $isPatient = $portalUser && $portalUser->user_type === 'patient';
                         $portalUnreadCount = $portalUser ? \App\Models\SystemNotification::where('user_id', $portalUser->id)->where('is_read', false)->count() : 0;
                         $portalRecentNotifications = $portalUser ? \App\Models\SystemNotification::where('user_id', $portalUser->id)->latest('created_at')->limit(5)->get() : collect();
                     @endphp
@@ -321,11 +402,11 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end notification-dropdown shadow-sm" style="min-width: 330px; max-width: 380px;">
                             <div class="notification-header d-flex align-items-center justify-content-between p-3 border-bottom">
-                                <span class="fw-bold text-navy" style="font-size: 0.85rem;">System &amp; Clinical Alerts</span>
+                                <span class="fw-bold text-navy" style="font-size: 0.85rem;">{{ $isPatient ? 'Patient Notifications' : 'System & Clinical Alerts' }}</span>
                                 <div class="d-flex align-items-center gap-2">
                                     @if($portalUnreadCount > 0)
                                         <span class="badge bg-danger-subtle text-danger" style="font-size: 0.7rem;">{{ $portalUnreadCount }} Unread</span>
-                                        <form method="POST" action="{{ route('portal.notifications.mark-all-read') }}" class="d-inline">
+                                        <form method="POST" action="{{ $isPatient ? route('patient.notifications.read-all') : route('portal.notifications.mark-all-read') }}" class="d-inline">
                                             @csrf
                                             <button type="submit" class="btn btn-link p-0 text-muted small text-decoration-none" style="font-size: 0.7rem;" title="Mark all as read">
                                                 <i class="bi bi-check-all"></i> Read all
@@ -353,7 +434,7 @@
                                                     <a href="{{ $notif->action_url }}" class="text-teal small fw-semibold text-decoration-none" style="font-size: 0.7rem;">View Record &rarr;</a>
                                                 @endif
                                                 @if(!$notif->is_read)
-                                                    <form method="POST" action="{{ route('portal.notifications.read', $notif->id) }}" class="d-inline">
+                                                    <form method="POST" action="{{ $isPatient ? route('patient.notifications.read', $notif->id) : route('portal.notifications.read', $notif->id) }}" class="d-inline">
                                                         @csrf
                                                         <button type="submit" class="btn btn-link p-0 text-muted" style="font-size: 0.7rem;">Mark read</button>
                                                     </form>
@@ -369,7 +450,11 @@
                                 @endforelse
                             </div>
                             <div class="p-2 border-top text-center bg-light">
-                                <a href="{{ route('portal.notifications.index') }}" class="text-teal fw-semibold text-decoration-none" style="font-size: 0.75rem;">Notification Center</a>
+                                @if($isPatient)
+                                    <a href="{{ route('patient.profile') }}" class="text-teal fw-semibold text-decoration-none" style="font-size: 0.75rem;">Account &amp; Emergency Contacts &rarr;</a>
+                                @else
+                                    <a href="{{ route('portal.notifications.index') }}" class="text-teal fw-semibold text-decoration-none" style="font-size: 0.75rem;">Notification Center &rarr;</a>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -377,32 +462,60 @@
                     <!-- User Profile Dropdown -->
                     <div class="dropdown">
                         <button class="hms-user-badge dropdown-toggle border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span class="hms-avatar {{ $currentConfig['avatarClass'] }}">
-                                {{ substr($displayName, 0, 1) }}
+                            <span class="hms-avatar {{ $avatarClass }}">
+                                {{ strtoupper(mb_substr($displayName, 0, 1)) }}
                             </span>
                             <div class="d-none d-sm-block text-start lh-1">
-                                <span class="d-block fw-semibold text-navy" style="font-size: 0.825rem;">{{ $displayName }}</span>
-                                <span class="text-muted-hms" style="font-size: 0.7rem;">{{ $displayRole }}</span>
+                                <span class="d-block fw-semibold text-navy text-truncate" style="font-size: 0.825rem; max-width: 170px;">{{ $displayName }}</span>
+                                <span class="text-muted-hms text-truncate d-block" style="font-size: 0.7rem; max-width: 170px;">{{ $displayRole }}</span>
                             </div>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width: 220px;">
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width: 230px;">
                             <li class="px-3 py-2 border-bottom bg-light">
-                                <span class="d-block fw-bold text-navy" style="font-size: 0.85rem;">{{ $displayName }}</span>
-                                <span class="d-block text-muted-hms" style="font-size: 0.75rem;">{{ $displayRole }}</span>
-                                <x-badge :status="$currentConfig['badgeStatus']" :dot="false" class="mt-1">
-                                    {{ $currentConfig['badge'] }}
+                                <span class="d-block fw-bold text-navy text-truncate" style="font-size: 0.85rem;">{{ $displayName }}</span>
+                                <span class="d-block text-muted-hms text-truncate" style="font-size: 0.75rem;">{{ $displayRole }}</span>
+                                <x-badge :status="$badgeStatus" :dot="false" class="mt-1">
+                                    {{ $badgeText }}
                                 </x-badge>
                             </li>
-                            <li>
-                                <a class="dropdown-item py-2" href="{{ Auth::check() && Auth::user()->user_type === 'patient' ? route('patient.profile') : route('portal.staff.shifts') }}">
-                                    <i class="bi bi-person me-2 text-teal"></i> My Profile & Shift
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item py-2" href="{{ Auth::check() && Auth::user()->user_type === 'patient' ? route('patient.profile') : route('portal.audit-logs.index') }}">
-                                    <i class="bi bi-shield-lock me-2 text-teal"></i> Security & Audit Logs
-                                </a>
-                            </li>
+                            @if($portalUser && $portalUser->user_type === 'patient')
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ route('patient.profile') }}">
+                                        <i class="bi bi-person-circle me-2 text-teal"></i> My Profile &amp; Account
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ route('patient.appointments.index') }}">
+                                        <i class="bi bi-calendar2-check me-2 text-teal"></i> My Doctor Appointments
+                                    </a>
+                                </li>
+                                @if($portalUser->patient?->is_verified)
+                                    <li>
+                                        <a class="dropdown-item py-2" href="{{ route('patient.prescriptions') }}">
+                                            <i class="bi bi-file-earmark-medical me-2 text-teal"></i> My Prescriptions &amp; Rx
+                                        </a>
+                                    </li>
+                                @endif
+                            @else
+                                <li>
+                                    <a class="dropdown-item py-2" href="{{ route('portal.staff.shifts') }}">
+                                        <i class="bi bi-person-badge me-2 text-teal"></i> My Profile &amp; Shift Roster
+                                    </a>
+                                </li>
+                                @if($portalUser && $portalUser->hasRole(['super_admin', 'administrator']))
+                                    <li>
+                                        <a class="dropdown-item py-2" href="{{ route('portal.audit-logs.index') }}">
+                                            <i class="bi bi-shield-lock me-2 text-teal"></i> Security &amp; Audit Logs
+                                        </a>
+                                    </li>
+                                @else
+                                    <li>
+                                        <a class="dropdown-item py-2" href="{{ route('portal.notifications.index') }}">
+                                            <i class="bi bi-bell me-2 text-teal"></i> Notifications Center
+                                        </a>
+                                    </li>
+                                @endif
+                            @endif
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">

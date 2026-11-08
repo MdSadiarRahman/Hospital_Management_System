@@ -2,7 +2,7 @@
     <!-- Page Header Component -->
     <x-page-header 
         title="Nursing Station — 10-Bed Inpatient Ward" 
-        subtitle="Sister Shima Begum &bull; Morning Shift (08:00 AM – 04:00 PM) &bull; Ward Station Desk"
+        subtitle="{{ Auth::user()->name ?? 'Sister Shima Begum' }} &bull; Morning Shift (08:00 AM – 04:00 PM) &bull; Ward Station Desk"
     >
         <x-slot:actions>
             <x-button variant="outline-teal" size="sm" href="{{ route('portal.nurse') }}#shift-section">

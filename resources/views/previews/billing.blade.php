@@ -2,7 +2,7 @@
     <!-- Page Header Component -->
     <x-page-header 
         title="Billing & Cashier Portal" 
-        subtitle="Aftab Ahmed &bull; Accounts Counter &bull; Invoices, Payment Settlements, and Dual Discharge Clearance"
+        subtitle="{{ Auth::user()->name ?? 'Aftab Ahmed' }} &bull; Accounts Counter &bull; Invoices, Payment Settlements, and Dual Discharge Clearance"
     >
         <x-slot:actions>
             <x-button variant="outline-teal" size="sm" href="{{ route('portal.reports.index') }}">
