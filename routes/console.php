@@ -119,10 +119,14 @@ Artisan::command('export:gh-pages', function () {
     ];
 
     foreach ($views as $fileName => $viewName) {
-        $html = view($viewName)->render();
-        $html = $cleanHtml($html);
-        file_put_contents($distPath . DIRECTORY_SEPARATOR . "{$fileName}.html", $html);
-        $this->info("Rendered {$fileName}.html");
+        try {
+            $html = view($viewName)->render();
+            $html = $cleanHtml($html);
+            file_put_contents($distPath . DIRECTORY_SEPARATOR . "{$fileName}.html", $html);
+            $this->info("Rendered {$fileName}.html");
+        } catch (\Throwable $e) {
+            $this->warn("Could not render {$viewName}: " . $e->getMessage());
+        }
     }
 
     // 5. Render public landing page preview
