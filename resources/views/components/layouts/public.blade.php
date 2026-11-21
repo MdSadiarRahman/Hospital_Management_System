@@ -22,6 +22,9 @@
     <meta property="og:description" content="{{ $metaDescription ?? 'Meghna Clinic and Nursing Home in Dinajpur provides 24/7 emergency care, 10 inpatient beds, gynecological and orthopedic surgery, and diagnostic pathology.' }}">
     <meta property="og:url" content="{{ url()->current() }}">
 
+    <!-- Brand Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo-icon.svg') }}">
+
     <!-- Design System Assets via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
@@ -48,14 +51,8 @@
     <nav class="public-navbar">
         <div class="container-xl d-flex align-items-center justify-content-between">
             <!-- Brand Logo -->
-            <a href="{{ route('home') }}" class="d-flex align-items-center gap-2 text-decoration-none">
-                <span class="rounded bg-primary text-white p-2 d-inline-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
-                    <i class="bi bi-hospital fs-4 text-teal"></i>
-                </span>
-                <div>
-                    <span class="d-block fw-bold text-navy fs-5 lh-1">Meghna Clinic</span>
-                    <span class="d-block text-muted-hms" style="font-size: 0.75rem;">& Nursing Home, Dinajpur</span>
-                </div>
+            <a href="{{ route('home') }}" class="text-decoration-none">
+                <x-brand-logo size="md" theme="light" />
             </a>
 
             <!-- Desktop Links -->
@@ -73,13 +70,13 @@
 
             <!-- Portal Entry & Appointment Buttons -->
             <div class="d-none d-sm-flex align-items-center gap-2">
-                <a href="{{ route('home') }}#appointment" class="btn btn-hms-teal btn-hms-sm d-none d-md-inline-flex">
+                <a href="{{ route('home') }}#appointment" class="btn btn-hms-teal btn-hms-sm btn-hms-pill d-none d-md-inline-flex shadow-sm">
                     <i class="bi bi-calendar2-check"></i> Book Appointment
                 </a>
 
                 <!-- Hospital Portals Dropdown (Like BAUST Management Systems) -->
                 <div class="dropdown">
-                    <button class="btn btn-hms-primary btn-hms-sm dropdown-toggle d-inline-flex align-items-center gap-1.5 shadow-sm" type="button" id="hospitalPortalsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-hms-primary btn-hms-sm btn-hms-pill dropdown-toggle d-inline-flex align-items-center gap-1.5 shadow-sm" type="button" id="hospitalPortalsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-grid-fill text-teal"></i>
                         <span>Hospital Portals</span>
                     </button>
@@ -214,12 +211,7 @@
     <!-- Mobile Offcanvas Drawer -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="publicNavOffcanvas" aria-labelledby="publicNavOffcanvasLabel">
         <div class="offcanvas-header border-bottom">
-            <div class="d-flex align-items-center gap-2">
-                <span class="rounded bg-primary text-white p-2 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                    <i class="bi bi-hospital fs-5 text-teal"></i>
-                </span>
-                <h5 class="offcanvas-title text-navy fw-bold mb-0" id="publicNavOffcanvasLabel">Meghna Clinic</h5>
-            </div>
+            <x-brand-logo size="sm" theme="light" />
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body d-flex flex-column justify-content-between">
@@ -303,11 +295,8 @@
         <div class="container-xl">
             <div class="row g-4 justify-content-between">
                 <div class="col-lg-4">
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <span class="rounded bg-teal text-white p-2 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
-                            <i class="bi bi-hospital fs-5"></i>
-                        </span>
-                        <h4 class="text-white h5 mb-0 fw-bold">Meghna Clinic & Nursing Home</h4>
+                    <div class="mb-3">
+                        <x-brand-logo size="md" theme="dark" />
                     </div>
                     <p class="text-white-50 mb-3" style="font-size: 0.9rem; line-height: 1.6;">
                         A trusted healthcare institution providing 24/7 emergency medical care, specialized orthopedic and gynecological surgery, 10-bed inpatient ward observation, and diagnostic laboratory services in Dinajpur.

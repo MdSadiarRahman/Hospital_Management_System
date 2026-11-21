@@ -57,3 +57,50 @@
 ::-webkit-scrollbar-thumb:hover {
     background: var(--hms-text-muted);
 }
+
+/* =============================================================================
+   Healthcare Brand Color Utilities & Micro-Interactions
+   ============================================================================= */
+.bg-teal {
+    background: linear-gradient(135deg, #0aa4b5 0%, #087F8C 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-teal-subtle {
+    background-color: var(--hms-teal-light) !important;
+    color: var(--hms-teal) !important;
+}
+
+.bg-navy {
+    background: linear-gradient(135deg, #1a4f7c 0%, #123B5D 100%) !important;
+    color: #ffffff !important;
+}
+
+.bg-navy-subtle {
+    background-color: var(--hms-primary-light) !important;
+    color: var(--hms-primary) !important;
+}
+
+.text-navy {
+    color: var(--hms-primary) !important;
+}
+
+.card-hover-lift {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.card-hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px -6px rgba(18, 59, 93, 0.12), 0 4px 12px -2px rgba(18, 59, 93, 0.06);
+    border-color: rgba(8, 127, 140, 0.35) !important;
+}
+
+.icon-box-glow {
+    box-shadow: 0 4px 12px rgba(8, 127, 140, 0.25);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover-lift:hover .icon-box-glow {
+    transform: scale(1.08);
+    box-shadow: 0 6px 16px rgba(8, 127, 140, 0.35);
+}

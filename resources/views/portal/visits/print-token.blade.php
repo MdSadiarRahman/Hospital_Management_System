@@ -62,9 +62,7 @@
         <!-- Clinic Branding Header -->
         <div class="text-center pb-3 border-bottom mb-3">
             <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
-                <div class="rounded-circle bg-teal text-white d-flex align-items-center justify-content-center fw-bold" style="width: 28px; height: 28px; font-size: 0.85rem;">
-                    <i class="bi bi-hospital"></i>
-                </div>
+                <img src="{{ asset('images/logo-icon.svg') }}" width="28" height="28" alt="Meghna Clinic">
                 <h1 class="h6 fw-bold text-navy mb-0" style="letter-spacing: -0.3px;">MEGHNA CLINIC</h1>
             </div>
             <div class="small fw-semibold text-teal" style="font-size: 0.75rem;">& NURSING HOME</div>

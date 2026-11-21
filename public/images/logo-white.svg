@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 48" width="280" height="48" fill="none">
+    <defs>
+        <linearGradient id="hmsLogoGradWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0aa4b5" />
+            <stop offset="60%" stop-color="#087F8C" />
+            <stop offset="100%" stop-color="#123B5D" />
+        </linearGradient>
+        <linearGradient id="hmsPulseGradWhite" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
+            <stop offset="50%" stop-color="#ffffff" />
+            <stop offset="100%" stop-color="#5eead4" />
+        </linearGradient>
+        <filter id="hmsGlowWhite" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" flood-color="#087F8C" flood-opacity="0.4" />
+        </filter>
+    </defs>
+    
+    <!-- Emblem -->
+    <g transform="translate(2, 2)">
+        <rect width="44" height="44" rx="12" fill="url(#hmsLogoGradWhite)" filter="url(#hmsGlowWhite)" />
+        <rect x="0.5" y="0.5" width="43" height="43" rx="11.5" stroke="rgba(255,255,255,0.35)" stroke-width="1" />
+        <rect x="18.5" y="8" width="7" height="28" rx="3.5" fill="#ffffff" fill-opacity="0.25" />
+        <rect x="8" y="18.5" width="28" height="7" rx="3.5" fill="#ffffff" fill-opacity="0.25" />
+        <path d="M 19.5 10 C 19.5 9 20.4 8 21.5 8 L 22.5 8 C 23.6 8 24.5 9 24.5 10 L 24.5 19.5 L 34 19.5 C 35 19.5 36 20.4 36 21.5 L 36 22.5 C 36 23.6 35 24.5 34 24.5 L 24.5 24.5 L 24.5 34 C 24.5 35 23.6 36 22.5 36 L 21.5 36 C 20.4 36 19.5 35 19.5 34 L 19.5 24.5 L 10 24.5 C 9 24.5 8 23.6 8 22.5 L 8 21.5 C 8 20.4 9 19.5 10 19.5 L 19.5 19.5 Z" fill="#ffffff" />
+        <path d="M 8 22 L 15 22 L 18 16 L 21 27 L 24 13 L 27 25 L 29 20 L 31 22 L 36 22" stroke="url(#hmsPulseGradWhite)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="32" cy="13" r="2" fill="#5eead4" />
+    </g>
+
+    <!-- Typography (Pure White & Mint) -->
+    <g transform="translate(56, 12)">
+        <text x="0" y="16" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="19" font-weight="800" fill="#FFFFFF" letter-spacing="-0.02em">
+            Meghna Clinic
+        </text>
+        <text x="0" y="29" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9" font-weight="600" fill="#5eead4" letter-spacing="0.08em">
+            &amp; NURSING HOME, DINAJPUR
+        </text>
+    </g>
+</svg>

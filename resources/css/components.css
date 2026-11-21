@@ -4,35 +4,40 @@
  */
 
 /* =============================================================================
-   1. BUTTONS (Accessible touch targets, crisp feedback, high contrast)
+   1. BUTTONS (Modern SaaS Healthcare Buttons - Crisp, Accessible, Elevated)
    ============================================================================= */
 .btn-hms-primary {
-    background-color: var(--hms-primary);
-    border-color: var(--hms-primary);
-    color: var(--hms-text-inverse);
-    font-weight: var(--hms-font-medium);
-    padding: 0.5rem 1.15rem;
+    background: linear-gradient(135deg, #1b4f7a 0%, #123B5D 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--hms-text-inverse) !important;
+    font-weight: var(--hms-font-semibold);
+    padding: 0.55rem 1.25rem;
     font-size: var(--hms-text-sm);
     border-radius: var(--hms-radius-sm);
-    min-height: 40px;
+    min-height: 42px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    transition: background-color var(--hms-transition-fast), border-color var(--hms-transition-fast), box-shadow var(--hms-transition-fast);
+    gap: 0.55rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 5px rgba(18, 59, 93, 0.16);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .btn-hms-primary:hover,
 .btn-hms-primary:focus {
-    background-color: var(--hms-primary-hover);
-    border-color: var(--hms-primary-hover);
-    color: var(--hms-text-inverse);
-    box-shadow: var(--hms-shadow-sm);
+    background: linear-gradient(135deg, #246399 0%, #0d2a43 100%);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: var(--hms-text-inverse) !important;
+    transform: translateY(-1.5px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 6px 16px rgba(18, 59, 93, 0.26);
 }
 
 .btn-hms-primary:active {
-    background-color: var(--hms-primary-active);
-    border-color: var(--hms-primary-active);
+    background: linear-gradient(135deg, #0d2a43 0%, #091F31 100%);
+    transform: translateY(0.5px);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .btn-hms-primary:focus-visible {
@@ -40,47 +45,135 @@
     box-shadow: var(--hms-shadow-focus);
 }
 
-/* Medical Teal Button (Secondary Brand / Primary Actions) */
+/* Medical Teal Button (Secondary Brand / Primary Action CTA) */
 .btn-hms-teal {
-    background-color: var(--hms-teal);
-    border-color: var(--hms-teal);
-    color: var(--hms-text-inverse);
-    font-weight: var(--hms-font-medium);
-    padding: 0.5rem 1.15rem;
+    background: linear-gradient(135deg, #0aa4b5 0%, #087F8C 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--hms-text-inverse) !important;
+    font-weight: var(--hms-font-semibold);
+    padding: 0.55rem 1.25rem;
     font-size: var(--hms-text-sm);
     border-radius: var(--hms-radius-sm);
-    min-height: 40px;
+    min-height: 42px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem;
-    transition: background-color var(--hms-transition-fast), border-color var(--hms-transition-fast), box-shadow var(--hms-transition-fast);
+    gap: 0.55rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 8px rgba(8, 127, 140, 0.24);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .btn-hms-teal:hover,
 .btn-hms-teal:focus {
-    background-color: var(--hms-teal-hover);
-    border-color: var(--hms-teal-hover);
-    color: var(--hms-text-inverse);
-    box-shadow: var(--hms-shadow-sm);
+    background: linear-gradient(135deg, #0cb5c7 0%, #066772 100%);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--hms-text-inverse) !important;
+    transform: translateY(-1.5px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 8px 20px rgba(8, 127, 140, 0.36);
 }
 
 .btn-hms-teal:active {
-    background-color: var(--hms-teal-active);
-    border-color: var(--hms-teal-active);
+    background: linear-gradient(135deg, #066772 0%, #044E57 100%);
+    transform: translateY(0.5px);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .btn-hms-teal:focus-visible {
     outline: none;
-    box-shadow: var(--hms-shadow-focus);
+    box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.35);
+}
+
+/* Emergency Danger Button (Vibrant Coral/Red with Pulse Gradient) */
+.btn-hms-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff !important;
+    font-weight: var(--hms-font-semibold);
+    padding: 0.55rem 1.25rem;
+    font-size: var(--hms-text-sm);
+    border-radius: var(--hms-radius-sm);
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 3px 8px rgba(220, 38, 38, 0.25);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-hms-danger:hover,
+.btn-hms-danger:focus {
+    background: linear-gradient(135deg, #f87171 0%, #b91c1c 100%);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff !important;
+    transform: translateY(-1.5px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 8px 20px rgba(220, 38, 38, 0.38);
+}
+
+.btn-hms-danger:active {
+    background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+    transform: translateY(0.5px);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Button Size Modifiers */
+.btn-hms-lg {
+    min-height: 48px !important;
+    padding: 0.75rem 1.65rem !important;
+    font-size: 1rem !important;
+    font-weight: var(--hms-font-semibold) !important;
+    border-radius: 12px !important;
+}
+
+.btn-hms-md {
+    min-height: 42px !important;
+    padding: 0.55rem 1.25rem !important;
+    font-size: var(--hms-text-sm) !important;
+    font-weight: var(--hms-font-semibold) !important;
+    border-radius: var(--hms-radius-sm) !important;
+}
+
+/* Icon Micro-Interactions on Button Hover */
+.btn-hms-primary i,
+.btn-hms-teal i,
+.btn-hms-outline-teal i,
+.btn-hms-outline-primary i {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-hms-primary:hover i,
+.btn-hms-teal:hover i,
+.btn-hms-outline-teal:hover i,
+.btn-hms-outline-primary:hover i {
+    transform: scale(1.12);
+}
+
+/* Rounded Pill Button Style */
+.btn-hms-pill {
+    border-radius: 50px !important;
+    padding-left: 1.35rem !important;
+    padding-right: 1.35rem !important;
+}
+
+/* Compact Button for Navbars & Action Bars */
+.btn-hms-sm {
+    min-height: 38px !important;
+    padding: 0.4rem 1rem !important;
+    font-size: var(--hms-text-xs) !important;
+    font-weight: var(--hms-font-semibold) !important;
+    border-radius: 8px !important;
 }
 
 /* Outlined Variants */
 .btn-hms-outline-primary {
     background-color: transparent;
-    border: 1px solid var(--hms-primary);
-    color: var(--hms-primary);
-    font-weight: var(--hms-font-medium);
+    border: 1.5px solid var(--hms-primary);
+    color: var(--hms-primary) !important;
+    font-weight: var(--hms-font-semibold);
     padding: 0.5rem 1.15rem;
     font-size: var(--hms-text-sm);
     border-radius: var(--hms-radius-sm);
@@ -89,20 +182,23 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    transition: all var(--hms-transition-fast);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
 }
 
 .btn-hms-outline-primary:hover {
-    background-color: var(--hms-primary-light);
-    color: var(--hms-primary-hover);
+    background-color: var(--hms-primary);
+    color: #ffffff !important;
     border-color: var(--hms-primary);
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 12px rgba(18, 59, 93, 0.2);
 }
 
 .btn-hms-outline-teal {
     background-color: transparent;
-    border: 1px solid var(--hms-teal);
-    color: var(--hms-teal);
-    font-weight: var(--hms-font-medium);
+    border: 1.5px solid var(--hms-teal);
+    color: var(--hms-teal) !important;
+    font-weight: var(--hms-font-semibold);
     padding: 0.5rem 1.15rem;
     font-size: var(--hms-text-sm);
     border-radius: var(--hms-radius-sm);
@@ -111,13 +207,16 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    transition: all var(--hms-transition-fast);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
 }
 
 .btn-hms-outline-teal:hover {
-    background-color: var(--hms-teal-light);
-    color: var(--hms-teal-hover);
+    background-color: var(--hms-teal);
+    color: #ffffff !important;
     border-color: var(--hms-teal);
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 12px rgba(8, 127, 140, 0.25);
 }
 
 /* Subtle Ghost Button */

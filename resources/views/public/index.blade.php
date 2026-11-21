@@ -444,9 +444,9 @@
 
             <div class="row g-4">
                 <div class="col-md-6 col-lg-4">
-                    <div class="p-4 rounded-3 border bg-body h-100">
-                        <div class="rounded-3 bg-teal text-white p-2.5 d-inline-flex align-items-center justify-content-center mb-3" style="width: 44px; height: 44px;">
-                            <i class="bi bi-hospital fs-5"></i>
+                    <div class="p-4 rounded-3 border bg-body h-100 card-hover-lift shadow-sm">
+                        <div class="rounded-3 bg-teal text-white p-2.5 d-inline-flex align-items-center justify-content-center mb-3 icon-box-glow" style="width: 46px; height: 46px;">
+                            <i class="bi bi-hospital-fill fs-5"></i>
                         </div>
                         <h3 class="h6 fw-bold text-navy mb-2">10-Bed Inpatient Ward</h3>
                         <p class="text-muted-hms mb-0" style="font-size: 0.875rem; line-height: 1.6;">
@@ -456,8 +456,8 @@
                 </div>
 
                 <div class="col-md-6 col-lg-4">
-                    <div class="p-4 rounded-3 border bg-body h-100">
-                        <div class="rounded-3 bg-teal text-white p-2.5 d-inline-flex align-items-center justify-content-center mb-3" style="width: 44px; height: 44px;">
+                    <div class="p-4 rounded-3 border bg-body h-100 card-hover-lift shadow-sm">
+                        <div class="rounded-3 bg-navy text-white p-2.5 d-inline-flex align-items-center justify-content-center mb-3 icon-box-glow" style="width: 46px; height: 46px;">
                             <i class="bi bi-scissors fs-5"></i>
                         </div>
                         <h3 class="h6 fw-bold text-navy mb-2">Operation Theatre (OT)</h3>
@@ -468,9 +468,9 @@
                 </div>
 
                 <div class="col-md-6 col-lg-4">
-                    <div class="p-4 rounded-3 border bg-body h-100">
-                        <div class="rounded-3 bg-teal text-white p-2.5 d-inline-flex align-items-center justify-content-center mb-3" style="width: 44px; height: 44px;">
-                            <i class="bi bi-virus fs-5"></i>
+                    <div class="p-4 rounded-3 border bg-body h-100 card-hover-lift shadow-sm">
+                        <div class="rounded-3 bg-teal text-white p-2.5 d-inline-flex align-items-center justify-content-center mb-3 icon-box-glow" style="width: 46px; height: 46px;">
+                            <i class="bi bi-clipboard2-pulse-fill fs-5 text-white"></i>
                         </div>
                         <h3 class="h6 fw-bold text-navy mb-2">Diagnostic Pathology & Partners</h3>
                         <p class="text-muted-hms mb-0" style="font-size: 0.875rem; line-height: 1.6;">
@@ -480,9 +480,9 @@
                 </div>
 
                 <div class="col-md-6 col-lg-4">
-                    <div class="p-4 rounded-3 border bg-body h-100">
-                        <div class="rounded-3 bg-danger text-white p-2.5 d-inline-flex align-items-center justify-content-center mb-3" style="width: 44px; height: 44px;">
-                            <i class="bi bi-heart-pulse fs-5"></i>
+                    <div class="p-4 rounded-3 border bg-body h-100 card-hover-lift shadow-sm">
+                        <div class="rounded-3 bg-danger text-white p-2.5 d-inline-flex align-items-center justify-content-center mb-3 icon-box-glow" style="width: 46px; height: 46px;">
+                            <i class="bi bi-heart-pulse-fill fs-5"></i>
                         </div>
                         <h3 class="h6 fw-bold text-navy mb-2">Emergency Triage & Oxygen</h3>
                         <p class="text-muted-hms mb-0" style="font-size: 0.875rem; line-height: 1.6;">
@@ -492,8 +492,8 @@
                 </div>
 
                 <div class="col-md-6 col-lg-4">
-                    <div class="p-4 rounded-3 border bg-body h-100">
-                        <div class="rounded-3 bg-teal text-white p-2.5 d-inline-flex align-items-center justify-content-center mb-3" style="width: 44px; height: 44px;">
+                    <div class="p-4 rounded-3 border bg-body h-100 card-hover-lift shadow-sm">
+                        <div class="rounded-3 bg-teal text-white p-2.5 d-inline-flex align-items-center justify-content-center mb-3 icon-box-glow" style="width: 46px; height: 46px;">
                             <i class="bi bi-gender-female fs-5"></i>
                         </div>
                         <h3 class="h6 fw-bold text-navy mb-2">Antenatal & Maternal Care</h3>
@@ -504,9 +504,9 @@
                 </div>
 
                 <div class="col-md-6 col-lg-4">
-                    <div class="p-4 rounded-3 border bg-body h-100">
-                        <div class="rounded-3 bg-teal text-white p-2.5 d-inline-flex align-items-center justify-content-center mb-3" style="width: 44px; height: 44px;">
-                            <i class="bi bi-receipt fs-5"></i>
+                    <div class="p-4 rounded-3 border bg-body h-100 card-hover-lift shadow-sm">
+                        <div class="rounded-3 bg-navy text-white p-2.5 d-inline-flex align-items-center justify-content-center mb-3 icon-box-glow" style="width: 46px; height: 46px;">
+                            <i class="bi bi-receipt-cutoff fs-5 text-white"></i>
                         </div>
                         <h3 class="h6 fw-bold text-navy mb-2">Transparent Inpatient Billing</h3>
                         <p class="text-muted-hms mb-0" style="font-size: 0.875rem; line-height: 1.6;">

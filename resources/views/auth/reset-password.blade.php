@@ -4,20 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Set New Password — Meghna Clinic and Nursing Home</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo-icon.svg') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-body d-flex flex-column min-vh-100 justify-content-between">
     <!-- Top Minimal Navigation -->
     <header class="py-3 px-4 border-bottom bg-white">
         <div class="container-xl d-flex justify-content-between align-items-center">
-            <a href="{{ route('home') }}" class="d-flex align-items-center gap-2 text-decoration-none">
-                <span class="rounded bg-teal text-white p-2 d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                    <i class="bi bi-hospital fs-5"></i>
-                </span>
-                <div>
-                    <span class="d-block fw-bold text-navy fs-6 lh-1">Meghna Clinic</span>
-                    <span class="d-block text-muted-hms" style="font-size: 0.7rem;">Set New Password</span>
-                </div>
+            <a href="{{ route('home') }}" class="text-decoration-none">
+                <x-brand-logo size="sm" theme="light" />
             </a>
             <a href="{{ route('portal.login') }}" class="btn btn-hms-outline-teal btn-hms-sm">
                 <i class="bi bi-box-arrow-in-right me-1"></i> Sign In

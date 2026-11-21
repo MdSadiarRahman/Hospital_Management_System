@@ -264,6 +264,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }} — Meghna Clinic & Nursing Home</title>
 
+    <!-- Brand Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo-icon.svg') }}">
+
     <!-- Design System Assets via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
@@ -273,14 +276,10 @@
         <!-- 1. Desktop Responsive Sidebar -->
         <aside class="hms-sidebar d-none d-lg-flex" aria-label="Portal Navigation Sidebar">
             <!-- Sidebar Brand Header -->
-            <div class="hms-sidebar-brand">
-                <span class="rounded bg-teal text-white p-2 d-inline-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
-                    <i class="bi bi-hospital fs-5"></i>
-                </span>
-                <div class="overflow-hidden">
-                    <span class="d-block fw-bold text-white text-truncate" style="font-size: 0.95rem;">Meghna Clinic</span>
-                    <span class="d-block text-white-50 text-truncate" style="font-size: 0.7rem;">Shohid Minar Mor, Dinajpur</span>
-                </div>
+            <div class="hms-sidebar-brand py-3 px-3">
+                <a href="{{ route('home') }}" class="text-decoration-none d-block">
+                    <x-brand-logo size="md" theme="dark" />
+                </a>
             </div>
 
             <!-- Role Badge Banner -->
@@ -328,12 +327,7 @@
         <!-- 2. Mobile Offcanvas Sidebar Drawer -->
         <div class="offcanvas offcanvas-start bg-primary text-white" tabindex="-1" id="portalMobileSidebar" aria-labelledby="portalMobileSidebarLabel" style="width: 280px; background-color: var(--hms-primary) !important;">
             <div class="offcanvas-header border-bottom border-white border-opacity-10">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="rounded bg-teal text-white p-2 d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                        <i class="bi bi-hospital fs-5"></i>
-                    </span>
-                    <h5 class="offcanvas-title text-white fw-bold mb-0" id="portalMobileSidebarLabel">Meghna Clinic</h5>
-                </div>
+                <x-brand-logo size="sm" theme="dark" />
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
             <div class="offcanvas-body p-0 d-flex flex-column justify-content-between">

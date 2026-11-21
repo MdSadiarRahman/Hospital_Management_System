@@ -6,6 +6,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Hospital Management System' }} — Meghna Clinic & Nursing Home</title>
     
+    <!-- Brand Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo-icon.svg') }}">
+
     <!-- Design System Assets via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>

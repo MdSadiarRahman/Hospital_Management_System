@@ -90,10 +90,8 @@
         {{-- Hospital Header --}}
         <div class="row align-items-center border-bottom pb-3 mb-3">
             <div class="col-8">
-                <div class="d-flex align-items-center gap-2 mb-1">
-                    <div class="bg-primary text-white rounded p-2 d-inline-flex align-items-center justify-content-center" style="width: 40px; height: 40px; background-color: #123B5D !important;">
-                        <i class="bi bi-hospital fs-5"></i>
-                    </div>
+                <div class="d-flex align-items-center gap-2.5 mb-1">
+                    <img src="{{ asset('images/logo-icon.svg') }}" width="42" height="42" alt="Meghna Clinic" class="flex-shrink-0">
                     <div>
                         <h4 class="header-title mb-0">MEGHNA CLINIC & NURSING HOME</h4>
                         <div class="bengali-text text-muted small fw-semibold">মেঘনা ক্লিনিক অ্যান্ড নার্সিং হোম • দিনাজপুর</div>
