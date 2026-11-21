@@ -1047,7 +1047,7 @@ textarea.hms-form-control {
 }
 
 /* =============================================================================
-   12. PAGINATION
+   12. PAGINATION (Clean Bootstrap 5 Styling & SVG Size Constraints)
    ============================================================================= */
 .hms-pagination {
     display: flex;
@@ -1055,13 +1055,19 @@ textarea.hms-form-control {
     justify-content: space-between;
     padding-top: 1rem;
     font-size: var(--hms-text-sm);
+    flex-wrap: wrap;
+    gap: 0.75rem;
 }
 
+.pagination,
 .hms-pagination .pagination {
     margin-bottom: 0;
     gap: 0.25rem;
+    display: flex;
+    align-items: center;
 }
 
+.page-item .page-link,
 .hms-pagination .page-item .page-link {
     border: 1px solid var(--hms-border-color);
     color: var(--hms-text-main);
@@ -1069,27 +1075,51 @@ textarea.hms-form-control {
     padding: 0.35rem 0.75rem;
     font-size: var(--hms-text-sm);
     min-width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     transition: all var(--hms-transition-fast);
+    text-decoration: none;
+    line-height: 1;
 }
 
+.page-item .page-link:hover,
 .hms-pagination .page-item .page-link:hover {
     background-color: var(--hms-bg-subtle);
     color: var(--hms-teal);
     border-color: var(--hms-teal);
 }
 
+.page-item.active .page-link,
 .hms-pagination .page-item.active .page-link {
     background-color: var(--hms-primary);
     border-color: var(--hms-primary);
-    color: #FFFFFF;
+    color: #FFFFFF !important;
     font-weight: var(--hms-font-semibold);
 }
 
+.page-item.disabled .page-link,
 .hms-pagination .page-item.disabled .page-link {
     background-color: var(--hms-bg-muted);
     color: var(--hms-text-muted);
     border-color: var(--hms-border-subtle);
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Guard against oversized pagination SVG arrows (< and >) across all views */
+.pagination svg,
+nav[role="navigation"] svg,
+.hms-pagination svg,
+.page-link svg {
+    width: 0.875rem !important;
+    height: 0.875rem !important;
+    max-width: 0.875rem !important;
+    max-height: 0.875rem !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
 }
 
 /* =============================================================================

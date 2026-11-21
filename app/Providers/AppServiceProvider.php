@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\URL;
@@ -23,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Enforce Bootstrap 5 Pagination across all portals and data lists
+        Paginator::useBootstrapFive();
+
         // Enforce HTTPS in production environments or when explicitly configured
         if ($this->app->environment('production') || env('FORCE_HTTPS', false)) {
             URL::forceScheme('https');

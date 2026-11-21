@@ -309,10 +309,14 @@
             </ul>
 
             <!-- Sidebar Bottom Info -->
+            @php
+                $sidebarOccupiedBeds = \App\Models\Bed::where('status', 'occupied')->count();
+                $sidebarTotalBeds = \App\Models\Bed::count() ?: 10;
+            @endphp
             <div class="p-3 border-top border-white border-opacity-10 text-white-50" style="font-size: 0.75rem;">
                 <div class="d-flex align-items-center justify-content-between mb-1">
                     <span>Inpatient Beds</span>
-                    <span class="text-white fw-bold tabular-nums">8 / 10 Occupied</span>
+                    <span class="text-white fw-bold tabular-nums">{{ $sidebarOccupiedBeds }} / {{ $sidebarTotalBeds }} Occupied</span>
                 </div>
                 <div class="d-flex align-items-center justify-content-between">
                     <span>Emergency Doctor</span>
