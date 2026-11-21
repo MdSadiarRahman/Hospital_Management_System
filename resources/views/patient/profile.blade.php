@@ -88,9 +88,19 @@
                         <div>
                             <h2 class="h5 fw-bold text-navy mb-1">
                                 <i class="bi bi-person-lines-fill text-teal me-2"></i> Personal Demographics
+                                @if(!$isLinked)
+                                    <span class="badge bg-warning-subtle text-warning ms-1" style="font-size: 0.72rem; vertical-align: middle;">
+                                        <i class="bi bi-shield-lock me-1"></i>Clinical Linking Pending
+                                    </span>
+                                @endif
                             </h2>
                             <p class="text-muted-hms mb-0" style="font-size: 0.8rem;">
                                 Your official patient details used for OPD tokens, invoices, and clinical identification.
+                                @if(!$isLinked)
+                                    <span class="d-block text-warning mt-1 fw-semibold" style="font-size: 0.75rem;">
+                                        <i class="bi bi-info-circle me-1"></i> Date of Birth, Blood Group, and Address are part of your official hospital clinical chart and will be recorded upon verification at the reception desk.
+                                    </span>
+                                @endif
                             </p>
                         </div>
                     </div>

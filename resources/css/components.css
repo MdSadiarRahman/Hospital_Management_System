@@ -743,9 +743,16 @@ textarea.hms-form-control {
     width: 260px;
     background-color: var(--hms-primary);
     color: var(--hms-text-inverse);
-    min-height: 100vh;
+    height: 100vh;
+    max-height: 100vh;
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 1020;
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
+    align-self: flex-start;
     transition: all var(--hms-transition-base);
 }
 
@@ -755,13 +762,40 @@ textarea.hms-form-control {
     align-items: center;
     gap: 0.75rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
 }
 
 .hms-sidebar-nav {
     list-style: none;
-    padding: 1rem 0.75rem;
+    padding: 0.75rem 0.75rem;
     margin: 0;
     flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+.hms-sidebar-nav::-webkit-scrollbar {
+    width: 5px;
+}
+
+.hms-sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.hms-sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 4px;
+}
+
+.hms-sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.hms-sidebar-bottom {
+    flex-shrink: 0;
 }
 
 .hms-nav-item {
@@ -788,7 +822,8 @@ textarea.hms-form-control {
 
 .hms-nav-link.active {
     color: #FFFFFF;
-    background-color: var(--hms-teal);
+    background: linear-gradient(135deg, #0aa4b5 0%, #087F8C 100%);
+    box-shadow: 0 2px 8px rgba(8, 127, 140, 0.35);
     font-weight: var(--hms-font-semibold);
 }
 

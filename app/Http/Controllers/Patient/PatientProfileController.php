@@ -76,7 +76,11 @@ class PatientProfileController extends Controller
             'created_at' => now(),
         ]);
 
-        return redirect()->route('patient.profile')->with('status', 'Your profile details have been successfully updated.');
+        $statusMessage = $patient 
+            ? 'Your profile details have been successfully updated.'
+            : 'Basic account details (Name, Email, Phone) have been updated. Note: Clinical demographics (Date of Birth, Blood Group, Address) will be synchronized once your account is verified at the reception desk.';
+
+        return redirect()->route('patient.profile')->with('status', $statusMessage);
     }
 
     /**

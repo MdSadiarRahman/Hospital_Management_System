@@ -157,6 +157,7 @@
             ['title' => 'Departments & Wards', 'icon' => 'diagram-3', 'slug' => 'departments', 'url' => route('portal.departments.index')],
             ['title' => '10 Beds & Tariffs', 'icon' => 'door-open', 'slug' => 'beds', 'url' => route('portal.beds.index')],
             ['title' => 'Bed Occupancy Board', 'icon' => 'grid-3x3-gap', 'slug' => 'occupancy', 'url' => route('portal.beds.occupancy')],
+            ['title' => 'Bed Transfers & Ledger', 'icon' => 'arrow-left-right', 'slug' => 'transfers', 'url' => route('portal.beds.transfers')],
             ['title' => 'Diagnostic Lab Orders', 'icon' => 'clipboard2-pulse', 'slug' => 'lab-orders', 'url' => route('portal.lab-orders.index')],
             ['title' => 'Diagnostic Test Reports', 'icon' => 'file-earmark-medical', 'slug' => 'lab-reports', 'url' => route('portal.lab-reports.index')],
             ['title' => 'Operation Theatre (OT)', 'icon' => 'scissors', 'slug' => 'operations', 'url' => route('portal.operations.index')],
@@ -247,6 +248,41 @@
         ],
         default => [],
     };
+    // Dynamic Active Menu Detection
+    $currentUrl = request()->url();
+    $currentPath = trim(request()->path(), '/'); // e.g. "portal/beds/transfers"
+    $hasCustomActive = !empty($activeNav) && $activeNav !== 'dashboard' && $activeNav !== 'overview';
+
+    $isMenuActive = function($menu) use ($activeNav, $currentUrl, $currentPath, $hasCustomActive) {
+        if ($hasCustomActive) {
+            return $activeNav === $menu['slug'];
+        }
+
+        $menuRawUrl = $menu['url'];
+        $menuPath = parse_url($menuRawUrl, PHP_URL_PATH);
+        $menuCleanPath = trim($menuPath ?? '', '/');
+        $menuUrl = url($menuPath ?? '');
+
+        // 1. Exact match by full URL or clean path
+        if ($currentUrl === $menuUrl || $currentPath === $menuCleanPath) {
+            return true;
+        }
+
+        // 2. Sub-path match (e.g. portal/beds/transfers or portal/patients/12, but exclude root dashboards)
+        if ($menu['slug'] !== 'dashboard' && !empty($menuCleanPath)) {
+            $isNotRoot = !in_array($menuCleanPath, ['portal', 'portal/dashboard', 'patient', 'patient/dashboard']);
+            if ($isNotRoot && (str_starts_with($currentPath, $menuCleanPath . '/') || $currentPath === $menuCleanPath)) {
+                return true;
+            }
+        }
+
+        // 3. Fallback when on dashboard root
+        if ($menu['slug'] === 'dashboard') {
+            return in_array($currentPath, ['portal', 'portal/doctor', 'portal/admin', 'portal/nurse', 'portal/reception', 'portal/billing', 'portal/lab', 'portal/ot_ward', 'patient', 'patient/dashboard']);
+        }
+
+        return false;
+    };
 @endphp
 
 <!DOCTYPE html>
@@ -291,8 +327,11 @@
             <ul class="hms-sidebar-nav">
                 <li class="hms-nav-section-title">Main Navigation</li>
                 @foreach($navMenus as $menu)
+                    @php
+                        $isActive = $isMenuActive($menu);
+                    @endphp
                     <li class="hms-nav-item">
-                        <a href="{{ $menu['url'] }}" class="hms-nav-link {{ $activeNav === $menu['slug'] ? 'active' : '' }}">
+                        <a href="{{ $menu['url'] }}" class="hms-nav-link {{ $isActive ? 'active' : '' }}">
                             <i class="bi bi-{{ $menu['icon'] }}" aria-hidden="true"></i>
                             <span>{{ $menu['title'] }}</span>
                         </a>
@@ -310,7 +349,7 @@
                     $sidebarTotalBeds = 10;
                 }
             @endphp
-            <div class="p-3 border-top border-white border-opacity-10 text-white-50" style="font-size: 0.75rem;">
+            <div class="hms-sidebar-bottom p-3 border-top border-white border-opacity-10 text-white-50" style="font-size: 0.75rem;">
                 <div class="d-flex align-items-center justify-content-between mb-1">
                     <span>Inpatient Beds</span>
                     <span class="text-white fw-bold tabular-nums">{{ $sidebarOccupiedBeds }} / {{ $sidebarTotalBeds }} Occupied</span>
@@ -332,8 +371,11 @@
                 <ul class="hms-sidebar-nav px-3 py-2">
                     <li class="hms-nav-section-title">{{ $currentConfig['title'] }}</li>
                     @foreach($navMenus as $menu)
+                        @php
+                            $isActive = $isMenuActive($menu);
+                        @endphp
                         <li class="hms-nav-item">
-                            <a href="{{ $menu['url'] }}" class="hms-nav-link {{ $activeNav === $menu['slug'] ? 'active' : '' }}">
+                            <a href="{{ $menu['url'] }}" class="hms-nav-link {{ $isActive ? 'active' : '' }}">
                                 <i class="bi bi-{{ $menu['icon'] }}" aria-hidden="true"></i>
                                 <span>{{ $menu['title'] }}</span>
                             </a>

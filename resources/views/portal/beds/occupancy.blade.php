@@ -1,4 +1,4 @@
-<x-layouts.portal role="admin" title="10-Bed Live Occupancy Dashboard">
+<x-layouts.portal role="admin" title="10-Bed Live Occupancy Dashboard" activeNav="occupancy">
     <div class="container-fluid px-0">
         <!-- Page Header & Action Bar -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">

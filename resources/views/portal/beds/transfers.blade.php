@@ -1,4 +1,4 @@
-<x-layouts.portal role="admin" title="Bed Transfers & Movement History">
+<x-layouts.portal role="admin" title="Bed Transfers & Movement History" activeNav="transfers">
     <div class="container-fluid px-0">
         <!-- Page Header & Action Bar -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
