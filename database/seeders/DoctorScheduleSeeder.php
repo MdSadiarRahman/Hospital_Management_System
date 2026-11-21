@@ -18,9 +18,9 @@ class DoctorScheduleSeeder extends Seeder
         $orthoDept = Department::where('code', 'ORTHO')->first();
         $emergDept = Department::where('code', 'EMERG')->first() ?? $gynDept;
 
-        $drNasreen = User::where('email', 'doctor@meghnaclinic.com')->first();
-        $drSamad = User::where('email', 'doctor.ortho@meghnaclinic.com')->first();
-        $drFarhana = User::where('email', 'doctor.emerg@meghnaclinic.com')->first();
+        $drNasreen = User::whereIn('email', ['dr.nasreen@gmail.com', 'doctor@meghnaclinic.com'])->first();
+        $drSamad = User::whereIn('email', ['dr.samad@gmail.com', 'doctor.ortho@meghnaclinic.com'])->first();
+        $drFarhana = User::whereIn('email', ['dr.farhana@gmail.com', 'doctor.emerg@meghnaclinic.com'])->first();
 
         // 1. Dr. Nasreen Sultana (Gynecology) - Morning OPD
         if ($drNasreen && $gynDept) {

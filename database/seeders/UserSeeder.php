@@ -56,7 +56,7 @@ class UserSeeder extends Seeder
             // 2. Doctors (24/7 Coverage - 2 Doctors available at all times)
             [
                 'name' => 'Dr. Nasreen Sultana',
-                'email' => 'doctor@meghnaclinic.com',
+                'email' => 'dr.nasreen@gmail.com',
                 'phone' => '+8801711000002',
                 'user_type' => 'staff',
                 'is_active' => true,
@@ -75,7 +75,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'name' => 'Dr. M. A. Samad',
-                'email' => 'doctor.ortho@meghnaclinic.com',
+                'email' => 'dr.samad@gmail.com',
                 'phone' => '+8801711000011',
                 'user_type' => 'staff',
                 'is_active' => true,
@@ -94,7 +94,7 @@ class UserSeeder extends Seeder
             ],
             [
                 'name' => 'Dr. Farhana Yasmin',
-                'email' => 'doctor.emerg@meghnaclinic.com',
+                'email' => 'dr.farhana@gmail.com',
                 'phone' => '+8801711000012',
                 'user_type' => 'staff',
                 'is_active' => true,
@@ -286,25 +286,9 @@ class UserSeeder extends Seeder
                 'nid_number' => '1991271890033',
                 'qualification' => 'H.S.C, Trained OT Technician',
             ],
-
-            // 5. Patient Users
-            [
-                'name' => 'Most. Rokeya Akhter',
-                'email' => 'patient@meghnaclinic.com',
-                'phone' => '+8801711000007',
-                'user_type' => 'patient',
-                'is_active' => true,
-                'role' => 'patient',
-            ],
-            [
-                'name' => 'Tanvir Hasan (Unlinked)',
-                'email' => 'newpatient@meghnaclinic.com',
-                'phone' => '+8801711000008',
-                'user_type' => 'patient',
-                'is_active' => true,
-                'role' => 'patient',
-            ],
         ];
+
+        $doctorPassword = Hash::make('Doctor@123');
 
         foreach ($users as $userData) {
             $roleName = $userData['role'];
@@ -335,9 +319,11 @@ class UserSeeder extends Seeder
                 $userData['qualification']
             );
 
+            $userPassword = ($roleName === 'doctor') ? $doctorPassword : $defaultPassword;
+
             $user = User::firstOrCreate(
                 ['email' => $userData['email']],
-                array_merge($userData, ['password' => $defaultPassword])
+                array_merge($userData, ['password' => $userPassword])
             );
 
             $role = Role::where('name', $roleName)->first();
