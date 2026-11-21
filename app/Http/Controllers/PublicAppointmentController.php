@@ -67,7 +67,7 @@ class PublicAppointmentController extends Controller
             ->whereHas('roles', fn($q) => $q->where('name', 'doctor'))
             ->where(function ($query) use ($request) {
                 $query->whereHas('staffProfile', fn($q) => $q->where('department_id', $request->department_id))
-                    ->orWhereHas('staffProfile.secondaryDepartments', fn($q) => $q->where('departments.id', $request->department_id));
+                    ->orWhereHas('staffProfile.departments', fn($q) => $q->where('departments.id', $request->department_id));
             })
             ->with(['staffProfile.department'])
             ->get()

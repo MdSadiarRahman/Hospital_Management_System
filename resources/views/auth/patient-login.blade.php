@@ -59,11 +59,6 @@
                         </div>
                     @endif
 
-                    <div class="alert alert-info py-2 px-3 mb-3 d-flex align-items-center gap-2" style="font-size: 0.825rem;">
-                        <i class="bi bi-lightning-charge-fill text-teal"></i>
-                        <div><strong>Default Login Active:</strong> Just click <strong>Log In</strong> to enter automatically!</div>
-                    </div>
-
                     <form method="POST" action="{{ route('patient.login.submit') }}" class="d-flex flex-column gap-3">
                         @csrf
 
@@ -79,8 +74,9 @@
                                     name="email" 
                                     id="email" 
                                     class="form-control @error('email') is-invalid @enderror" 
-                                    value="{{ old('email', 'patient@meghnaclinic.com') }}" 
-                                    placeholder="patient@meghnaclinic.com" 
+                                    value="{{ old('email') }}" 
+                                    placeholder="Enter your registered email or phone" 
+                                    required
                                     autofocus
                                 >
                             </div>
@@ -106,8 +102,8 @@
                                     name="password" 
                                     id="password" 
                                     class="form-control @error('password') is-invalid @enderror" 
-                                    value="Meghna@2026!"
                                     placeholder="••••••••••••"
+                                    required
                                 >
                             </div>
                             @error('password')
@@ -117,7 +113,7 @@
 
                         <!-- Remember Me -->
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remember" id="remember" value="1" checked>
+                            <input class="form-check-input" type="checkbox" name="remember" id="remember" value="1">
                             <label class="form-check-label text-muted-hms" for="remember" style="font-size: 0.825rem;">
                                 Keep me logged in on this browser
                             </label>
@@ -135,16 +131,6 @@
                         <a href="{{ route('patient.register') }}" class="d-block fw-bold text-teal text-decoration-none mt-1" style="font-size: 0.875rem;">
                             <i class="bi bi-person-plus-fill me-1"></i> Register New Patient Account
                         </a>
-                    </div>
-
-                    <!-- Quick Testing Credentials Badge -->
-                    <div class="mt-3 pt-2 border-top">
-                        <span class="d-block text-muted-hms fw-semibold mb-1" style="font-size: 0.75rem;">
-                            Demo Patient:
-                        </span>
-                        <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size: 0.7rem;" onclick="document.getElementById('email').value='patient@meghnaclinic.com'; document.getElementById('password').value='Meghna@2026!';">
-                            Most. Rokeya Akhter (patient@meghnaclinic.com)
-                        </button>
                     </div>
                 </div>
             </div>

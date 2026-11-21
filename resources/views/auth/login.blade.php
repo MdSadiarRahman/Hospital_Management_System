@@ -59,11 +59,6 @@
                         </div>
                     @endif
 
-                    <div class="alert alert-info py-2 px-3 mb-3 d-flex align-items-center gap-2" style="font-size: 0.825rem;">
-                        <i class="bi bi-lightning-charge-fill text-primary"></i>
-                        <div><strong>Default Login Active:</strong> Just click <strong>Sign In</strong> to enter automatically!</div>
-                    </div>
-
                     <form method="POST" action="{{ route('portal.login.submit') }}" class="d-flex flex-column gap-3">
                         @csrf
 
@@ -79,8 +74,9 @@
                                     name="email" 
                                     id="email" 
                                     class="form-control @error('email') is-invalid @enderror" 
-                                    value="{{ old('email', 'admin@meghnaclinic.com') }}" 
-                                    placeholder="admin@meghnaclinic.com" 
+                                    value="{{ old('email') }}" 
+                                    placeholder="e.g. staff@meghnaclinic.com" 
+                                    required
                                     autofocus
                                 >
                             </div>
@@ -106,8 +102,8 @@
                                     name="password" 
                                     id="password" 
                                     class="form-control @error('password') is-invalid @enderror" 
-                                    value="Meghna@2026!"
                                     placeholder="••••••••••••"
+                                    required
                                 >
                             </div>
                             @error('password')
@@ -117,7 +113,7 @@
 
                         <!-- Remember Me -->
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remember" id="remember" value="1" checked>
+                            <input class="form-check-input" type="checkbox" name="remember" id="remember" value="1">
                             <label class="form-check-label text-muted-hms" for="remember" style="font-size: 0.825rem;">
                                 Keep me signed in on this workstation
                             </label>
@@ -128,33 +124,6 @@
                             <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Portal
                         </x-button>
                     </form>
-
-                    <!-- Quick Testing Credentials Badge Drawer -->
-                    <div class="mt-4 pt-3 border-top">
-                        <span class="d-block text-muted-hms fw-semibold mb-2" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px;">
-                            Quick Demo Credentials (Password: <code>Meghna@2026!</code>)
-                        </span>
-                        <div class="d-flex flex-wrap gap-1">
-                            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size: 0.7rem;" onclick="document.getElementById('email').value='admin@meghnaclinic.com'; document.getElementById('password').value='Meghna@2026!';">
-                                Admin
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size: 0.7rem;" onclick="document.getElementById('email').value='doctor@meghnaclinic.com'; document.getElementById('password').value='Meghna@2026!';">
-                                Doctor
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size: 0.7rem;" onclick="document.getElementById('email').value='nurse@meghnaclinic.com'; document.getElementById('password').value='Meghna@2026!';">
-                                Nurse
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size: 0.7rem;" onclick="document.getElementById('email').value='reception@meghnaclinic.com'; document.getElementById('password').value='Meghna@2026!';">
-                                Reception
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size: 0.7rem;" onclick="document.getElementById('email').value='billing@meghnaclinic.com'; document.getElementById('password').value='Meghna@2026!';">
-                                Billing
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size: 0.7rem;" onclick="document.getElementById('email').value='lab@meghnaclinic.com'; document.getElementById('password').value='Meghna@2026!';">
-                                Lab
-                            </button>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Security Note -->
