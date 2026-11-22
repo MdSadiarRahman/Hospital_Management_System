@@ -1,4 +1,4 @@
-<x-layouts.portal role="admin" title="Provision New Bed — Ward Inventory">
+<x-layouts.portal role="admin" title="Provision New Bed — Ward Inventory" activeNav="beds">
     <div class="container-fluid px-0">
         <!-- Breadcrumb & Header -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">

@@ -1,4 +1,4 @@
-<x-layouts.portal role="reception" title="Patient Visits & Triage Intake">
+<x-layouts.portal role="reception" title="Patient Visits & Triage Intake" activeNav="visits">
     <div class="container-fluid px-0">
         <!-- Page Header & Action Toolbar -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">

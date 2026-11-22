@@ -1,4 +1,4 @@
-<x-layouts.portal title="Refund Vouchers — Meghna Clinic">
+<x-layouts.portal title="Refund Vouchers — Meghna Clinic" activeNav="refunds">
     <div class="container-fluid py-4">
 
         {{-- Flash Alerts --}}

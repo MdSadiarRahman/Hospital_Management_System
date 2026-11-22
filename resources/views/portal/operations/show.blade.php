@@ -1,4 +1,4 @@
-<x-layouts.portal title="Operation Dossier {{ $operation->operation_number }} — Meghna Clinic">
+<x-layouts.portal title="Operation Dossier {{ $operation->operation_number }} — Meghna Clinic" activeNav="operations">
     <div class="container-fluid py-4">
 
         {{-- Flash Alerts --}}

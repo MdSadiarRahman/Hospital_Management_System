@@ -1,4 +1,4 @@
-<x-layouts.portal title="Payments & Money Receipts — Meghna Clinic">
+<x-layouts.portal title="Payments & Money Receipts — Meghna Clinic" activeNav="payments">
     <div class="container-fluid py-4">
 
         {{-- Flash Alerts --}}

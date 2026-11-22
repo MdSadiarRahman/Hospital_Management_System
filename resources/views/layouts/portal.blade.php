@@ -207,14 +207,14 @@
         ],
         'reception' => [
             ['title' => 'Reception Desk', 'icon' => 'speedometer2', 'slug' => 'dashboard', 'url' => route('portal.reception')],
-            ['title' => 'Patient Registration', 'icon' => 'person-plus', 'slug' => 'patients', 'url' => route('portal.patients.create')],
-            ['title' => 'Patient Registry', 'icon' => 'person-vcard', 'slug' => 'patient-list', 'url' => route('portal.patients.index')],
+            ['title' => 'Patient Registration', 'icon' => 'person-plus', 'slug' => 'register', 'url' => route('portal.patients.create')],
+            ['title' => 'Patient Registry', 'icon' => 'person-vcard', 'slug' => 'patients', 'url' => route('portal.patients.index')],
             ['title' => 'Doctor Appointments', 'icon' => 'calendar2-check', 'slug' => 'appointments', 'url' => route('portal.appointments.index')],
             ['title' => 'Doctor Schedules', 'icon' => 'calendar-week', 'slug' => 'doctor-schedules', 'url' => route('portal.doctor-schedules.index')],
-            ['title' => 'Visit & Triage Intake', 'icon' => 'ticket-perforated', 'slug' => 'visits', 'url' => route('portal.visits.create')],
-            ['title' => 'Patient Visits List', 'icon' => 'card-list', 'slug' => 'visits-list', 'url' => route('portal.visits.index')],
-            ['title' => 'Inpatient Admission', 'icon' => 'box-arrow-in-right', 'slug' => 'admissions', 'url' => route('portal.admissions.create')],
-            ['title' => 'Admissions List', 'icon' => 'hospital', 'slug' => 'admissions-list', 'url' => route('portal.admissions.index')],
+            ['title' => 'Visit & Triage Intake', 'icon' => 'ticket-perforated', 'slug' => 'visits-create', 'url' => route('portal.visits.create')],
+            ['title' => 'Patient Visits List', 'icon' => 'card-list', 'slug' => 'visits', 'url' => route('portal.visits.index')],
+            ['title' => 'Inpatient Admission', 'icon' => 'box-arrow-in-right', 'slug' => 'admissions-create', 'url' => route('portal.admissions.create')],
+            ['title' => 'Admissions List', 'icon' => 'hospital', 'slug' => 'admissions', 'url' => route('portal.admissions.index')],
             ['title' => '10-Bed Occupancy Board', 'icon' => 'door-open', 'slug' => 'beds', 'url' => route('portal.beds.occupancy')],
             ['title' => 'Verify & Link Accounts', 'icon' => 'person-check', 'slug' => 'linking', 'url' => route('portal.patient-linking.index')],
         ],
@@ -256,40 +256,97 @@
         default => [],
     };
 
-    // Dynamic Active Menu Detection
+    // Dynamic Active Menu Detection - Guarantee Exactly ONE Active Link
+    $currentFullUrl = request()->fullUrl();
     $currentUrl = request()->url();
     $currentPath = trim(request()->path(), '/'); // e.g. "portal/beds/transfers"
     $hasCustomActive = !empty($activeNav) && $activeNav !== 'dashboard' && $activeNav !== 'overview';
 
-    $isMenuActive = function($menu) use ($activeNav, $currentUrl, $currentPath, $hasCustomActive) {
-        if ($hasCustomActive) {
-            return $activeNav === $menu['slug'];
+    $resolvedActiveSlug = null;
+
+    // 1. Explicit Custom activeNav passed to layout (if valid in current role menu)
+    if ($hasCustomActive) {
+        foreach ($navMenus as $menu) {
+            if ($menu['slug'] === $activeNav) {
+                $resolvedActiveSlug = $menu['slug'];
+                break;
+            }
         }
+    }
 
-        $menuRawUrl = $menu['url'];
-        $menuPath = parse_url($menuRawUrl, PHP_URL_PATH);
-        $menuCleanPath = trim($menuPath ?? '', '/');
-        $menuUrl = url($menuPath ?? '');
+    // 2. Exact match by full URL (including query string) or clean path
+    // Exclude root dashboard and client-side anchors (#) from exact matching
+    if (!$resolvedActiveSlug) {
+        foreach ($navMenus as $menu) {
+            if ($menu['slug'] === 'dashboard' || str_contains($menu['url'], '#')) {
+                continue;
+            }
 
-        // 1. Exact match by full URL or clean path
-        if ($currentUrl === $menuUrl || $currentPath === $menuCleanPath) {
-            return true;
+            if (str_contains($menu['url'], '?')) {
+                if ($currentFullUrl === $menu['url']) {
+                    $resolvedActiveSlug = $menu['slug'];
+                    break;
+                }
+            } else {
+                $menuPath = trim(parse_url($menu['url'], PHP_URL_PATH) ?? '', '/');
+                if (!empty($menuPath) && ($currentPath === $menuPath || $currentUrl === url($menuPath))) {
+                    $resolvedActiveSlug = $menu['slug'];
+                    break;
+                }
+            }
         }
+    }
 
-        // 2. Sub-path match (e.g. portal/beds/transfers or portal/patients/12, but exclude root dashboards)
-        if ($menu['slug'] !== 'dashboard' && !empty($menuCleanPath)) {
-            $isNotRoot = !in_array($menuCleanPath, ['portal', 'portal/dashboard', 'patient', 'patient/dashboard']);
-            if ($isNotRoot && (str_starts_with($currentPath, $menuCleanPath . '/') || $currentPath === $menuCleanPath)) {
-                return true;
+    // 3. Most specific sub-path / prefix match (the LONGEST matching prefix wins!)
+    // For example: on /portal/visits/45 or /portal/patients/12, match the parent index item
+    if (!$resolvedActiveSlug) {
+        $bestMatchSlug = null;
+        $bestMatchLength = 0;
+
+        foreach ($navMenus as $menu) {
+            if ($menu['slug'] === 'dashboard' || str_contains($menu['url'], '#')) {
+                continue;
+            }
+
+            $menuPath = trim(parse_url($menu['url'], PHP_URL_PATH) ?? '', '/');
+            if (!empty($menuPath) && !in_array($menuPath, ['portal', 'patient'])) {
+                if (str_starts_with($currentPath, $menuPath . '/')) {
+                    $len = strlen($menuPath);
+                    if ($len > $bestMatchLength) {
+                        $bestMatchLength = $len;
+                        $bestMatchSlug = $menu['slug'];
+                    }
+                }
             }
         }
 
-        // 3. Fallback when on dashboard root
-        if ($menu['slug'] === 'dashboard') {
-            return in_array($currentPath, ['portal', 'portal/doctor', 'portal/admin', 'portal/nurse', 'portal/reception', 'portal/billing', 'portal/lab', 'portal/ot_ward', 'patient', 'patient/dashboard']);
+        if ($bestMatchSlug) {
+            $resolvedActiveSlug = $bestMatchSlug;
         }
+    }
 
-        return false;
+    // 4. Fallback for Root Dashboards
+    if (!$resolvedActiveSlug) {
+        $rootDashboardPaths = [
+            'portal',
+            'portal/dashboard',
+            'portal/doctor',
+            'portal/admin',
+            'portal/nurse',
+            'portal/reception',
+            'portal/billing',
+            'portal/lab',
+            'portal/ot_ward',
+            'patient',
+            'patient/dashboard',
+        ];
+        if (in_array($currentPath, $rootDashboardPaths) || empty($activeNav) || $activeNav === 'dashboard' || $activeNav === 'overview') {
+            $resolvedActiveSlug = 'dashboard';
+        }
+    }
+
+    $isMenuActive = function($menu) use ($resolvedActiveSlug) {
+        return $resolvedActiveSlug === $menu['slug'];
     };
 @endphp
 

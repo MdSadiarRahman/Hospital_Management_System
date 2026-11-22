@@ -1,4 +1,4 @@
-<x-layouts.portal title="Operation Theatre (OT) Management — Meghna Clinic">
+<x-layouts.portal title="Operation Theatre (OT) Management — Meghna Clinic" activeNav="operations">
     <div class="container-fluid py-4">
 
         {{-- Flash Alerts --}}

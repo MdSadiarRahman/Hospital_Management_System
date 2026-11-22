@@ -1,4 +1,4 @@
-<x-layouts.portal role="reception" title="Edit Patient — {{ $patient->patient_code }}">
+<x-layouts.portal role="reception" title="Edit Patient — {{ $patient->patient_code }}" activeNav="patients">
     <div class="container-fluid px-0">
         <!-- Page Header -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">

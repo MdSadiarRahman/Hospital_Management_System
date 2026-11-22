@@ -1,4 +1,4 @@
-<x-layouts.portal title="Emergency Referral {{ $referral->referral_number }} — Meghna Clinic">
+<x-layouts.portal title="Emergency Referral {{ $referral->referral_number }} — Meghna Clinic" activeNav="referrals">
     <div class="container-fluid py-4">
 
         {{-- Flash Alerts --}}

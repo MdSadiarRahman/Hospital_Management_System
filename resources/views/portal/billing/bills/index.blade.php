@@ -1,4 +1,4 @@
-<x-layouts.portal title="Invoices & Billing Ledger — Meghna Clinic">
+<x-layouts.portal title="Invoices & Billing Ledger — Meghna Clinic" activeNav="financials">
     <div class="container-fluid py-4">
 
         {{-- Flash Alerts --}}

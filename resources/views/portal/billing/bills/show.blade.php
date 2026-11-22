@@ -1,4 +1,4 @@
-<x-layouts.portal title="Invoice {{ $bill->invoice_number }} — Meghna Clinic">
+<x-layouts.portal title="Invoice {{ $bill->invoice_number }} — Meghna Clinic" activeNav="financials">
     <div class="container-fluid py-4">
 
         {{-- Flash Alerts --}}

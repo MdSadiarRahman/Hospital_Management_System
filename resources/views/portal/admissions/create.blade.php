@@ -1,4 +1,4 @@
-<x-layouts.portal role="admin" title="Admit Inpatient & Bed Allocation" activeNav="admissions">
+<x-layouts.portal role="admin" title="Admit Inpatient & Bed Allocation" activeNav="admissions-create">
     <div class="container-fluid px-0">
         <!-- Page Header -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">

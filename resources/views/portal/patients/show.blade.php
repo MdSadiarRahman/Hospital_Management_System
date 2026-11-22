@@ -1,4 +1,4 @@
-<x-layouts.portal role="reception" title="Patient Profile & Medical Record — {{ $patient->patient_code }}">
+<x-layouts.portal role="reception" title="Patient Profile & Medical Record — {{ $patient->patient_code }}" activeNav="patients">
     <div class="container-fluid px-0">
         <!-- Page Header & Action Toolbar -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">

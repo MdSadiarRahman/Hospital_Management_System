@@ -1,4 +1,4 @@
-<x-layouts.portal title="Initiate Emergency Referral — Meghna Clinic">
+<x-layouts.portal title="Initiate Emergency Referral — Meghna Clinic" activeNav="referrals">
     <div class="container-fluid py-4">
 
         {{-- Breadcrumb & Header --}}

@@ -1,4 +1,4 @@
-<x-layouts.portal title="Service Catalog & Tariffs — Meghna Clinic">
+<x-layouts.portal title="Service Catalog & Tariffs — Meghna Clinic" activeNav="services">
     <div class="container-fluid py-4">
 
         {{-- Flash Alerts --}}

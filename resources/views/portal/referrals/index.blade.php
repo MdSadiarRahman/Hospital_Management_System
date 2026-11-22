@@ -1,4 +1,4 @@
-<x-layouts.portal title="Emergency Referrals & ICU/CCU Transfers — Meghna Clinic">
+<x-layouts.portal title="Emergency Referrals & ICU/CCU Transfers — Meghna Clinic" activeNav="referrals">
     <div class="container-fluid py-4">
 
         {{-- Flash Alerts --}}

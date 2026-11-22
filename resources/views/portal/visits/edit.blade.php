@@ -1,4 +1,4 @@
-<x-layouts.portal role="reception" title="Update Visit #{{ $visit->visit_number }}">
+<x-layouts.portal role="reception" title="Update Visit #{{ $visit->visit_number }}" activeNav="visits">
     <div class="container-fluid px-0">
         <!-- Breadcrumbs & Header -->
         <div class="mb-4">

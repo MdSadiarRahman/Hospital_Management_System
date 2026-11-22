@@ -1,4 +1,4 @@
-<x-layouts.portal role="reception" title="Patient Check-in & Visit Intake">
+<x-layouts.portal role="reception" title="Patient Check-in & Visit Intake" activeNav="visits-create">
     <div class="container-fluid px-0">
         <!-- Breadcrumbs & Header -->
         <div class="mb-4">

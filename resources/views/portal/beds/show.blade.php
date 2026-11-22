@@ -1,4 +1,4 @@
-<x-layouts.portal role="admin" title="Bed Dossier — {{ $bed->bed_number }}">
+<x-layouts.portal role="admin" title="Bed Dossier — {{ $bed->bed_number }}" activeNav="beds">
     <div class="container-fluid px-0">
         <!-- Breadcrumb & Header -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">

@@ -1,4 +1,4 @@
-<x-layouts.portal title="Schedule Operation — Meghna Clinic">
+<x-layouts.portal title="Schedule Operation — Meghna Clinic" activeNav="operations">
     <div class="container-fluid py-4">
 
         {{-- Breadcrumb & Header --}}

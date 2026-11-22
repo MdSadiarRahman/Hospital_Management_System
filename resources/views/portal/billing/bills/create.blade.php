@@ -1,4 +1,4 @@
-<x-layouts.portal title="Generate Patient Invoice — Meghna Clinic">
+<x-layouts.portal title="Generate Patient Invoice — Meghna Clinic" activeNav="invoices">
     <div class="container-fluid py-4">
 
         {{-- Flash Alerts --}}

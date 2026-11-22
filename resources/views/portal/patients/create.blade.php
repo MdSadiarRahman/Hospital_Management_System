@@ -1,4 +1,4 @@
-<x-layouts.portal role="reception" title="Register New Patient">
+<x-layouts.portal role="reception" title="Register New Patient" activeNav="register">
     <div class="container-fluid px-0">
         <!-- Page Header -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">

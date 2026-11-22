@@ -1,4 +1,4 @@
-<x-layouts.portal role="reception" title="Visit Dossier — {{ $visit->visit_number }}">
+<x-layouts.portal role="reception" title="Visit Dossier — {{ $visit->visit_number }}" activeNav="visits">
     <div class="container-fluid px-0">
         <!-- Breadcrumbs & Action Toolbar -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
