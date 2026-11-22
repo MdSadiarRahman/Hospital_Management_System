@@ -124,7 +124,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('previews.doctor') }}">
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('portal.login.role', 'doctor') }}">
                                 <span class="rounded bg-info-subtle text-teal p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
                                     <i class="bi bi-heart-pulse-fill fs-6"></i>
                                 </span>
@@ -135,7 +135,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('previews.nurse') }}">
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('portal.login.role', 'nurse') }}">
                                 <span class="rounded bg-success-subtle text-success p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
                                     <i class="bi bi-clipboard2-pulse fs-6"></i>
                                 </span>
@@ -146,7 +146,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('previews.reception') }}">
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('portal.login.role', 'reception') }}">
                                 <span class="rounded bg-warning-subtle text-warning p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
                                     <i class="bi bi-person-vcard fs-6 text-dark"></i>
                                 </span>
@@ -157,7 +157,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('previews.billing') }}">
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('portal.login.role', 'billing') }}">
                                 <span class="rounded bg-danger-subtle text-danger p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
                                     <i class="bi bi-cash-stack fs-6"></i>
                                 </span>
@@ -168,7 +168,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('previews.lab') }}">
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('portal.login.role', 'lab') }}">
                                 <span class="rounded bg-info-subtle text-info p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
                                     <i class="bi bi-virus fs-6"></i>
                                 </span>
@@ -179,7 +179,7 @@
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('previews.admin') }}">
+                            <a class="dropdown-item d-flex align-items-center gap-2.5 py-2 rounded-2" href="{{ route('portal.login.role', 'admin') }}">
                                 <span class="rounded bg-secondary-subtle text-secondary p-1.5 d-inline-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">
                                     <i class="bi bi-shield-check fs-6 text-navy"></i>
                                 </span>
@@ -248,27 +248,27 @@
                             <i class="bi bi-shield-lock-fill"></i>
                             <span>Unified Staff Login (All Roles)</span>
                         </a>
-                        <a href="{{ route('previews.doctor') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
+                        <a href="{{ route('portal.login.role', 'doctor') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
                             <i class="bi bi-heart-pulse-fill text-teal"></i>
                             <span>Doctor Clinical Workstation</span>
                         </a>
-                        <a href="{{ route('previews.nurse') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
+                        <a href="{{ route('portal.login.role', 'nurse') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
                             <i class="bi bi-clipboard2-pulse text-success"></i>
                             <span>Nurse Ward Station (10 Beds)</span>
                         </a>
-                        <a href="{{ route('previews.reception') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
+                        <a href="{{ route('portal.login.role', 'reception') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
                             <i class="bi bi-person-vcard text-warning"></i>
                             <span>Reception &amp; Intake Desk</span>
                         </a>
-                        <a href="{{ route('previews.billing') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
+                        <a href="{{ route('portal.login.role', 'billing') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
                             <i class="bi bi-cash-stack text-danger"></i>
                             <span>Billing &amp; Cashier Desk</span>
                         </a>
-                        <a href="{{ route('previews.lab') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
+                        <a href="{{ route('portal.login.role', 'lab') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
                             <i class="bi bi-virus text-info"></i>
                             <span>Diagnostic Laboratory</span>
                         </a>
-                        <a href="{{ route('previews.admin') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
+                        <a href="{{ route('portal.login.role', 'admin') }}" class="btn btn-white btn-sm text-start text-navy d-flex align-items-center gap-2 border bg-white">
                             <i class="bi bi-shield-check text-primary"></i>
                             <span>Hospital Administration</span>
                         </a>

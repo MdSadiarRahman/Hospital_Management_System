@@ -1026,7 +1026,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
                             OPD consultation queue, digital prescription writing, diagnostic requisitions, and 10-bed ward rounds.
                         </p>
-                        <a href="{{ route('previews.doctor') }}" class="btn btn-hms-outline-teal btn-sm w-100">
+                        <a href="{{ route('portal.login.role', 'doctor') }}" class="btn btn-hms-outline-teal btn-sm w-100">
                             <i class="bi bi-laptop me-1"></i> Doctor Portal
                         </a>
                     </div>
@@ -1045,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
                             Real-time bed occupancy, bedside vital signs logging, medication administration (MAR), and shift handover.
                         </p>
-                        <a href="{{ route('previews.nurse') }}" class="btn btn-hms-outline-teal btn-sm w-100">
+                        <a href="{{ route('portal.login.role', 'nurse') }}" class="btn btn-hms-outline-teal btn-sm w-100">
                             <i class="bi bi-hospital me-1"></i> Nurse Station
                         </a>
                     </div>
@@ -1064,7 +1064,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
                             New patient registration, duplicate check (NID/Phone), visit tokens, and acute bed admissions.
                         </p>
-                        <a href="{{ route('previews.reception') }}" class="btn btn-hms-outline-teal btn-sm w-100">
+                        <a href="{{ route('portal.login.role', 'reception') }}" class="btn btn-hms-outline-teal btn-sm w-100">
                             <i class="bi bi-door-open me-1"></i> Reception Desk
                         </a>
                     </div>
@@ -1083,7 +1083,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
                             Itemized billing, advance collections, money receipts, service catalog, and financial discharge clearance.
                         </p>
-                        <a href="{{ route('previews.billing') }}" class="btn btn-hms-outline-teal btn-sm w-100">
+                        <a href="{{ route('portal.login.role', 'billing') }}" class="btn btn-hms-outline-teal btn-sm w-100">
                             <i class="bi bi-receipt me-1"></i> Cashier Desk
                         </a>
                     </div>
@@ -1102,7 +1102,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
                             Test orders, barcode specimen tracking, internal hematology results, and external lab dispatch.
                         </p>
-                        <a href="{{ route('previews.lab') }}" class="btn btn-hms-outline-teal btn-sm w-100">
+                        <a href="{{ route('portal.login.role', 'lab') }}" class="btn btn-hms-outline-teal btn-sm w-100">
                             <i class="bi bi-clipboard-pulse me-1"></i> Lab Worklist
                         </a>
                     </div>
@@ -1121,7 +1121,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p class="text-muted-hms small mb-3 flex-grow-1" style="font-size: 0.8rem; line-height: 1.5;">
                             14 staff management, 10 bed tariffs, daily revenue metrics, security audit logs, and analytics.
                         </p>
-                        <a href="{{ route('previews.admin') }}" class="btn btn-hms-outline-teal btn-sm w-100">
+                        <a href="{{ route('portal.login.role', 'admin') }}" class="btn btn-hms-outline-teal btn-sm w-100">
                             <i class="bi bi-gear me-1"></i> Admin Portal
                         </a>
                     </div>

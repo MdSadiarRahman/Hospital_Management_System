@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Staff Portal Login — Meghna Clinic and Nursing Home</title>
+    <title>{{ !empty($roleData['name']) ? $roleData['name'] . ' Login' : 'Staff Portal Login' }} — Meghna Clinic and Nursing Home</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo-icon.svg') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -30,13 +30,28 @@
                 <!-- Login Card -->
                 <div class="card border-0 shadow-sm hms-card p-3 p-sm-4 bg-white">
                     <div class="text-center mb-4">
-                        <div class="d-inline-flex p-3 rounded-circle bg-teal-subtle text-teal mb-3">
-                            <i class="bi bi-shield-lock-fill fs-3"></i>
-                        </div>
-                        <h1 class="h4 fw-bold text-navy mb-1">Staff Portal Login</h1>
-                        <p class="text-muted-hms" style="font-size: 0.875rem;">
-                            Authorized personnel only &bull; Doctors, Nurses, Cashier, Reception & Administration.
-                        </p>
+                        @if(!empty($roleData))
+                            <div class="d-inline-flex p-3 rounded-circle {{ $roleData['badge_class'] ?? 'bg-teal-subtle text-teal' }} mb-2">
+                                <i class="bi {{ $roleData['icon'] ?? 'bi-shield-lock-fill' }} fs-3"></i>
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge {{ $roleData['badge_class'] ?? 'bg-secondary-subtle text-dark' }} px-3 py-1.5 fw-semibold" style="font-size: 0.8rem;">
+                                    {{ $roleData['role_title'] ?? 'Staff Portal' }}
+                                </span>
+                            </div>
+                            <h1 class="h4 fw-bold text-navy mb-1">{{ $roleData['name'] ?? 'Workstation' }} Login</h1>
+                            <p class="text-muted-hms" style="font-size: 0.85rem; line-height: 1.45;">
+                                {{ $roleData['subtitle'] ?? 'Please sign in with your authorized credentials to access your clinical workstation.' }}
+                            </p>
+                        @else
+                            <div class="d-inline-flex p-3 rounded-circle bg-teal-subtle text-teal mb-3">
+                                <i class="bi bi-shield-lock-fill fs-3"></i>
+                            </div>
+                            <h1 class="h4 fw-bold text-navy mb-1">Staff Portal Login</h1>
+                            <p class="text-muted-hms" style="font-size: 0.875rem;">
+                                Authorized personnel only &bull; Doctors, Nurses, Cashier, Reception & Administration.
+                            </p>
+                        @endif
                     </div>
 
                     @if(session('status'))
@@ -56,11 +71,14 @@
 
                     <form method="POST" action="{{ route('portal.login.submit') }}" class="d-flex flex-column gap-3">
                         @csrf
+                        @if(!empty($activeRole))
+                            <input type="hidden" name="intended_role" value="{{ $activeRole }}">
+                        @endif
 
                         <!-- Email Address -->
                         <div>
                             <label for="email" class="form-label text-navy fw-semibold" style="font-size: 0.85rem;">
-                                Staff Email Address
+                                {{ !empty($roleData['role_title']) ? $roleData['role_title'] . ' Email Address' : 'Staff Email Address' }}
                             </label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light text-muted-hms"><i class="bi bi-envelope"></i></span>
@@ -69,8 +87,8 @@
                                     name="email" 
                                     id="email" 
                                     class="form-control @error('email') is-invalid @enderror" 
-                                    value="{{ old('email') }}" 
-                                    placeholder="e.g. staff@meghnaclinic.com" 
+                                    value="{{ old('email', !empty($roleData['sample_email']) ? $roleData['sample_email'] : '') }}" 
+                                    placeholder="{{ $roleData['sample_email'] ?? 'e.g. staff@meghnaclinic.com' }}" 
                                     required
                                     autofocus
                                 >
@@ -116,8 +134,43 @@
 
                         <!-- Submit Button -->
                         <x-button type="submit" variant="primary" size="md" class="w-100 mt-2">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to Portal
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to {{ !empty($roleData['name']) ? $roleData['name'] : 'Portal' }}
                         </x-button>
+
+                        @if(!empty($roleData))
+                            <!-- Role Credentials Test Hint -->
+                            <div class="mt-2 p-2.5 rounded-3 bg-light border text-muted-hms" style="font-size: 0.78rem;">
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <span class="fw-semibold text-navy"><i class="bi bi-info-circle me-1 text-teal"></i> Workstation Demo Access</span>
+                                    <span class="badge bg-white border text-secondary" style="font-size: 0.7rem;">Default Credential</span>
+                                </div>
+                                <div class="font-monospace text-navy" style="font-size: 0.75rem;">
+                                    <div><strong>Email:</strong> {{ $roleData['sample_email'] }}</div>
+                                    <div><strong>Pass:</strong> {{ $roleData['default_password'] ?? 'Meghna@2026!' }}</div>
+                                </div>
+                            </div>
+
+                            <div class="text-center pt-2 border-top mt-1">
+                                <a href="{{ route('portal.login') }}" class="text-decoration-none text-muted-hms" style="font-size: 0.8rem;">
+                                    <i class="bi bi-arrow-left me-1"></i> Switch to Unified Staff Portal
+                                </a>
+                            </div>
+                        @else
+                            <!-- Dedicated Workstation Login Selectors -->
+                            <div class="pt-3 border-top mt-1">
+                                <div class="text-muted-hms mb-2 text-center" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">
+                                    Dedicated Workstations
+                                </div>
+                                <div class="d-flex flex-wrap gap-1.5 justify-content-center">
+                                    <a href="{{ route('portal.login.role', 'doctor') }}" class="badge text-decoration-none bg-info-subtle text-teal py-1.5 px-2">Doctor</a>
+                                    <a href="{{ route('portal.login.role', 'nurse') }}" class="badge text-decoration-none bg-success-subtle text-success py-1.5 px-2">Nurse</a>
+                                    <a href="{{ route('portal.login.role', 'reception') }}" class="badge text-decoration-none bg-warning-subtle text-dark py-1.5 px-2">Reception</a>
+                                    <a href="{{ route('portal.login.role', 'billing') }}" class="badge text-decoration-none bg-danger-subtle text-danger py-1.5 px-2">Billing</a>
+                                    <a href="{{ route('portal.login.role', 'lab') }}" class="badge text-decoration-none bg-info-subtle text-info py-1.5 px-2">Laboratory</a>
+                                    <a href="{{ route('portal.login.role', 'admin') }}" class="badge text-decoration-none bg-secondary-subtle text-navy py-1.5 px-2">Admin</a>
+                                </div>
+                            </div>
+                        @endif
                     </form>
                 </div>
 

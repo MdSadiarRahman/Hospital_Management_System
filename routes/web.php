@@ -75,6 +75,7 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 
 Route::prefix('portal')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('portal.login');
+    Route::get('/login/{role}', [AuthController::class, 'showRoleLoginForm'])->name('portal.login.role');
     Route::post('/login', [AuthController::class, 'login'])->name('portal.login.submit');
     Route::post('/logout', [AuthController::class, 'logout'])->name('portal.logout');
 });
@@ -533,30 +534,30 @@ Route::prefix('previews')->name('previews.')->group(function () {
     Route::get('/public', [PublicController::class, 'index'])->name('public');
 
     Route::get('/admin', function () {
-        return view('previews.admin');
+        return redirect()->route('portal.login.role', 'admin');
     })->name('admin');
 
     Route::get('/doctor', function () {
-        return view('previews.doctor');
+        return redirect()->route('portal.login.role', 'doctor');
     })->name('doctor');
 
     Route::get('/nurse', function () {
-        return view('previews.nurse');
+        return redirect()->route('portal.login.role', 'nurse');
     })->name('nurse');
 
     Route::get('/reception', function () {
-        return view('previews.reception');
+        return redirect()->route('portal.login.role', 'reception');
     })->name('reception');
 
     Route::get('/billing', function () {
-        return view('previews.billing');
+        return redirect()->route('portal.login.role', 'billing');
     })->name('billing');
 
     Route::get('/lab', function () {
-        return view('previews.lab');
+        return redirect()->route('portal.login.role', 'lab');
     })->name('lab');
 
     Route::get('/patient', function () {
-        return view('previews.patient');
+        return redirect()->route('patient.login');
     })->name('patient');
 });
